@@ -1,0 +1,14 @@
+Django==4.2.7
+python-dotenv==1.0.0
+psycopg2-binary==2.9.7
+djangorestframework==3.14.0
+django-cors-headers==4.3.1
+gunicorn==21.2.0
+whitenoise==6.6.0
+Pillow==10.1.0
+
+# Development tools
+black==23.12.1
+isort==5.13.2
+flake8==7.0.0
+pre-commit==3.6.0

@@ -1,0 +1,26 @@
+[flake8]
+max-line-length = 88
+extend-ignore = 
+    # E203: whitespace before ':' (conflicts with Black)
+    E203,
+    # W503: line break before binary operator (conflicts with Black)
+    W503,
+    # E501: line too long (handled by Black)
+    E501
+exclude = 
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    env,
+    migrations,
+    .pytest_cache,
+    .tox,
+    build,
+    dist,
+    *.egg-info
+per-file-ignores =
+    # Django settings files can have long lines and unused imports
+    */settings/*.py:F401,E501
+    # __init__.py files can have unused imports
+    __init__.py:F401
