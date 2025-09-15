@@ -58,6 +58,8 @@ coverage.xml
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+staticfiles/
+media/
 
 # Flask stuff:
 instance/
@@ -219,6 +221,8 @@ temp/
 *~
 
 # OS generated files
+backend/.DS_Store
+front/.DS_Store
 .DS_Store
 .DS_Store?
 ._*
