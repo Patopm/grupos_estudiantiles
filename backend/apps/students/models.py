@@ -59,6 +59,19 @@ class Student(models.Model):
     """
     Modelo para representar estudiantes con información académica
     """
+    tuition_number = models.CharField(
+        primary_key=True,
+        max_length=10,
+        unique=True,
+        validators=[
+            RegexValidator(
+                regex=r'^AL[0-9]{8}+$',
+                message='La matrícula debe contener solo letras mayúsculas y números',
+                code='invalid_tuition_number'
+            )
+        ],
+        help_text="Matrícula del estudiante"
+    )
     
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -66,18 +79,6 @@ class Student(models.Model):
         related_name='student_profile',
         limit_choices_to={'role': 'student'},
         help_text="Usuario asociado al estudiante"
-    )
-    
-    student_id = models.CharField(
-        max_length=20,
-        unique=True,
-        validators=[
-            RegexValidator(
-                regex=r'^[A-Z0-9]+$',
-                message='El ID de estudiante debe contener solo letras mayúsculas y números'
-            )
-        ],
-        help_text="Número de identificación del estudiante"
     )
     
     group = models.ForeignKey(
@@ -128,10 +129,10 @@ class Student(models.Model):
         db_table = 'students'
         verbose_name = 'Estudiante'
         verbose_name_plural = 'Estudiantes'
-        ordering = ['student_id']
+        ordering = ['tuition_number']
     
     def __str__(self):
-        return f"{self.student_id} - {self.user.get_full_name()}"
+        return f"{self.tuition_number} - {self.user.get_full_name()}"
     
     @property
     def full_name(self):

@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.core.validators import RegexValidator
 
 
 class User(AbstractUser):
@@ -21,7 +22,14 @@ class User(AbstractUser):
     
     email = models.EmailField(
         unique=True,
-        help_text="Correo electrónico único del usuario"
+        help_text="Correo electrónico único del usuario",
+        validators=[
+            RegexValidator(
+                regex=r'^AL[0-9]{8}+@tecmilenio.mx$',
+                message='El correo electrónico debe ser válido y pertenecer a Tecmilenio',
+                code='invalid_email'
+            )
+        ]
     )
     
     phone = models.CharField(

@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.utils import timezone
+import uuid
 
 
 class Event(models.Model):
@@ -25,6 +26,13 @@ class Event(models.Model):
         CANCELLED = 'cancelled', 'Cancelado'
         COMPLETED = 'completed', 'Completado'
     
+
+    event_id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        help_text="ID del evento"
+    )
+
     title = models.CharField(
         max_length=200,
         help_text="Título del evento"
@@ -172,6 +180,12 @@ class EventAttendee(models.Model):
         NO_SHOW = 'no_show', 'No asistió'
         CANCELLED = 'cancelled', 'Canceló'
     
+    attendee_id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        help_text="ID de la asistencia"
+    )
+
     event = models.ForeignKey(
         Event,
         on_delete=models.CASCADE,

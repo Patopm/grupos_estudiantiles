@@ -43,7 +43,7 @@ class StudentGroupAdmin(admin.ModelAdmin):
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
     list_display = (
-        'student_id',
+        'tuition_number',
         'full_name',
         'email',
         'career',
@@ -63,14 +63,14 @@ class StudentAdmin(admin.ModelAdmin):
     )
     
     search_fields = (
-        'student_id',
+        'tuition_number',
         'user__first_name',
         'user__last_name',
         'user__email',
         'career'
     )
     
-    ordering = ('student_id',)
+    ordering = ('tuition_number',)
     
     fieldsets = (
         ('Información del Usuario', {
@@ -78,7 +78,7 @@ class StudentAdmin(admin.ModelAdmin):
         }),
         ('Información Académica', {
             'fields': (
-                'student_id',
+                'tuition_number',
                 'career',
                 'semester',
                 'group',
