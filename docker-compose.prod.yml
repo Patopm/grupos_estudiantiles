@@ -1,8 +1,6 @@
-version: "3.8"
-
 services:
   db:
-    image: postgres:15
+    image: postgres:17
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
@@ -19,7 +17,7 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3
     volumes:
       - static_volume:/app/staticfiles
@@ -40,7 +38,8 @@ services:
   frontend:
     build:
       context: ./front
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
+      target: production
     expose:
       - "3000"
     env_file:

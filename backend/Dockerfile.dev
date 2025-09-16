@@ -1,8 +1,9 @@
 FROM python:3.11-slim
 
-# Set environment variables
+# Set environment variables for development
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV DJANGO_SETTINGS_MODULE=config.settings.dev
 
 # Set work directory
 WORKDIR /app
@@ -13,14 +14,17 @@ RUN apt-get update \
         postgresql-client \
         build-essential \
         libpq-dev \
+        netcat-openbsd \
+        curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project
-COPY . /app/
+# Copy entrypoint script
+COPY entrypoint.sh /app/
+RUN chmod +x /app/entrypoint.sh
 
 # Create a non-root user
 RUN adduser --disabled-password --gecos '' appuser && chown -R appuser /app
@@ -29,5 +33,8 @@ USER appuser
 # Expose port
 EXPOSE 8000
 
-# Run the application
+# Set entrypoint
+ENTRYPOINT ["/app/entrypoint.sh"]
+
+# Run the development server with hot reload
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

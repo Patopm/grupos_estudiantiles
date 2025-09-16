@@ -9,6 +9,7 @@ help:
 	@echo "  shell-backend   Open shell in backend container"
 	@echo "  shell-frontend  Open shell in frontend container"
 	@echo "  migrate         Run Django migrations"
+	@echo "  createcachetable Create Django cache table"
 	@echo "  collectstatic   Collect static files"
 	@echo "  test            Run tests"
 	@echo "  clean           Clean up Docker resources"
@@ -44,6 +45,9 @@ shell-frontend:
 
 migrate:
 	docker-compose exec backend python manage.py migrate
+
+createcachetable:
+	docker-compose exec backend python manage.py createcachetable
 
 collectstatic:
 	docker-compose exec backend python manage.py collectstatic --noinput
