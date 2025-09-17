@@ -1,154 +1,151 @@
-from django.db import models
+import uuid
+
 from django.conf import settings
-from django.core.validators import RegexValidator
+from django.core.validators import MinValueValidator
+from django.db import models
 
 
 class StudentGroup(models.Model):
     """
-    Modelo para representar grupos de estudiantes (ej: Grupo A, Grupo B, etc.)
+    Modelo Grupo Estudiantil según especificaciones
     """
-    
-    name = models.CharField(
-        max_length=100,
-        unique=True,
-        help_text="Nombre del grupo (ej: Grupo A, 1er Semestre, etc.)"
-    )
-    
-    description = models.TextField(
-        blank=True,
-        null=True,
-        help_text="Descripción del grupo"
-    )
-    
-    president = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='led_group',
-        limit_choices_to={'role': 'president'},
-        help_text="Presidente del grupo"
-    )
-    
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    is_active = models.BooleanField(
-        default=True,
-        help_text="Indica si el grupo está activo"
-    )
-    
+
+    CATEGORY_CHOICES = [
+        ('deportivo', 'Deportivo'),
+        ('cultural', 'Cultural'),
+        ('academico', 'Académico'),
+        ('social', 'Social'),
+        ('tecnologico', 'Tecnológico'),
+        ('otro', 'Otro'),
+    ]
+
+    group_id = models.UUIDField(primary_key=True,
+                                default=uuid.uuid4,
+                                editable=False,
+                                help_text="ID único del grupo estudiantil")
+
+    name = models.CharField(max_length=200,
+                            unique=True,
+                            help_text="Nombre del grupo estudiantil")
+
+    description = models.TextField(help_text="Descripción detallada del grupo")
+
+    image = models.ImageField(upload_to='groups/images/',
+                              null=True,
+                              blank=True,
+                              help_text="Imagen representativa del grupo")
+
+    president = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                  on_delete=models.SET_NULL,
+                                  null=True,
+                                  blank=True,
+                                  related_name='led_groups',
+                                  limit_choices_to={'role': 'president'},
+                                  help_text="Presidente del grupo")
+
+    created_at = models.DateTimeField(auto_now_add=True,
+                                      help_text="Fecha de creación del grupo")
+
+    is_active = models.BooleanField(default=True,
+                                    help_text="Indica si el grupo está activo")
+
+    max_members = models.IntegerField(
+        validators=[MinValueValidator(1)],
+        default=50,
+        help_text="Número máximo de miembros permitidos")
+
+    category = models.CharField(max_length=20,
+                                choices=CATEGORY_CHOICES,
+                                default='otro',
+                                help_text="Categoría del grupo estudiantil")
+
     class Meta:
         db_table = 'student_groups'
-        verbose_name = 'Grupo de Estudiantes'
-        verbose_name_plural = 'Grupos de Estudiantes'
+        verbose_name = 'Grupo Estudiantil'
+        verbose_name_plural = 'Grupos Estudiantiles'
         ordering = ['name']
-    
+
     def __str__(self):
         return self.name
-    
+
     @property
-    def student_count(self):
-        return self.students.filter(is_active=True).count()
-    
+    def member_count(self):
+        """Número actual de miembros activos"""
+        return self.memberships.filter(status='active').count()
+
+    @property
+    def pending_requests_count(self):
+        """Número de solicitudes pendientes"""
+        return self.memberships.filter(status='pending').count()
+
+    @property
+    def is_full(self):
+        """Verifica si el grupo está lleno"""
+        return self.member_count >= self.max_members
+
     @property
     def president_name(self):
-        return self.president.get_full_name() if self.president else "Sin presidente"
+        """Nombre del presidente o mensaje por defecto"""
+        return self.president.get_full_name(
+        ) if self.president else "Sin presidente asignado"
 
 
-class Student(models.Model):
+class GroupMembership(models.Model):
     """
-    Modelo para representar estudiantes con información académica
+    Modelo Membresía según especificaciones
     """
-    tuition_number = models.CharField(
-        primary_key=True,
-        max_length=10,
-        unique=True,
-        validators=[
-            RegexValidator(
-                regex=r'^AL[0-9]{8}+$',
-                message='La matrícula debe contener solo letras mayúsculas y números',
-                code='invalid_tuition_number'
-            )
-        ],
-        help_text="Matrícula del estudiante"
-    )
-    
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='student_profile',
-        limit_choices_to={'role': 'student'},
-        help_text="Usuario asociado al estudiante"
-    )
-    
-    group = models.ForeignKey(
-        StudentGroup,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='students',
-        help_text="Grupo al que pertenece el estudiante"
-    )
-    
-    career = models.CharField(
-        max_length=200,
-        help_text="Carrera que estudia"
-    )
-    
-    semester = models.PositiveIntegerField(
-        help_text="Semestre actual del estudiante"
-    )
-    
-    enrollment_date = models.DateField(
-        help_text="Fecha de inscripción"
-    )
-    
-    graduation_date = models.DateField(
-        null=True,
-        blank=True,
-        help_text="Fecha de graduación (si aplica)"
-    )
-    
-    average_grade = models.DecimalField(
-        max_digits=4,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        help_text="Promedio general del estudiante"
-    )
-    
-    is_active = models.BooleanField(
-        default=True,
-        help_text="Indica si el estudiante está activo"
-    )
-    
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
+
+    STATUS_CHOICES = [
+        ('pending', 'Pendiente'),
+        ('active', 'Activo'),
+        ('inactive', 'Inactivo'),
+    ]
+
+    ROLE_CHOICES = [
+        ('member', 'Miembro'),
+        ('president', 'Presidente'),
+    ]
+
+    membership_id = models.UUIDField(primary_key=True,
+                                     default=uuid.uuid4,
+                                     editable=False,
+                                     help_text="ID único de la membresía")
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE,
+                             related_name='group_memberships',
+                             help_text="Usuario miembro del grupo")
+
+    group = models.ForeignKey(StudentGroup,
+                              on_delete=models.CASCADE,
+                              related_name='memberships',
+                              help_text="Grupo al que pertenece")
+
+    status = models.CharField(max_length=20,
+                              choices=STATUS_CHOICES,
+                              default='pending',
+                              help_text="Estado de la membresía")
+
+    joined_at = models.DateTimeField(
+        auto_now_add=True, help_text="Fecha de solicitud/ingreso al grupo")
+
+    role = models.CharField(max_length=20,
+                            choices=ROLE_CHOICES,
+                            default='member',
+                            help_text="Rol dentro del grupo")
+
     class Meta:
-        db_table = 'students'
-        verbose_name = 'Estudiante'
-        verbose_name_plural = 'Estudiantes'
-        ordering = ['tuition_number']
-    
+        db_table = 'group_memberships'
+        verbose_name = 'Membresía de Grupo'
+        verbose_name_plural = 'Membresías de Grupos'
+        unique_together = ['user', 'group']
+        ordering = ['-joined_at']
+
     def __str__(self):
-        return f"{self.tuition_number} - {self.user.get_full_name()}"
-    
-    @property
-    def full_name(self):
-        return self.user.get_full_name()
-    
-    @property
-    def email(self):
-        return self.user.email
-    
-    @property
-    def is_graduated(self):
-        return self.graduation_date is not None
-    
+        return f"{self.user.get_full_name()} - {self.group.name} ({self.get_status_display()})"
+
     def save(self, *args, **kwargs):
-        # Ensure the associated user has the correct role
-        if self.user.role != 'student':
-            self.user.role = 'student'
-            self.user.save()
+        # Si el usuario es presidente del grupo, asegurar que tenga rol de presidente
+        if self.group.president == self.user:
+            self.role = 'president'
         super().save(*args, **kwargs)

@@ -1,15 +1,20 @@
-from django.urls import path, include
+from django.urls import include, path
+
 from rest_framework.routers import DefaultRouter
 
-from .views import EventViewSet, EventAttendeeViewSet
+from .views import EventAttendanceViewSet, EventViewSet
 
 app_name = 'events'
 
-# Router for API endpoints
+# Router for events endpoints according to specifications
 router = DefaultRouter()
-router.register(r'events', EventViewSet, basename='event')
-router.register(r'attendees', EventAttendeeViewSet, basename='eventattendee')
+router.register(r'', EventViewSet, basename='events')  # /api/events/
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    path('', include(router.urls)),
+
+    # Additional endpoints handled by custom actions in EventViewSet:
+    # POST /api/events/{id}/attend/
+    # POST /api/events/{id}/unattend/ (not in specs but useful)
+    # GET /api/events/{id}/attendees/
 ]

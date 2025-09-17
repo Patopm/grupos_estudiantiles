@@ -14,6 +14,7 @@ interface FormInputProps {
   required?: boolean;
   autoComplete?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 export default function FormInput({
@@ -27,6 +28,7 @@ export default function FormInput({
   required = false,
   autoComplete,
   onChange,
+  onBlur,
 }: FormInputProps) {
   return (
     <div className='space-y-2'>
@@ -41,6 +43,7 @@ export default function FormInput({
         required={required}
         value={value}
         onChange={onChange}
+        onBlur={onBlur}
         placeholder={placeholder}
         className={cn(
           error && 'border-destructive focus-visible:ring-destructive'

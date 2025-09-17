@@ -10,10 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-from pathlib import Path
-from dotenv import load_dotenv
 import os
 from datetime import timedelta
+from pathlib import Path
+
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -37,13 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # Third-party apps
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
     'drf_spectacular',
-    
+
     # Local apps
     'apps.core',
     'apps.users',
@@ -142,7 +143,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom User Model
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'users.CustomUser'
 
 # Django REST Framework
 REST_FRAMEWORK = {
@@ -161,13 +162,16 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20,
+    'DEFAULT_PAGINATION_CLASS':
+    'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE':
+    20,
     'DEFAULT_FILTER_BACKENDS': [
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ],
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_SCHEMA_CLASS':
+    'drf_spectacular.openapi.AutoSchema',
 }
 
 # CORS settings
@@ -178,8 +182,10 @@ CORS_ALLOWED_ORIGINS = [
 
 # drf-spectacular settings
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Student Management System API',
-    'DESCRIPTION': '''
+    'TITLE':
+    'Student Management System API',
+    'DESCRIPTION':
+    '''
     API para el sistema de gestión estudiantil con funcionalidades de:
     - Gestión de usuarios con roles (Admin, Presidente, Estudiante)
     - Administración de grupos de estudiantes
@@ -187,8 +193,10 @@ SPECTACULAR_SETTINGS = {
     - Autenticación JWT
     - Sistema de permisos basado en roles
     ''',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
+    'VERSION':
+    '1.0.0',
+    'SERVE_INCLUDE_SCHEMA':
+    False,
     'CONTACT': {
         'name': 'Patricio Piña',
         'email': 'patriciog.pina@gmail.com',
@@ -196,25 +204,39 @@ SPECTACULAR_SETTINGS = {
     'LICENSE': {
         'name': 'MIT License',
     },
-    
+
     # Schema customization
-    'COMPONENT_SPLIT_REQUEST': True,
-    'COMPONENT_NO_READ_ONLY_REQUIRED': True,
-    
+    'COMPONENT_SPLIT_REQUEST':
+    True,
+    'COMPONENT_NO_READ_ONLY_REQUIRED':
+    True,
+
     # Authentication
     'AUTHENTICATION_WHITELIST': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
-    
+
     # Tags
     'TAGS': [
-        {'name': 'Authentication', 'description': 'Endpoints de autenticación JWT'},
-        {'name': 'Users', 'description': 'Gestión de usuarios'},
-        {'name': 'Students', 'description': 'Gestión de estudiantes y grupos'},
-        {'name': 'Events', 'description': 'Gestión de eventos estudiantiles'},
+        {
+            'name': 'Authentication',
+            'description': 'Endpoints de autenticación JWT'
+        },
+        {
+            'name': 'Users',
+            'description': 'Gestión de usuarios'
+        },
+        {
+            'name': 'Students',
+            'description': 'Gestión de estudiantes y grupos'
+        },
+        {
+            'name': 'Events',
+            'description': 'Gestión de eventos estudiantiles'
+        },
     ],
-    
+
     # Security schemes
     'APPEND_COMPONENTS': {
         'securitySchemes': {
@@ -226,13 +248,15 @@ SPECTACULAR_SETTINGS = {
             }
         }
     },
-    
+
     # Preprocessing hooks
     'PREPROCESSING_HOOKS': [],
-    
+
     # Schema path prefix
-    'SCHEMA_PATH_PREFIX': '/api/',
-    'SCHEMA_PATH_PREFIX_TRIM': True,
+    'SCHEMA_PATH_PREFIX':
+    '/api/',
+    'SCHEMA_PATH_PREFIX_TRIM':
+    True,
 
     # Custom extensions
     'EXTENSIONS_INFO': {
@@ -241,17 +265,22 @@ SPECTACULAR_SETTINGS = {
             'altText': 'Student Management System Logo'
         }
     },
-    
+
     # Enum generation
     'ENUM_NAME_OVERRIDES': {
-        'RoleEnum': 'apps.users.models.User.Role',
-        'EventTypeEnum': 'apps.events.models.Event.EventType',
-        'EventStatusEnum': 'apps.events.models.Event.Status',
-        'AttendanceStatusEnum': 'apps.events.models.EventAttendee.AttendanceStatus',
+        'RoleEnum':
+        'apps.users.models.User.Role',
+        'EventTypeEnum':
+        'apps.events.models.Event.EventType',
+        'EventStatusEnum':
+        'apps.events.models.Event.Status',
+        'AttendanceStatusEnum':
+        'apps.events.models.EventAttendee.AttendanceStatus',
     },
-    
+
     # Disable warnings for missing descriptions
-    'DISABLE_ERRORS_AND_WARNINGS': True,
+    'DISABLE_ERRORS_AND_WARNINGS':
+    True,
 }
 
 CORS_ALLOW_CREDENTIALS = True
@@ -279,14 +308,12 @@ CORS_ALLOW_METHODS = [
     'PUT',
 ]
 
-
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': True,
-    
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
     'VERIFYING_KEY': None,
@@ -294,19 +321,16 @@ SIMPLE_JWT = {
     'ISSUER': None,
     'JWK_URL': None,
     'LEEWAY': 0,
-    
-    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_TYPES': ('Bearer', ),
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
-    'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
-    
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'USER_AUTHENTICATION_RULE':
+    'rest_framework_simplejwt.authentication.default_user_authentication_rule',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken', ),
     'TOKEN_TYPE_CLAIM': 'token_type',
     'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
-    
     'JTI_CLAIM': 'jti',
-    
     'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=60),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=7),
@@ -322,7 +346,8 @@ STATICFILES_DIRS = [
 ]
 
 # Email settings (for password reset, etc.)
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND',
+                          'django.core.mail.backends.console.EmailBackend')
 EMAIL_HOST = os.getenv('EMAIL_HOST', '')
 EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() == 'true'

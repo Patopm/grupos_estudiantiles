@@ -15,8 +15,11 @@ export default function AuthGroupLayout({ children }: AuthLayoutProps) {
             href='/'
             className='text-3xl font-bold text-primary hover:text-primary/80 transition-colors'
           >
-            EventHub
+            Grupos Estudiantiles
           </Link>
+          <p className='text-sm text-muted-foreground mt-2'>
+            Universidad Tecmilenio
+          </p>
         </div>
 
         {children}

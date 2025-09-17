@@ -4,73 +4,61 @@ import { useState } from 'react';
 import AuthCard from '@/components/auth/AuthCard';
 import FormInput from '@/components/forms/FormInput';
 import AuthButton from '@/components/auth/AuthButton';
-import UserTypeSelector from '@/components/auth/UserTypeSelector';
 import CheckboxField from '@/components/forms/CheckboxField';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserGraduate } from '@fortawesome/free-solid-svg-icons';
+import {
+  validateRegister,
+  type RegisterFormData,
+} from '@/lib/validations/auth';
+import PasswordStrength from '@/components/auth/PasswordStrength';
 
 export default function RegisterPage() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<RegisterFormData>({
     firstName: '',
     lastName: '',
     email: '',
+    studentId: '',
+    phone: '',
     password: '',
     confirmPassword: '',
-    userType: 'student', // 'student' or 'organizer'
     agreeToTerms: false,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
-    }
-
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    if (!formData.agreeToTerms) {
-      newErrors.agreeToTerms = 'You must agree to the terms and conditions';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm()) {
+    // Validate form using Zod
+    const validationResult = validateRegister(formData);
+
+    if (!validationResult.success) {
+      setErrors(validationResult.errors);
       return;
     }
 
+    // Clear any existing errors
+    setErrors({});
     setIsLoading(true);
 
-    // TODO: Implement actual registration with backend
-    console.log('Registration attempt:', formData);
+    try {
+      // TODO: Implement actual registration with backend
+      console.log('Registration attempt:', validationResult.data);
 
-    // Simulate API call
-    setTimeout(() => {
+      // Simulate API call
+      setTimeout(() => {
+        setIsLoading(false);
+        // TODO: Redirect to login page or dashboard
+      }, 1000);
+    } catch (error) {
+      console.error('Registration error:', error);
+      setErrors({
+        general:
+          'Hubo un problema al crear tu cuenta. Por favor verifica todos los datos e intenta de nuevo.',
+      });
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleChange = (
@@ -92,80 +80,140 @@ export default function RegisterPage() {
     }
   };
 
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name } = e.target;
+
+    // Validate individual field on blur
+    const fieldValidation = validateRegister({
+      [name]: formData[name as keyof RegisterFormData],
+    });
+
+    if (!fieldValidation.success && fieldValidation.errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: fieldValidation.errors[name],
+      }));
+    }
+  };
+
   return (
     <AuthCard
-      title='Create your account'
-      subtitle='Join EventHub and start managing events'
-      footerText='Already have an account?'
-      footerLinkText='Sign in here'
+      title='Registro de Estudiante'
+      subtitle='Únete a la comunidad estudiantil de Tecmilenio'
+      footerText='¿Ya tienes una cuenta?'
+      footerLinkText='Inicia sesión aquí'
       footerLinkHref='/login'
     >
-      <form className='space-y-6' onSubmit={handleSubmit}>
-        <UserTypeSelector value={formData.userType} onChange={handleChange} />
+      <form className='space-y-6' onSubmit={handleSubmit} noValidate>
+        {errors.general && (
+          <div className='p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md'>
+            {errors.general}
+          </div>
+        )}
+
+        {/* Student Badge */}
+        <div className='flex items-center justify-center p-4 bg-primary/5 rounded-lg border border-primary/20'>
+          <FontAwesomeIcon
+            icon={faUserGraduate}
+            className='w-5 h-5 text-primary mr-2'
+          />
+          <span className='text-sm font-medium text-primary'>
+            Registro como Estudiante
+          </span>
+        </div>
 
         <div className='grid grid-cols-2 gap-4'>
           <FormInput
             id='firstName'
             name='firstName'
             type='text'
-            label='First name'
-            placeholder='First name'
+            label='Nombre(s)'
+            placeholder='Tu nombre'
             value={formData.firstName}
             error={errors.firstName}
             onChange={handleChange}
-            required
+            onBlur={handleBlur}
           />
 
           <FormInput
             id='lastName'
             name='lastName'
             type='text'
-            label='Last name'
-            placeholder='Last name'
+            label='Apellidos'
+            placeholder='Tus apellidos'
             value={formData.lastName}
             error={errors.lastName}
             onChange={handleChange}
-            required
+            onBlur={handleBlur}
           />
         </div>
+
+        <FormInput
+          id='studentId'
+          name='studentId'
+          type='text'
+          label='Matrícula'
+          placeholder='Tu matrícula estudiantil'
+          value={formData.studentId}
+          error={errors.studentId}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          autoComplete='off'
+        />
 
         <FormInput
           id='email'
           name='email'
           type='email'
-          label='Email address'
-          placeholder='Enter your email'
+          label='Correo Electrónico'
+          placeholder='tu.email@tecmilenio.mx'
           value={formData.email}
           error={errors.email}
           onChange={handleChange}
+          onBlur={handleBlur}
           autoComplete='email'
-          required
         />
 
         <FormInput
-          id='password'
-          name='password'
-          type='password'
-          label='Password'
-          placeholder='Create a password'
-          value={formData.password}
-          error={errors.password}
+          id='phone'
+          name='phone'
+          type='tel'
+          label='Teléfono'
+          placeholder='10 dígitos'
+          value={formData.phone}
+          error={errors.phone}
           onChange={handleChange}
-          autoComplete='new-password'
-          required
+          onBlur={handleBlur}
+          autoComplete='tel'
         />
+
+        <div className='space-y-2'>
+          <FormInput
+            id='password'
+            name='password'
+            type='password'
+            label='Contraseña'
+            placeholder='Crea una contraseña segura'
+            value={formData.password}
+            error={errors.password}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            autoComplete='new-password'
+          />
+          <PasswordStrength password={formData.password} />
+        </div>
 
         <FormInput
           id='confirmPassword'
           name='confirmPassword'
           type='password'
-          label='Confirm password'
-          placeholder='Confirm your password'
+          label='Confirmar Contraseña'
+          placeholder='Confirma tu contraseña'
           value={formData.confirmPassword}
           error={errors.confirmPassword}
           onChange={handleChange}
+          onBlur={handleBlur}
           autoComplete='new-password'
-          required
         />
 
         <CheckboxField
@@ -175,24 +223,18 @@ export default function RegisterPage() {
           error={errors.agreeToTerms}
           onChange={handleChange}
         >
-          I agree to the{' '}
-          <a
-            href='#'
-            className='text-primary-600 dark:text-primary-400 hover:text-indigo-500 dark:hover:text-indigo-300'
-          >
-            Terms and Conditions
+          Acepto los{' '}
+          <a className='text-primary hover:text-primary/80 underline'>
+            Términos y Condiciones
           </a>{' '}
-          and{' '}
-          <a
-            href='#'
-            className='text-primary-600 dark:text-primary-400 hover:text-indigo-500 dark:hover:text-indigo-300'
-          >
-            Privacy Policy
+          y la{' '}
+          <a className='text-primary hover:text-primary/80 underline'>
+            Política de Privacidad
           </a>
         </CheckboxField>
 
-        <AuthButton isLoading={isLoading} loadingText='Creating account...'>
-          Create account
+        <AuthButton isLoading={isLoading} loadingText='Creando cuenta...'>
+          Crear Cuenta de Estudiante
         </AuthButton>
       </form>
     </AuthCard>

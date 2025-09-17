@@ -6,19 +6,20 @@ export default function HeroSection() {
     <main className='px-6 py-16'>
       <div className='max-w-7xl mx-auto text-center'>
         <h1 className='text-5xl md:text-6xl font-bold mb-6'>
-          Manage Your Events
-          <span className='block text-primary'>Effortlessly</span>
+          Únete a Grupos Estudiantiles
+          <span className='block text-primary'>en Tecmilenio</span>
         </h1>
         <p className='text-xl text-muted-foreground mb-8 max-w-3xl mx-auto'>
-          Create, organize, and manage events with ease. Connect with students,
-          track attendance, and make every event memorable.
+          Descubre grupos estudiantiles, participa en eventos increíbles y
+          conecta con estudiantes que comparten tus intereses. Tu experiencia
+          universitaria comienza aquí.
         </p>
         <div className='flex flex-col sm:flex-row gap-4 justify-center'>
           <Button size='lg' asChild>
-            <Link href='/register'>Start Creating Events</Link>
+            <Link href='/register'>Explorar Grupos</Link>
           </Button>
           <Button variant='outline' size='lg' asChild>
-            <Link href='/login'>Sign In</Link>
+            <Link href='/login'>Iniciar Sesión</Link>
           </Button>
         </div>
       </div>

@@ -4,69 +4,125 @@ import { useState } from 'react';
 import AuthCard from '@/components/auth/AuthCard';
 import FormInput from '@/components/forms/FormInput';
 import AuthButton from '@/components/auth/AuthButton';
-import SocialLogin from '@/components/auth/SocialLogin';
 import CheckboxField from '@/components/forms/CheckboxField';
+import { validateLogin, type LoginFormData } from '@/lib/validations/auth';
 
 export default function LoginPage() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<LoginFormData>({
     email: '',
     password: '',
     rememberMe: false,
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate form using Zod
+    const validationResult = validateLogin(formData);
+
+    if (!validationResult.success) {
+      setErrors(validationResult.errors);
+      return;
+    }
+
+    // Clear any existing errors
+    setErrors({});
     setIsLoading(true);
 
-    // TODO: Implement actual authentication with backend
-    console.log('Login attempt:', formData);
+    try {
+      // TODO: Implement actual authentication with backend
+      console.log('Login attempt:', validationResult.data);
 
-    // Simulate API call
-    setTimeout(() => {
+      // Simulate API call
+      setTimeout(() => {
+        setIsLoading(false);
+        // TODO: Redirect to dashboard based on user role
+      }, 1000);
+    } catch (error) {
+      console.error('Login error:', error);
+      setErrors({
+        general:
+          'Hubo un problema al iniciar sesión. Por favor verifica tus datos e intenta de nuevo.',
+      });
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
+
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: newValue,
     });
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: '',
+      });
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name } = e.target;
+
+    // Validate individual field on blur
+    const fieldValidation = validateLogin({
+      [name]: formData[name as keyof LoginFormData],
+    });
+
+    if (!fieldValidation.success && fieldValidation.errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: fieldValidation.errors[name],
+      }));
+    }
   };
 
   return (
     <AuthCard
-      title='Welcome back'
-      subtitle='Sign in to your account to continue'
-      footerText="Don't have an account?"
-      footerLinkText='Sign up here'
+      title='Bienvenido de vuelta'
+      subtitle='Inicia sesión en tu cuenta para continuar'
+      footerText='¿No tienes una cuenta?'
+      footerLinkText='Regístrate aquí'
       footerLinkHref='/register'
     >
-      <form className='space-y-6' onSubmit={handleSubmit}>
+      <form className='space-y-6' onSubmit={handleSubmit} noValidate>
+        {errors.general && (
+          <div className='p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md'>
+            {errors.general}
+          </div>
+        )}
+
         <FormInput
           id='email'
           name='email'
           type='email'
-          label='Email address'
-          placeholder='Enter your email'
+          label='Correo Electrónico'
+          placeholder='Ingresa tu email'
           value={formData.email}
+          error={errors.email}
           onChange={handleChange}
+          onBlur={handleBlur}
           autoComplete='email'
-          required
         />
 
         <FormInput
           id='password'
           name='password'
           type='password'
-          label='Password'
-          placeholder='Enter your password'
+          label='Contraseña'
+          placeholder='Ingresa tu contraseña'
           value={formData.password}
+          error={errors.password}
           onChange={handleChange}
+          onBlur={handleBlur}
           autoComplete='current-password'
-          required
         />
 
         <div className='flex items-center justify-between'>
@@ -76,25 +132,36 @@ export default function LoginPage() {
             checked={formData.rememberMe}
             onChange={handleChange}
           >
-            Remember me
+            Recordarme
           </CheckboxField>
 
           <div className='text-sm'>
             <a
               href='#'
-              className='font-medium text-primary-600 dark:text-primary-400 hover:text-indigo-500 dark:hover:text-indigo-300'
+              className='font-medium text-primary hover:text-primary/80 underline'
             >
-              Forgot your password?
+              ¿Olvidaste tu contraseña?
             </a>
           </div>
         </div>
 
-        <AuthButton isLoading={isLoading} loadingText='Signing in...'>
-          Sign in
+        <AuthButton isLoading={isLoading} loadingText='Iniciando sesión...'>
+          Iniciar Sesión
         </AuthButton>
       </form>
 
-      <SocialLogin />
+      <div className='mt-6'>
+        <div className='relative'>
+          <div className='absolute inset-0 flex items-center'>
+            <div className='w-full border-t border-muted-foreground/20' />
+          </div>
+          <div className='relative flex justify-center text-sm'>
+            <span className='bg-background px-2 text-muted-foreground'>
+              Acceso para estudiantes, presidentes y administradores
+            </span>
+          </div>
+        </div>
+      </div>
     </AuthCard>
   );
 }

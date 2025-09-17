@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'EventHub - Manage Your Events Effortlessly',
+  title: 'Grupos Estudiantiles - Tecmilenio',
   description:
-    'Create, organize, and manage events with ease. Connect with students, track attendance, and make every event memorable.',
+    'Plataforma integral para la gestión de grupos estudiantiles en Tecmilenio. Únete a grupos, participa en eventos y conecta con estudiantes.',
 };
 
 export default function RootLayout({
@@ -26,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en' suppressHydrationWarning>
+    <html lang='es-MX' suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

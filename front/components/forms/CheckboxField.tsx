@@ -21,7 +21,7 @@ export default function CheckboxField({
 }: CheckboxFieldProps) {
   return (
     <div className='space-y-2'>
-      <div className='flex items-start space-x-2'>
+      <div className='flex items-center space-x-2'>
         <Checkbox
           id={id}
           name={name}

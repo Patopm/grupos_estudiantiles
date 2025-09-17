@@ -1,40 +1,57 @@
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from drf_spectacular.utils import extend_schema_field
 
-from .models import Student, StudentGroup
+from drf_spectacular.utils import extend_schema_field
+from rest_framework import serializers
+
+from .models import GroupMembership, StudentGroup
 
 User = get_user_model()
 
 
 class StudentGroupSerializer(serializers.ModelSerializer):
     """
-    Serializer for StudentGroup model
+    Serializer for StudentGroup model according to specifications
     """
-    
+
     president_name = serializers.SerializerMethodField()
-    student_count = serializers.SerializerMethodField()
+    member_count = serializers.SerializerMethodField()
+    pending_requests_count = serializers.SerializerMethodField()
     president_details = serializers.SerializerMethodField()
-    
+    is_full = serializers.SerializerMethodField()
+
     class Meta:
         model = StudentGroup
         fields = [
-            'id', 'name', 'description', 'president', 'president_name',
-            'president_details', 'student_count', 'is_active',
-            'created_at', 'updated_at'
+            'group_id', 'name', 'description', 'image', 'president',
+            'president_name', 'president_details', 'created_at', 'is_active',
+            'max_members', 'category', 'member_count',
+            'pending_requests_count', 'is_full'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at', 'student_count']
-    
+        read_only_fields = [
+            'group_id', 'created_at', 'member_count', 'pending_requests_count',
+            'is_full'
+        ]
+
     @extend_schema_field(serializers.CharField)
     def get_president_name(self, obj):
         """Retorna el nombre del presidente del grupo"""
         return obj.president_name
-    
+
     @extend_schema_field(serializers.IntegerField)
-    def get_student_count(self, obj):
-        """Retorna el número de estudiantes activos en el grupo"""
-        return obj.student_count
-    
+    def get_member_count(self, obj):
+        """Retorna el número de miembros activos en el grupo"""
+        return obj.member_count
+
+    @extend_schema_field(serializers.IntegerField)
+    def get_pending_requests_count(self, obj):
+        """Retorna el número de solicitudes pendientes"""
+        return obj.pending_requests_count
+
+    @extend_schema_field(serializers.BooleanField)
+    def get_is_full(self, obj):
+        """Retorna si el grupo está lleno"""
+        return obj.is_full
+
     @extend_schema_field(serializers.DictField)
     def get_president_details(self, obj):
         """Retorna detalles del presidente si existe"""
@@ -42,7 +59,8 @@ class StudentGroupSerializer(serializers.ModelSerializer):
             return {
                 'id': obj.president.id,
                 'full_name': obj.president.get_full_name(),
-                'email': obj.president.email
+                'email': obj.president.email,
+                'student_id': obj.president.student_id
             }
         return None
 
@@ -51,148 +69,134 @@ class StudentGroupCreateSerializer(serializers.ModelSerializer):
     """
     Serializer for creating StudentGroup
     """
-    
+
     class Meta:
         model = StudentGroup
-        fields = ['name', 'description', 'president']
-    
+        fields = [
+            'name', 'description', 'image', 'president', 'max_members',
+            'category'
+        ]
+
     def validate_president(self, value):
         """Valida que el presidente tenga el rol correcto"""
         if value and not value.is_president:
             raise serializers.ValidationError(
-                "El usuario seleccionado debe tener rol de presidente"
-            )
+                "El usuario seleccionado debe tener rol de presidente")
         return value
 
 
-class StudentSerializer(serializers.ModelSerializer):
+class GroupMembershipSerializer(serializers.ModelSerializer):
     """
-    Serializer for Student model with user information
+    Serializer for GroupMembership model
     """
-    
-    full_name = serializers.SerializerMethodField()
-    email = serializers.SerializerMethodField()
+
     user_details = serializers.SerializerMethodField()
-    group_name = serializers.SerializerMethodField()
-    is_graduated = serializers.SerializerMethodField()
-    
+    group_details = serializers.SerializerMethodField()
+
     class Meta:
-        model = Student
+        model = GroupMembership
         fields = [
-            'user', 'tuition_number', 'group', 'group_name',
-            'career', 'semester', 'enrollment_date', 'graduation_date',
-            'average_grade', 'is_active', 'full_name', 'email',
-            'user_details', 'is_graduated', 'created_at', 'updated_at'
+            'membership_id', 'user', 'group', 'status', 'joined_at', 'role',
+            'user_details', 'group_details'
         ]
-        read_only_fields = ['created_at', 'updated_at']
-    
-    @extend_schema_field(serializers.CharField)
-    def get_full_name(self, obj):
-        """Retorna el nombre completo del estudiante"""
-        return obj.full_name
-    
-    @extend_schema_field(serializers.EmailField)
-    def get_email(self, obj):
-        """Retorna el email del estudiante"""
-        return obj.email
-    
-    @extend_schema_field(serializers.CharField)
-    def get_group_name(self, obj):
-        """Retorna el nombre del grupo"""
-        return obj.group.name if obj.group else None
-    
-    @extend_schema_field(serializers.BooleanField)
-    def get_is_graduated(self, obj):
-        """Retorna si el estudiante está graduado"""
-        return obj.is_graduated
-    
+        read_only_fields = ['membership_id', 'joined_at']
+
     @extend_schema_field(serializers.DictField)
     def get_user_details(self, obj):
-        """Retorna detalles del usuario asociado"""
+        """Retorna detalles del usuario"""
         return {
             'id': obj.user.id,
-            'username': obj.user.username,
             'full_name': obj.user.get_full_name(),
             'email': obj.user.email,
+            'student_id': obj.user.student_id,
             'phone': obj.user.phone
         }
 
+    @extend_schema_field(serializers.DictField)
+    def get_group_details(self, obj):
+        """Retorna detalles del grupo"""
+        return {
+            'group_id': str(obj.group.group_id),
+            'name': obj.group.name,
+            'category': obj.group.category
+        }
 
-class StudentCreateSerializer(serializers.ModelSerializer):
+
+class GroupMembershipCreateSerializer(serializers.ModelSerializer):
     """
-    Serializer for creating Student
+    Serializer for creating GroupMembership (join request)
     """
-    
+
     class Meta:
-        model = Student
-        fields = [
-            'user', 'tuition_number', 'group', 'career',
-            'semester', 'enrollment_date', 'average_grade'
-        ]
-    
-    def validate_user(self, value):
-        """Valida que el usuario tenga el rol correcto"""
-        if not value.is_student:
-            raise serializers.ValidationError(
-                "El usuario seleccionado debe tener rol de estudiante"
-            )
+        model = GroupMembership
+        fields = ['group']
+
+    def validate_group(self, value):
+        """Valida que el grupo esté activo y no esté lleno"""
+        if not value.is_active:
+            raise serializers.ValidationError("El grupo no está activo")
+
+        if value.is_full:
+            raise serializers.ValidationError("El grupo está lleno")
+
         return value
-    
-    def validate_tuition_number(self, value):
-        """Valida que el ID de estudiante sea único"""
-        if Student.objects.filter(tuition_number=value).exists():
+
+    def validate(self, attrs):
+        """Valida que el usuario no tenga ya una membresía en el grupo"""
+        user = self.context['request'].user
+        group = attrs['group']
+
+        if GroupMembership.objects.filter(user=user, group=group).exists():
             raise serializers.ValidationError(
-                "Ya existe un estudiante con esta matrícula"
-            )
+                "Ya tienes una solicitud o membresía en este grupo")
+
+        return attrs
+
+    def create(self, validated_data):
+        """Crea la membresía con el usuario del request"""
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)
+
+
+class GroupMembershipUpdateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for updating GroupMembership status (approve/reject)
+    """
+
+    class Meta:
+        model = GroupMembership
+        fields = ['status']
+
+    def validate_status(self, value):
+        """Valida que el estado sea válido para la transición"""
+        valid_statuses = ['active', 'inactive']
+        if value not in valid_statuses:
+            raise serializers.ValidationError(
+                f"Estado inválido. Debe ser uno de: {valid_statuses}")
         return value
 
 
-class StudentUpdateSerializer(serializers.ModelSerializer):
+class GroupMembersListSerializer(serializers.ModelSerializer):
     """
-    Serializer for updating Student information
+    Serializer for listing group members
     """
-    
+
+    user_details = serializers.SerializerMethodField()
+
     class Meta:
-        model = Student
+        model = GroupMembership
         fields = [
-            'group', 'career', 'semester', 'graduation_date',
-            'average_grade', 'is_active'
+            'membership_id', 'status', 'joined_at', 'role', 'user_details'
         ]
 
-
-class StudentProfileSerializer(serializers.ModelSerializer):
-    """
-    Serializer for student's own profile view
-    """
-    
-    full_name = serializers.SerializerMethodField()
-    email = serializers.SerializerMethodField()
-    group_name = serializers.SerializerMethodField()
-    is_graduated = serializers.SerializerMethodField()
-    
-    class Meta:
-        model = Student
-        fields = [
-            'tuition_number', 'group_name', 'career', 'semester',
-            'enrollment_date', 'graduation_date', 'average_grade',
-            'full_name', 'email', 'is_graduated', 'created_at'
-        ]
-        read_only_fields = [
-            'tuition_number', 'enrollment_date', 'created_at'
-        ]
-    
-    @extend_schema_field(serializers.CharField)
-    def get_full_name(self, obj):
-        return obj.full_name
-    
-    @extend_schema_field(serializers.EmailField)
-    def get_email(self, obj):
-        return obj.email
-    
-    @extend_schema_field(serializers.CharField)
-    def get_group_name(self, obj):
-        return obj.group.name if obj.group else None
-    
-    @extend_schema_field(serializers.BooleanField)
-    def get_is_graduated(self, obj):
-        return obj.is_graduated
+    @extend_schema_field(serializers.DictField)
+    def get_user_details(self, obj):
+        """Retorna detalles del usuario miembro"""
+        return {
+            'id': obj.user.id,
+            'full_name': obj.user.get_full_name(),
+            'email': obj.user.email,
+            'student_id': obj.user.student_id,
+            'phone': obj.user.phone,
+            'is_active_student': obj.user.is_active_student
+        }
