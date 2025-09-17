@@ -1,13 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import AuthCard from '@/components/auth/AuthCard';
 import FormInput from '@/components/forms/FormInput';
 import AuthButton from '@/components/auth/AuthButton';
 import CheckboxField from '@/components/forms/CheckboxField';
 import { validateLogin, type LoginFormData } from '@/lib/validations/auth';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
+  const { login } = useAuth();
+  const searchParams = useSearchParams();
+
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
     password: '',
@@ -15,6 +20,17 @@ export default function LoginPage() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [successMessage, setSuccessMessage] = useState<string>('');
+
+  // Check for success message from registration
+  useEffect(() => {
+    const message = searchParams.get('message');
+    if (message === 'registration-success') {
+      setSuccessMessage(
+        '¡Registro exitoso! Ahora puedes iniciar sesión con tu cuenta.'
+      );
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,24 +43,23 @@ export default function LoginPage() {
       return;
     }
 
-    // Clear any existing errors
+    // Clear any existing errors and success messages
     setErrors({});
+    setSuccessMessage('');
     setIsLoading(true);
 
     try {
-      // TODO: Implement actual authentication with backend
-      console.log('Login attempt:', validationResult.data);
-
-      // Simulate API call
-      setTimeout(() => {
-        setIsLoading(false);
-        // TODO: Redirect to dashboard based on user role
-      }, 1000);
+      await login(validationResult.data);
+      // Redirect is handled by AuthContext based on user role
     } catch (error) {
       console.error('Login error:', error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Hubo un problema al iniciar sesión. Por favor verifica tus datos e intenta de nuevo.';
+
       setErrors({
-        general:
-          'Hubo un problema al iniciar sesión. Por favor verifica tus datos e intenta de nuevo.',
+        general: errorMessage,
       });
       setIsLoading(false);
     }
@@ -93,6 +108,12 @@ export default function LoginPage() {
       footerLinkHref='/register'
     >
       <form className='space-y-6' onSubmit={handleSubmit} noValidate>
+        {successMessage && (
+          <div className='p-3 text-sm text-green-700 bg-green-50 border border-green-200 rounded-md'>
+            {successMessage}
+          </div>
+        )}
+
         {errors.general && (
           <div className='p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md'>
             {errors.general}

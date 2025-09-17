@@ -12,8 +12,11 @@ import {
   type RegisterFormData,
 } from '@/lib/validations/auth';
 import PasswordStrength from '@/components/auth/PasswordStrength';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function RegisterPage() {
+  const { register } = useAuth();
+
   const [formData, setFormData] = useState<RegisterFormData>({
     firstName: '',
     lastName: '',
@@ -43,19 +46,17 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      // TODO: Implement actual registration with backend
-      console.log('Registration attempt:', validationResult.data);
-
-      // Simulate API call
-      setTimeout(() => {
-        setIsLoading(false);
-        // TODO: Redirect to login page or dashboard
-      }, 1000);
+      await register(validationResult.data);
+      // Redirect is handled by AuthContext (goes to login page with success message)
     } catch (error) {
       console.error('Registration error:', error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Hubo un problema al crear tu cuenta. Por favor verifica todos los datos e intenta de nuevo.';
+
       setErrors({
-        general:
-          'Hubo un problema al crear tu cuenta. Por favor verifica todos los datos e intenta de nuevo.',
+        general: errorMessage,
       });
       setIsLoading(false);
     }

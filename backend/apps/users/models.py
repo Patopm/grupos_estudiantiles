@@ -47,7 +47,7 @@ class CustomUser(AbstractUser):
         help_text="Correo electrónico del usuario",
         validators=[
             RegexValidator(
-                regex=r'^AL[0-9]{8}+@tecmilenio.mx$',
+                regex=r'^[a-zA-Z0-9.]+@tecmilenio.mx$',
                 message=
                 'El correo electrónico debe ser válido y pertenecer a Tecmilenio',
                 code='invalid_email')
