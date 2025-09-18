@@ -30,7 +30,7 @@ export default function UserMenu() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>
         <Button
           variant='ghost'
           className='flex items-center gap-2 px-3 py-2 h-auto'

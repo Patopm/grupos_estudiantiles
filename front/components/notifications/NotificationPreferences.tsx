@@ -103,9 +103,11 @@ export default function NotificationPreferences({
         <div className='flex items-center justify-center py-8'>
           <FontAwesomeIcon
             icon={faSpinner}
-            className='text-2xl animate-spin text-gray-400'
+            className='text-2xl animate-spin text-muted-foreground'
           />
-          <span className='ml-3 text-gray-600'>Cargando preferencias...</span>
+          <span className='ml-3 text-secondary-text'>
+            Cargando preferencias...
+          </span>
         </div>
       </Card>
     );
@@ -120,7 +122,7 @@ export default function NotificationPreferences({
             icon={faCalendarAlt}
             className='text-lg text-blue-600 mr-3'
           />
-          <h3 className='text-lg font-semibold text-gray-900'>
+          <h3 className='text-lg font-semibold text-primary-text'>
             Notificaciones de Eventos
           </h3>
         </div>
@@ -161,7 +163,7 @@ export default function NotificationPreferences({
             icon={faUsers}
             className='text-lg text-green-600 mr-3'
           />
-          <h3 className='text-lg font-semibold text-gray-900'>
+          <h3 className='text-lg font-semibold text-primary-text'>
             Notificaciones de Grupos
           </h3>
         </div>
@@ -200,7 +202,7 @@ export default function NotificationPreferences({
             icon={faShield}
             className='text-lg text-red-600 mr-3'
           />
-          <h3 className='text-lg font-semibold text-gray-900'>
+          <h3 className='text-lg font-semibold text-primary-text'>
             Notificaciones de Seguridad
           </h3>
         </div>
@@ -233,7 +235,7 @@ export default function NotificationPreferences({
             icon={faNewspaper}
             className='text-lg text-purple-600 mr-3'
           />
-          <h3 className='text-lg font-semibold text-gray-900'>
+          <h3 className='text-lg font-semibold text-primary-text'>
             Notificaciones Generales
           </h3>
         </div>
@@ -266,13 +268,13 @@ export default function NotificationPreferences({
             icon={faBell}
             className='text-lg text-orange-600 mr-3'
           />
-          <h3 className='text-lg font-semibold text-gray-900'>
+          <h3 className='text-lg font-semibold text-primary-text'>
             Frecuencia de Emails
           </h3>
         </div>
 
         <div className='space-y-3'>
-          <Label className='text-sm font-medium text-gray-700'>
+          <Label className='text-sm font-medium text-secondary-text'>
             ¿Con qué frecuencia deseas recibir notificaciones por email?
           </Label>
 
@@ -289,7 +291,7 @@ export default function NotificationPreferences({
                 className='w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500'
               />
               <div>
-                <div className='font-medium text-gray-900'>Inmediato</div>
+                <div className='font-medium text-primary-text'>Inmediato</div>
                 <div className='text-sm text-gray-500'>
                   Recibe emails tan pronto como ocurra la actividad
                 </div>
@@ -308,7 +310,7 @@ export default function NotificationPreferences({
                 className='w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500'
               />
               <div>
-                <div className='font-medium text-gray-900'>Diario</div>
+                <div className='font-medium text-primary-text'>Diario</div>
                 <div className='text-sm text-gray-500'>
                   Recibe un resumen diario a las 9:00 AM
                 </div>
@@ -327,7 +329,7 @@ export default function NotificationPreferences({
                 className='w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500'
               />
               <div>
-                <div className='font-medium text-gray-900'>Semanal</div>
+                <div className='font-medium text-primary-text'>Semanal</div>
                 <div className='text-sm text-gray-500'>
                   Recibe un resumen semanal los lunes a las 9:00 AM
                 </div>
