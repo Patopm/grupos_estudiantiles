@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.students',
     'apps.events',
+    'apps.notifications',
 ]
 
 MIDDLEWARE = [
@@ -377,3 +378,53 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
+
+# Celery Configuration
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://127.0.0.1:6379/0')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND',
+                                  'redis://127.0.0.1:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+CELERY_ENABLE_UTC = True
+
+# Celery Beat Configuration (for periodic tasks)
+CELERY_BEAT_SCHEDULE = {
+    'send-event-reminders': {
+        'task': 'apps.notifications.tasks.send_event_reminders',
+        'schedule': 300.0,  # Run every 5 minutes
+    },
+    'process-pending-notifications': {
+        'task': 'apps.notifications.tasks.process_pending_notifications',
+        'schedule': 60.0,  # Run every minute
+    },
+    'send-daily-digest': {
+        'task': 'apps.notifications.tasks.send_daily_digest',
+        'schedule': 86400.0,  # Run daily
+        'options': {
+            'hour': 9,
+            'minute': 0
+        }  # At 9 AM
+    },
+    'send-weekly-digest': {
+        'task': 'apps.notifications.tasks.send_weekly_digest',
+        'schedule': 604800.0,  # Run weekly
+        'options': {
+            'day_of_week': 1,
+            'hour': 9,
+            'minute': 0
+        }  # Monday at 9 AM
+    },
+    'cleanup-old-notifications': {
+        'task': 'apps.notifications.tasks.cleanup_old_notifications',
+        'schedule': 86400.0,  # Run daily
+        'options': {
+            'hour': 2,
+            'minute': 0
+        }  # At 2 AM
+    },
+}
+
+# Templates configuration
+TEMPLATES[0]['DIRS'] = [BASE_DIR / 'templates']

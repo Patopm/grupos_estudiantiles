@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ template.subject }}</title>
+    <style>
+      /* Reset styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        line-height: 1.6;
+        color: #333333;
+        background-color: #f5f5f5;
+      }
+
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .email-header {
+        background: linear-gradient(135deg, #00534c 0%, #00716a 100%);
+        color: white;
+        padding: 30px 20px;
+        text-align: center;
+      }
+
+      .email-header h1 {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .email-header .subtitle {
+        font-size: 16px;
+        opacity: 0.9;
+      }
+
+      .email-body {
+        padding: 30px 20px;
+      }
+
+      .greeting {
+        font-size: 18px;
+        margin-bottom: 20px;
+        color: #2d3748;
+      }
+
+      .content {
+        font-size: 16px;
+        line-height: 1.8;
+        margin-bottom: 25px;
+      }
+
+      .content p {
+        margin-bottom: 16px;
+      }
+
+      .button {
+        display: inline-block;
+        background-color: #00534c;
+        color: white;
+        text-decoration: none;
+        padding: 14px 28px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 16px;
+        margin: 20px 0;
+        transition: background-color 0.3s ease;
+      }
+
+      .button:hover {
+        background-color: #00716a;
+      }
+
+      .button-secondary {
+        background-color: #e2e8f0;
+        color: #2d3748;
+      }
+
+      .button-secondary:hover {
+        background-color: #cbd5e0;
+      }
+
+      .info-box {
+        background-color: #f7fafc;
+        border-left: 4px solid #00534c;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+
+      .warning-box {
+        background-color: #fffaf0;
+        border-left: 4px solid #f6ad55;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 4px;
+      }
+
+      .event-details {
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+
+      .event-details h3 {
+        color: #00534c;
+        margin-bottom: 15px;
+        font-size: 18px;
+      }
+
+      .event-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-bottom: 15px;
+      }
+
+      .event-meta-item {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        color: #6c757d;
+      }
+
+      .event-meta-item strong {
+        color: #2d3748;
+        margin-left: 5px;
+      }
+
+      .group-info {
+        background-color: #f0fff4;
+        border: 1px solid #9ae6b4;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+      }
+
+      .group-info h3 {
+        color: #00534c;
+        margin-bottom: 10px;
+      }
+
+      .email-footer {
+        background-color: #f8f9fa;
+        padding: 30px 20px;
+        text-align: center;
+        border-top: 1px solid #e9ecef;
+      }
+
+      .email-footer p {
+        font-size: 14px;
+        color: #6c757d;
+        margin-bottom: 10px;
+      }
+
+      .email-footer .unsubscribe {
+        font-size: 12px;
+        color: #adb5bd;
+      }
+
+      .email-footer .unsubscribe a {
+        color: #00534c;
+        text-decoration: none;
+      }
+
+      .social-links {
+        margin: 20px 0;
+      }
+
+      .social-links a {
+        display: inline-block;
+        margin: 0 10px;
+        color: #6c757d;
+        text-decoration: none;
+      }
+
+      /* Responsive */
+      @media (max-width: 600px) {
+        .email-container {
+          margin: 0;
+          border-radius: 0;
+        }
+
+        .email-header,
+        .email-body,
+        .email-footer {
+          padding: 20px 15px;
+        }
+
+        .email-header h1 {
+          font-size: 20px;
+        }
+
+        .event-meta {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .button {
+          display: block;
+          text-align: center;
+          margin: 20px 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <!-- Header -->
+      <div class="email-header">
+        <h1>Grupos Estudiantiles</h1>
+        <div class="subtitle">Tecmilenio</div>
+      </div>
+
+      <!-- Body -->
+      <div class="email-body">
+        <div class="greeting">
+          Hola {{ user.first_name|default:user.email }},
+        </div>
+
+        <div class="content">{{ template.html_content|safe }}</div>
+      </div>
+
+      <!-- Footer -->
+      <div class="email-footer">
+        <p><strong>Grupos Estudiantiles - Tecmilenio</strong></p>
+        <p>Conectando estudiantes, creando comunidades</p>
+
+        <div class="social-links">
+          <a href="{{ site_url }}">Sitio Web</a>
+          <a href="{{ site_url }}/dashboard">Mi Dashboard</a>
+          <a href="{{ site_url }}/profile">Mi Perfil</a>
+        </div>
+
+        <div class="unsubscribe">
+          <p>
+            <a href="{{ site_url }}/profile/notifications"
+              >Gestionar preferencias de notificaciones</a
+            >
+          </p>
+          <p>
+            Este email fue enviado a {{ user.email }}<br />
+            Si no deseas recibir estos emails, puedes actualizar tus
+            preferencias arriba.
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

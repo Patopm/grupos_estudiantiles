@@ -30,6 +30,8 @@ urlpatterns = [
          include('apps.core.dashboard_urls')),  # Dashboard endpoints
     path('api/users/',
          include('apps.users.urls')),  # User management endpoints
+    path('api/notifications/',
+         include('apps.notifications.urls')),  # Notifications endpoints
 ]
 
 # Serve media files in development

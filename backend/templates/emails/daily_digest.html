@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resumen Diario - {{ date|date:"d/m/Y" }}</title>
+    <style>
+      /* Include the same styles as base.html */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        line-height: 1.6;
+        color: #333333;
+        background-color: #f5f5f5;
+      }
+
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .email-header {
+        background: linear-gradient(135deg, #00534c 0%, #00716a 100%);
+        color: white;
+        padding: 30px 20px;
+        text-align: center;
+      }
+
+      .email-header h1 {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .email-body {
+        padding: 30px 20px;
+      }
+
+      .digest-section {
+        margin-bottom: 30px;
+        border-bottom: 1px solid #e9ecef;
+        padding-bottom: 20px;
+      }
+
+      .digest-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+
+      .digest-section h3 {
+        color: #00534c;
+        font-size: 18px;
+        margin-bottom: 15px;
+        border-left: 4px solid #00534c;
+        padding-left: 15px;
+      }
+
+      .notification-item {
+        background-color: #f8f9fa;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 10px;
+      }
+
+      .notification-item h4 {
+        color: #2d3748;
+        font-size: 16px;
+        margin-bottom: 8px;
+      }
+
+      .notification-item p {
+        color: #6c757d;
+        font-size: 14px;
+        margin-bottom: 5px;
+      }
+
+      .notification-meta {
+        font-size: 12px;
+        color: #adb5bd;
+        margin-top: 10px;
+      }
+
+      .button {
+        display: inline-block;
+        background-color: #00534c;
+        color: white;
+        text-decoration: none;
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 14px;
+        margin: 10px 0;
+      }
+
+      .email-footer {
+        background-color: #f8f9fa;
+        padding: 30px 20px;
+        text-align: center;
+        border-top: 1px solid #e9ecef;
+      }
+
+      .email-footer p {
+        font-size: 14px;
+        color: #6c757d;
+        margin-bottom: 10px;
+      }
+
+      .stats-summary {
+        background-color: #f0fff4;
+        border: 1px solid #9ae6b4;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+
+      .stats-summary h3 {
+        color: #00534c;
+        margin-bottom: 15px;
+        border: none;
+        padding: 0;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 24px;
+        font-weight: bold;
+        color: #00534c;
+        display: block;
+      }
+
+      .stat-label {
+        font-size: 12px;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <!-- Header -->
+      <div class="email-header">
+        <h1>Resumen Diario</h1>
+        <div class="subtitle">{{ date|date:"l, d de F de Y" }}</div>
+      </div>
+
+      <!-- Body -->
+      <div class="email-body">
+        <div class="greeting">
+          Hola {{ user.first_name|default:user.email }},
+        </div>
+
+        <p>
+          Aquí tienes un resumen de las actividades de hoy en Grupos
+          Estudiantiles:
+        </p>
+
+        <!-- Stats Summary -->
+        <div class="stats-summary">
+          <h3>Resumen del Día</h3>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-number">{{ notifications|length }}</span>
+              <span class="stat-label">Notificaciones</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number"
+                >{{ notifications.event_reminder|length|default:0 }}</span
+              >
+              <span class="stat-label">Recordatorios</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number"
+                >{{ notifications.event_created|length|default:0 }}</span
+              >
+              <span class="stat-label">Nuevos Eventos</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications by Type -->
+        {% for notification_type, notification_list in notifications.items %}
+        <div class="digest-section">
+          <h3>
+            {% if notification_type == 'event_reminder' %} 🔔 Recordatorios de
+            Eventos {% elif notification_type == 'event_created' %} ✨ Nuevos
+            Eventos {% elif notification_type == 'event_updated' %} 📝 Eventos
+            Actualizados {% elif notification_type == 'group_new_member' %} 👥
+            Nuevos Miembros {% elif notification_type ==
+            'group_request_approved' %} ✅ Solicitudes Aprobadas {% else %} 📬
+            Otras Notificaciones {% endif %}
+          </h3>
+
+          {% for notification in notification_list %}
+          <div class="notification-item">
+            <h4>{{ notification.subject }}</h4>
+            {% if notification.template.template_type == 'event_reminder' %}
+            <p>Tienes un evento próximo que requiere tu atención.</p>
+            {% elif notification.template.template_type == 'event_created' %}
+            <p>Se ha creado un nuevo evento en uno de tus grupos.</p>
+            {% elif notification.template.template_type == 'group_new_member' %}
+            <p>Un nuevo miembro se ha unido a tu grupo.</p>
+            {% else %}
+            <p>{{ notification.text_content|truncatewords:20 }}</p>
+            {% endif %}
+
+            <div class="notification-meta">
+              Creado: {{ notification.created_at|date:"H:i" }}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% empty %}
+        <div class="digest-section">
+          <p>No hay notificaciones nuevas para hoy. ¡Disfruta tu día! 🌟</p>
+        </div>
+        {% endfor %}
+
+        <!-- Action Button -->
+        <div style="text-align: center; margin-top: 30px">
+          <a href="{{ site_url }}/dashboard" class="button"
+            >Ver Dashboard Completo</a
+          >
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="email-footer">
+        <p><strong>Grupos Estudiantiles - Tecmilenio</strong></p>
+        <p>
+          <a
+            href="{{ site_url }}/profile/notifications"
+            style="color: #00534c; text-decoration: none"
+          >
+            Cambiar frecuencia de resúmenes
+          </a>
+        </p>
+        <p style="font-size: 12px; color: #adb5bd">
+          Recibiste este resumen porque tu preferencia está configurada para
+          recibir emails diarios.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

@@ -451,7 +451,7 @@ PUT    /api/users/{id}/role/           # ✅ Cambiar rol de usuario
 - [ ] 📧 Notificaciones por email
 - [x] ✅ Panel de administración avanzado
 - [ ] 📊 Reportes básicos
-- [ ] 🎨 Páginas de autenticación (Login/Register)
+- [x] ✅ Páginas de autenticación (Login/Register)
 
 #### En Desarrollo Fase 2
 

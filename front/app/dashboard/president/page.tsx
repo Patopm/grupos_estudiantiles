@@ -2,6 +2,7 @@
 
 import { useAuth, ProtectedRoute } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import UserMenu from '@/components/dashboard/UserMenu';
 
 export default function PresidentDashboard() {
   return (
@@ -12,7 +13,7 @@ export default function PresidentDashboard() {
 }
 
 function PresidentDashboardContent() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   return (
     <div className='min-h-screen bg-background'>
@@ -21,14 +22,7 @@ function PresidentDashboardContent() {
           <div className='text-2xl font-bold text-primary'>
             Dashboard Presidente
           </div>
-          <div className='flex items-center gap-4'>
-            <span className='text-sm text-muted-foreground'>
-              Bienvenido, {user?.first_name}
-            </span>
-            <Button variant='outline' onClick={logout}>
-              Cerrar Sesión
-            </Button>
-          </div>
+          <UserMenu />
         </div>
       </nav>
 
