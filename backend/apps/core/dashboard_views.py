@@ -23,6 +23,7 @@ User = get_user_model()
     
     Incluye:
     - Mis grupos estudiantiles
+    - Grupos disponibles para unirse
     - Eventos próximos
     - Solicitudes pendientes
     - Historial de participación
@@ -57,13 +58,84 @@ User = get_user_model()
                             "name": {
                                 "type": "string"
                             },
+                            "description": {
+                                "type": "string"
+                            },
+                            "image": {
+                                "type": "string"
+                            },
+                            "president_name": {
+                                "type": "string"
+                            },
+                            "president_id": {
+                                "type": "integer"
+                            },
                             "category": {
                                 "type": "string"
                             },
                             "member_count": {
                                 "type": "integer"
                             },
-                            "status": {
+                            "max_members": {
+                                "type": "integer"
+                            },
+                            "is_active": {
+                                "type": "boolean"
+                            },
+                            "created_at": {
+                                "type": "string"
+                            },
+                            "is_member": {
+                                "type": "boolean"
+                            },
+                            "membership_status": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "available_groups": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "group_id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "description": {
+                                "type": "string"
+                            },
+                            "image": {
+                                "type": "string"
+                            },
+                            "president_name": {
+                                "type": "string"
+                            },
+                            "president_id": {
+                                "type": "integer"
+                            },
+                            "category": {
+                                "type": "string"
+                            },
+                            "member_count": {
+                                "type": "integer"
+                            },
+                            "max_members": {
+                                "type": "integer"
+                            },
+                            "is_active": {
+                                "type": "boolean"
+                            },
+                            "created_at": {
+                                "type": "string"
+                            },
+                            "is_member": {
+                                "type": "boolean"
+                            },
+                            "membership_status": {
                                 "type": "string"
                             }
                         }
@@ -159,11 +231,32 @@ def student_dashboard(request):
         user=user, status='active').select_related('group')
 
     my_groups = [{
-        'group_id': str(membership.group.group_id),
-        'name': membership.group.name,
-        'category': membership.group.category,
-        'member_count': membership.group.member_count,
-        'status': membership.status
+        'group_id':
+        str(membership.group.group_id),
+        'name':
+        membership.group.name,
+        'description':
+        membership.group.description,
+        'image':
+        membership.group.image.url if membership.group.image else None,
+        'president_name':
+        membership.group.president_name,
+        'president_id':
+        membership.group.president.id,
+        'category':
+        membership.group.category,
+        'member_count':
+        membership.group.member_count,
+        'max_members':
+        membership.group.max_members,
+        'is_active':
+        membership.group.is_active,
+        'created_at':
+        membership.group.created_at.isoformat(),
+        'is_member':
+        True,
+        'membership_status':
+        membership.status
     } for membership in my_memberships]
 
     # Eventos próximos (de mis grupos o públicos)
@@ -200,6 +293,33 @@ def student_dashboard(request):
         'requested_at': req.joined_at
     } for req in pending_requests]
 
+    # Grupos disponibles (no soy miembro ni tengo solicitud pendiente)
+    user_group_ids = list(
+        GroupMembership.objects.filter(user=user,
+                                       status__in=['active', 'pending'
+                                                   ]).values_list('group_id',
+                                                                  flat=True))
+
+    available_groups_query = StudentGroup.objects.filter(
+        is_active=True).exclude(
+            group_id__in=user_group_ids).order_by('-created_at')[:20]
+
+    available_groups = [{
+        'group_id': str(group.group_id),
+        'name': group.name,
+        'description': group.description,
+        'image': group.image.url if group.image else None,
+        'president_name': group.president_name,
+        'president_id': group.president.id,
+        'category': group.category,
+        'member_count': group.member_count,
+        'max_members': group.max_members,
+        'is_active': group.is_active,
+        'created_at': group.created_at.isoformat(),
+        'is_member': False,
+        'membership_status': None
+    } for group in available_groups_query]
+
     # Estadísticas
     total_events_attended = EventAttendance.objects.filter(
         user=user, status='attended').count()
@@ -213,9 +333,10 @@ def student_dashboard(request):
     return Response({
         'user_info': user_info,
         'my_groups': my_groups,
+        'available_groups': available_groups,
         'upcoming_events': upcoming_events,
         'pending_requests': pending_requests_data,
-        'stats': stats
+        'participation_stats': stats
     })
 
 

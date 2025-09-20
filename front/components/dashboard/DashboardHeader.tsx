@@ -73,13 +73,14 @@ export default function DashboardHeader({
   };
 
   // Build default breadcrumbs with dashboard as root
-  const defaultBreadcrumbs: BreadcrumbItem[] = [
-    {
-      label: getDashboardTitle(),
-      href: getDashboardUrl(),
-    },
-  ];
-
+  const defaultBreadcrumbs: BreadcrumbItem[] = showBackButton
+    ? [
+        {
+          label: getDashboardTitle(),
+          href: getDashboardUrl(),
+        },
+      ]
+    : [];
   // Combine default breadcrumbs with provided ones
   const allBreadcrumbs = [...defaultBreadcrumbs, ...breadcrumbs];
 
@@ -91,13 +92,17 @@ export default function DashboardHeader({
           <div className='flex justify-between items-center mb-4'>
             <div className='flex items-center gap-4'>
               {/* Back Button */}
-              {showBackButton && (
+              {showBackButton ? (
                 <Link href={backUrl || getDashboardUrl()}>
                   <Button variant='ghost' size='sm' className='gap-2'>
                     <FontAwesomeIcon icon={faArrowLeft} className='w-4 h-4' />
                     Volver
                   </Button>
                 </Link>
+              ) : (
+                <span className='text-lg font-semibold text-foreground'>
+                  {getDashboardTitle()}
+                </span>
               )}
             </div>
 

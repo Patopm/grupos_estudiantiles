@@ -13,6 +13,13 @@ export interface ApiResponse<T = unknown> {
   statusText: string;
 }
 
+export interface ApiPaginatedResponse<T = unknown> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
+
 // HTTP client configuration
 interface RequestConfig {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -31,7 +38,7 @@ class ApiClient {
   private async request<T = unknown>(
     endpoint: string,
     config: RequestConfig = {}
-  ): Promise<ApiResponse<T>> {
+  ): Promise<T> {
     const { method = 'GET', headers = {}, body, params } = config;
 
     // Build URL with query parameters
@@ -91,11 +98,7 @@ class ApiClient {
         throw error;
       }
 
-      return {
-        data,
-        status: response.status,
-        statusText: response.statusText,
-      };
+      return data;
     } catch (error) {
       // Re-throw ApiError as-is
       if (this.isApiError(error)) {
@@ -156,32 +159,23 @@ class ApiClient {
   async get<T = unknown>(
     endpoint: string,
     params?: Record<string, unknown>
-  ): Promise<ApiResponse<T>> {
+  ): Promise<T> {
     return this.request<T>(endpoint, { method: 'GET', params });
   }
 
-  async post<T = unknown>(
-    endpoint: string,
-    body?: unknown
-  ): Promise<ApiResponse<T>> {
+  async post<T = unknown>(endpoint: string, body?: unknown): Promise<T> {
     return this.request<T>(endpoint, { method: 'POST', body });
   }
 
-  async put<T = unknown>(
-    endpoint: string,
-    body?: unknown
-  ): Promise<ApiResponse<T>> {
+  async put<T = unknown>(endpoint: string, body?: unknown): Promise<T> {
     return this.request<T>(endpoint, { method: 'PUT', body });
   }
 
-  async patch<T = unknown>(
-    endpoint: string,
-    body?: unknown
-  ): Promise<ApiResponse<T>> {
+  async patch<T = unknown>(endpoint: string, body?: unknown): Promise<T> {
     return this.request<T>(endpoint, { method: 'PATCH', body });
   }
 
-  async delete<T = unknown>(endpoint: string): Promise<ApiResponse<T>> {
+  async delete<T = unknown>(endpoint: string): Promise<T> {
     return this.request<T>(endpoint, { method: 'DELETE' });
   }
 }
