@@ -7,9 +7,14 @@ import React, {
   useState,
   ReactNode,
 } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { authService, TokenManager, User, AuthResponse } from '@/lib/auth';
-import { LoginFormData, RegisterFormData } from '@/lib/validations/auth';
+import {
+  LoginFormData,
+  RegisterFormData,
+  ForgotPasswordFormData,
+  ResetPasswordFormData,
+} from '@/lib/validations/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -19,6 +24,12 @@ interface AuthContextType {
   register: (userData: RegisterFormData) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  requestPasswordReset: (email: ForgotPasswordFormData) => Promise<void>;
+  resetPassword: (
+    token: string,
+    uid: string,
+    passwordData: ResetPasswordFormData
+  ) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,6 +42,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const isAuthenticated = !!user && TokenManager.isAuthenticated();
 
@@ -93,7 +105,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
       TokenManager.setTokens(response);
       setUser(response.user);
 
-      // Redirect based on user role
+      // Check for redirect URL from middleware
+      const redirectUrl = searchParams.get('redirect');
+
+      if (redirectUrl) {
+        // Validate that the redirect URL is safe (internal to our app)
+        if (redirectUrl.startsWith('/') && !redirectUrl.startsWith('//')) {
+          router.push(redirectUrl);
+          return;
+        }
+      }
+
+      // Default redirect based on user role
       redirectToDashboard(response.user.role);
     } catch (error) {
       throw error; // Re-throw to be handled by the component
@@ -150,6 +173,28 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const requestPasswordReset = async (
+    email: ForgotPasswordFormData
+  ): Promise<void> => {
+    try {
+      await authService.requestPasswordReset(email);
+    } catch (error) {
+      throw error; // Re-throw to be handled by the component
+    }
+  };
+
+  const resetPassword = async (
+    token: string,
+    uid: string,
+    passwordData: ResetPasswordFormData
+  ): Promise<void> => {
+    try {
+      await authService.resetPassword(token, uid, passwordData);
+    } catch (error) {
+      throw error; // Re-throw to be handled by the component
+    }
+  };
+
   const redirectToDashboard = (role: string): void => {
     // Redirect based on user role as specified in requirements
     switch (role) {
@@ -174,6 +219,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     register,
     logout,
     refreshUser,
+    requestPasswordReset,
+    resetPassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

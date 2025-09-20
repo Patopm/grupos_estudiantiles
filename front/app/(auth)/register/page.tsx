@@ -5,6 +5,7 @@ import AuthCard from '@/components/auth/AuthCard';
 import FormInput from '@/components/forms/FormInput';
 import AuthButton from '@/components/auth/AuthButton';
 import CheckboxField from '@/components/forms/CheckboxField';
+import { AuthErrorMessage } from '@/components/auth/AuthFormError';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserGraduate } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -106,11 +107,7 @@ export default function RegisterPage() {
       footerLinkHref='/login'
     >
       <form className='space-y-6' onSubmit={handleSubmit} noValidate>
-        {errors.general && (
-          <div className='p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md'>
-            {errors.general}
-          </div>
-        )}
+        {errors.general && <AuthErrorMessage message={errors.general} />}
 
         {/* Student Badge */}
         <div className='flex items-center justify-center p-4 bg-primary/5 rounded-lg border border-primary/20'>

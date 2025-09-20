@@ -6,6 +6,10 @@ import AuthCard from '@/components/auth/AuthCard';
 import FormInput from '@/components/forms/FormInput';
 import AuthButton from '@/components/auth/AuthButton';
 import CheckboxField from '@/components/forms/CheckboxField';
+import {
+  AuthSuccessMessage,
+  AuthErrorMessage,
+} from '@/components/auth/AuthFormError';
 import { validateLogin, type LoginFormData } from '@/lib/validations/auth';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -22,12 +26,16 @@ export default function LoginPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [successMessage, setSuccessMessage] = useState<string>('');
 
-  // Check for success message from registration
+  // Check for success message from registration or password reset
   useEffect(() => {
     const message = searchParams.get('message');
     if (message === 'registration-success') {
       setSuccessMessage(
         '¡Registro exitoso! Ahora puedes iniciar sesión con tu cuenta.'
+      );
+    } else if (message === 'password-reset-success') {
+      setSuccessMessage(
+        '¡Contraseña restablecida exitosamente! Ahora puedes iniciar sesión con tu nueva contraseña.'
       );
     }
   }, [searchParams]);
@@ -108,17 +116,9 @@ export default function LoginPage() {
       footerLinkHref='/register'
     >
       <form className='space-y-6' onSubmit={handleSubmit} noValidate>
-        {successMessage && (
-          <div className='p-3 text-sm text-green-700 bg-green-50 border border-green-200 rounded-md'>
-            {successMessage}
-          </div>
-        )}
+        {successMessage && <AuthSuccessMessage message={successMessage} />}
 
-        {errors.general && (
-          <div className='p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md'>
-            {errors.general}
-          </div>
-        )}
+        {errors.general && <AuthErrorMessage message={errors.general} />}
 
         <FormInput
           id='email'
@@ -158,7 +158,7 @@ export default function LoginPage() {
 
           <div className='text-sm'>
             <a
-              href='#'
+              href='/forgot-password'
               className='font-medium text-primary hover:text-primary/80 underline'
             >
               ¿Olvidaste tu contraseña?

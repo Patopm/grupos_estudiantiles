@@ -99,9 +99,54 @@ export const registerSchema = z
     path: ['confirmPassword'],
   });
 
+// Forgot password form validation schema
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string({ message: 'Por favor ingresa tu correo electrónico' })
+    .min(1, 'El correo electrónico es obligatorio')
+    .email('Por favor ingresa un correo electrónico válido')
+    .refine(
+      email => email.endsWith('@tecmilenio.mx'),
+      'Debes usar tu correo institucional de Tecmilenio (@tecmilenio.mx)'
+    ),
+});
+
+// Reset password form validation schema
+export const resetPasswordSchema = z
+  .object({
+    password: z
+      .string({ message: 'Por favor crea una contraseña' })
+      .min(1, 'La contraseña es obligatoria')
+      .min(8, 'Tu contraseña debe tener al menos 8 caracteres')
+      .max(100, 'Tu contraseña es demasiado larga (máximo 100 caracteres)')
+      .regex(
+        /[a-z]/,
+        'Tu contraseña debe incluir al menos una letra minúscula (a-z)'
+      )
+      .regex(
+        /[A-Z]/,
+        'Tu contraseña debe incluir al menos una letra mayúscula (A-Z)'
+      )
+      .regex(/\d/, 'Tu contraseña debe incluir al menos un número (0-9)')
+      .regex(
+        /[!@#$%^&*(),.?":{}|<>]/,
+        'Tu contraseña debe incluir al menos un carácter especial (!@#$%^&*(),.?":{}|<>)'
+      ),
+    confirmPassword: z
+      .string({ message: 'Por favor confirma tu contraseña' })
+      .min(1, 'Debes confirmar tu contraseña'),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message:
+      'Las contraseñas que ingresaste no coinciden. Por favor verifica que sean idénticas.',
+    path: ['confirmPassword'],
+  });
+
 // Type exports for TypeScript
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
+export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
 // Helper function to format Zod errors
 export function formatZodErrors(error: z.ZodError): Record<string, string> {
@@ -136,6 +181,38 @@ export function validateLogin(data: unknown) {
 
 export function validateRegister(data: unknown) {
   const result = registerSchema.safeParse(data);
+
+  if (result.success) {
+    return {
+      success: true as const,
+      data: result.data,
+    };
+  }
+
+  return {
+    success: false as const,
+    errors: formatZodErrors(result.error),
+  };
+}
+
+export function validateForgotPassword(data: unknown) {
+  const result = forgotPasswordSchema.safeParse(data);
+
+  if (result.success) {
+    return {
+      success: true as const,
+      data: result.data,
+    };
+  }
+
+  return {
+    success: false as const,
+    errors: formatZodErrors(result.error),
+  };
+}
+
+export function validateResetPassword(data: unknown) {
+  const result = resetPasswordSchema.safeParse(data);
 
   if (result.success) {
     return {

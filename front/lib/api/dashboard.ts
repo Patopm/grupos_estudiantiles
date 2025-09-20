@@ -105,19 +105,18 @@ export interface AdminDashboardData {
 export const dashboardApi = {
   // Get student dashboard data
   getStudentData: async (): Promise<StudentDashboardData> => {
-    const response = await apiClient.get('/api/dashboard/student/');
-    return response.data as StudentDashboardData;
+    return await apiClient.get<StudentDashboardData>('/api/dashboard/student/');
   },
 
   // Get president dashboard data
   getPresidentData: async (): Promise<PresidentDashboardData> => {
-    const response = await apiClient.get('/api/dashboard/president/');
-    return response.data as PresidentDashboardData;
+    return await apiClient.get<PresidentDashboardData>(
+      '/api/dashboard/president/'
+    );
   },
 
   // Get admin dashboard data
   getAdminData: async (): Promise<AdminDashboardData> => {
-    const response = await apiClient.get('/api/dashboard/admin/');
-    return response.data as AdminDashboardData;
+    return await apiClient.get<AdminDashboardData>('/api/dashboard/admin/');
   },
 };

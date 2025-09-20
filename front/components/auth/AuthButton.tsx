@@ -9,6 +9,15 @@ interface AuthButtonProps {
   children: React.ReactNode;
   type?: 'button' | 'submit' | 'reset';
   onClick?: () => void;
+  variant?:
+    | 'default'
+    | 'destructive'
+    | 'outline'
+    | 'secondary'
+    | 'ghost'
+    | 'link';
+  className?: string;
+  disabled?: boolean;
 }
 
 export default function AuthButton({
@@ -17,19 +26,31 @@ export default function AuthButton({
   children,
   type = 'submit',
   onClick,
+  variant = 'default',
+  className = '',
+  disabled = false,
 }: AuthButtonProps) {
+  const isDisabled = isLoading || disabled;
+
   return (
     <Button
       type={type}
-      disabled={isLoading}
+      disabled={isDisabled}
       onClick={onClick}
-      className='w-full'
+      className={`w-full ${className}`}
       size='lg'
+      variant={variant}
+      aria-busy={isLoading}
+      aria-disabled={isDisabled}
     >
       {isLoading ? (
         <div className='flex items-center gap-2'>
-          <FontAwesomeIcon icon={faSpinner} className='animate-spin' />
-          {loadingText}
+          <FontAwesomeIcon
+            icon={faSpinner}
+            className='animate-spin w-4 h-4'
+            aria-hidden='true'
+          />
+          <span aria-live='polite'>{loadingText}</span>
         </div>
       ) : (
         children

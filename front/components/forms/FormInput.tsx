@@ -13,6 +13,7 @@ interface FormInputProps {
   error?: string;
   required?: boolean;
   autoComplete?: string;
+  autoFocus?: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 }
@@ -27,6 +28,7 @@ export default function FormInput({
   error,
   required = false,
   autoComplete,
+  autoFocus = false,
   onChange,
   onBlur,
 }: FormInputProps) {
@@ -40,6 +42,7 @@ export default function FormInput({
         name={name}
         type={type}
         autoComplete={autoComplete}
+        autoFocus={autoFocus}
         required={required}
         value={value}
         onChange={onChange}

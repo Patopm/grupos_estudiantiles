@@ -60,16 +60,14 @@ export const totpApi = {
     const response = await apiClient.get<
       TOTPDevice[] | { results: TOTPDevice[] }
     >('/api/notifications/totp/');
-    return Array.isArray(response.data) ? response.data : response.data.results;
+    return Array.isArray(response) ? response : response.results;
   },
 
   // Setup new TOTP device
   async setupDevice(name: string = 'Tecmilenio 2FA'): Promise<TOTPDevice> {
-    const response = await apiClient.post<TOTPDevice>(
-      '/api/notifications/totp/',
-      { name }
-    );
-    return response.data;
+    return await apiClient.post<TOTPDevice>('/api/notifications/totp/', {
+      name,
+    });
   },
 
   // Verify TOTP token
@@ -77,11 +75,10 @@ export const totpApi = {
     deviceId: string,
     token: string
   ): Promise<{ valid: boolean; message: string }> {
-    const response = await apiClient.post<{ valid: boolean; message: string }>(
+    return await apiClient.post<{ valid: boolean; message: string }>(
       `/api/notifications/totp/${deviceId}/verify/`,
       { token }
     );
-    return response.data;
   },
 
   // Confirm and activate TOTP device
@@ -89,11 +86,10 @@ export const totpApi = {
     deviceId: string,
     token: string
   ): Promise<{ message: string; device: TOTPDevice }> {
-    const response = await apiClient.post<{
+    return await apiClient.post<{
       message: string;
       device: TOTPDevice;
     }>(`/api/notifications/totp/${deviceId}/confirm/`, { token });
-    return response.data;
   },
 
   // Disable 2FA
@@ -101,11 +97,10 @@ export const totpApi = {
     deviceId: string,
     token: string
   ): Promise<{ message: string }> {
-    const response = await apiClient.post<{ message: string }>(
+    return await apiClient.post<{ message: string }>(
       `/api/notifications/totp/${deviceId}/disable/`,
       { token }
     );
-    return response.data;
   },
 
   // Delete TOTP device
@@ -119,21 +114,19 @@ export const preferencesApi = {
   // Get user's notification preferences
   async getPreferences(): Promise<NotificationPreferences> {
     // Since it's a singleton, we can use a fixed ID or the endpoint handles it
-    const response = await apiClient.get<NotificationPreferences>(
+    return await apiClient.get<NotificationPreferences>(
       '/api/notifications/preferences/1/'
     );
-    return response.data;
   },
 
   // Update notification preferences
   async updatePreferences(
     preferences: Partial<NotificationPreferences>
   ): Promise<NotificationPreferences> {
-    const response = await apiClient.patch<NotificationPreferences>(
+    return await apiClient.patch<NotificationPreferences>(
       '/api/notifications/preferences/1/',
       preferences
     );
-    return response.data;
   },
 };
 
@@ -160,23 +153,21 @@ export const emailNotificationsApi = {
         params,
       }
     );
-    return response.data;
+    return response;
   },
 
   // Get single notification
   async getNotification(id: string): Promise<EmailNotification> {
-    const response = await apiClient.get<EmailNotification>(
+    return await apiClient.get<EmailNotification>(
       `/api/notifications/emails/${id}/`
     );
-    return response.data;
   },
 
   // Resend failed notification
   async resendNotification(id: string): Promise<{ message: string }> {
-    const response = await apiClient.post<{ message: string }>(
+    return await apiClient.post<{ message: string }>(
       `/api/notifications/emails/${id}/resend/`
     );
-    return response.data;
   },
 };
 
@@ -194,7 +185,7 @@ export const eventRemindersApi = {
         params,
       }
     );
-    return response.data;
+    return response;
   },
 };
 

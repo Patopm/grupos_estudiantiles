@@ -1,4 +1,9 @@
-import { LoginFormData, RegisterFormData } from './validations/auth';
+import {
+  LoginFormData,
+  RegisterFormData,
+  ForgotPasswordFormData,
+  ResetPasswordFormData,
+} from './validations/auth';
 
 // Types for authentication responses
 export interface User {
@@ -214,6 +219,99 @@ class AuthService {
 
     return response.json();
   }
+
+  /**
+   * Request password reset
+   */
+  async requestPasswordReset(email: ForgotPasswordFormData): Promise<void> {
+    const response = await fetch(`${this.baseURL}/password-reset/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email.email,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      if (response.status === 400) {
+        const errorMessage =
+          data.email?.[0] ||
+          data.detail ||
+          'Error en la solicitud de restablecimiento.';
+        throw new Error(errorMessage);
+      } else if (response.status === 404) {
+        throw new Error(
+          'No se encontró una cuenta con este correo electrónico.'
+        );
+      } else {
+        throw new Error('Error del servidor. Por favor intenta más tarde.');
+      }
+    }
+  }
+
+  /**
+   * Reset password with token
+   */
+  async resetPassword(
+    token: string,
+    uid: string,
+    passwordData: ResetPasswordFormData
+  ): Promise<void> {
+    const response = await fetch(`${this.baseURL}/password-reset-confirm/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        uid: uid,
+        token: token,
+        new_password: passwordData.password,
+        new_password_confirm: passwordData.confirmPassword,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      if (response.status === 400) {
+        // Handle validation errors
+        const errors = [];
+
+        if (data.new_password) {
+          errors.push(`Contraseña: ${data.new_password[0]}`);
+        }
+        if (data.new_password_confirm) {
+          errors.push(
+            `Confirmación de contraseña: ${data.new_password_confirm[0]}`
+          );
+        }
+        if (data.token) {
+          errors.push(
+            'El enlace de restablecimiento ha expirado o es inválido.'
+          );
+        }
+        if (data.uid) {
+          errors.push('El enlace de restablecimiento es inválido.');
+        }
+        if (data.non_field_errors) {
+          errors.push(...data.non_field_errors);
+        }
+
+        const errorMessage =
+          errors.length > 0
+            ? errors.join('. ')
+            : 'Error en el restablecimiento de contraseña.';
+
+        throw new Error(errorMessage);
+      } else {
+        throw new Error('Error del servidor. Por favor intenta más tarde.');
+      }
+    }
+  }
 }
 
 // Token management utilities
@@ -223,13 +321,85 @@ export class TokenManager {
   private static USER_KEY = 'user_data';
 
   /**
+   * Set cookie with proper security settings
+   */
+  private static setCookie(name: string, value: string, maxAge?: number): void {
+    if (typeof document !== 'undefined') {
+      const secure = window.location.protocol === 'https:';
+      const sameSite = 'lax';
+      const path = '/';
+
+      let cookieString = `${name}=${encodeURIComponent(value)}; path=${path}; samesite=${sameSite}`;
+
+      if (secure) {
+        cookieString += '; secure';
+      }
+
+      if (maxAge) {
+        cookieString += `; max-age=${maxAge}`;
+      }
+
+      document.cookie = cookieString;
+    }
+  }
+
+  /**
+   * Remove cookie
+   */
+  private static removeCookie(name: string): void {
+    if (typeof document !== 'undefined') {
+      document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+    }
+  }
+
+  /**
    * Store authentication tokens and user data
    */
   static setTokens(tokens: AuthResponse): void {
     if (typeof window !== 'undefined') {
+      // Store in localStorage for client-side access
       localStorage.setItem(this.ACCESS_TOKEN_KEY, tokens.access);
       localStorage.setItem(this.REFRESH_TOKEN_KEY, tokens.refresh);
       localStorage.setItem(this.USER_KEY, JSON.stringify(tokens.user));
+
+      // Also store in cookies for server-side middleware access
+      // Calculate token expiration for cookie max-age
+      const accessTokenPayload = this.decodeTokenPayload(tokens.access);
+      const refreshTokenPayload = this.decodeTokenPayload(tokens.refresh);
+
+      const accessTokenMaxAge = accessTokenPayload
+        ? Math.max(0, accessTokenPayload.exp - Math.floor(Date.now() / 1000))
+        : 15 * 60; // Default 15 minutes
+
+      const refreshTokenMaxAge = refreshTokenPayload
+        ? Math.max(0, refreshTokenPayload.exp - Math.floor(Date.now() / 1000))
+        : 7 * 24 * 60 * 60; // Default 7 days
+
+      this.setCookie(this.ACCESS_TOKEN_KEY, tokens.access, accessTokenMaxAge);
+      this.setCookie(
+        this.REFRESH_TOKEN_KEY,
+        tokens.refresh,
+        refreshTokenMaxAge
+      );
+      this.setCookie(
+        this.USER_KEY,
+        JSON.stringify(tokens.user),
+        refreshTokenMaxAge
+      );
+    }
+  }
+
+  /**
+   * Decode token payload
+   */
+  private static decodeTokenPayload(
+    token: string
+  ): { exp: number; iat: number } | null {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload;
+    } catch {
+      return null;
     }
   }
 
@@ -270,6 +440,14 @@ export class TokenManager {
   static updateAccessToken(accessToken: string): void {
     if (typeof window !== 'undefined') {
       localStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken);
+
+      // Also update cookie
+      const tokenPayload = this.decodeTokenPayload(accessToken);
+      const maxAge = tokenPayload
+        ? Math.max(0, tokenPayload.exp - Math.floor(Date.now() / 1000))
+        : 15 * 60; // Default 15 minutes
+
+      this.setCookie(this.ACCESS_TOKEN_KEY, accessToken, maxAge);
     }
   }
 
@@ -278,9 +456,15 @@ export class TokenManager {
    */
   static clearTokens(): void {
     if (typeof window !== 'undefined') {
+      // Clear localStorage
       localStorage.removeItem(this.ACCESS_TOKEN_KEY);
       localStorage.removeItem(this.REFRESH_TOKEN_KEY);
       localStorage.removeItem(this.USER_KEY);
+
+      // Clear cookies
+      this.removeCookie(this.ACCESS_TOKEN_KEY);
+      this.removeCookie(this.REFRESH_TOKEN_KEY);
+      this.removeCookie(this.USER_KEY);
     }
   }
 

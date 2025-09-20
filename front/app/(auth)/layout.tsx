@@ -1,29 +1,24 @@
+'use client';
+
 import React from 'react';
-import Link from 'next/link';
+import AuthLayoutWrapper from '@/components/auth/AuthLayoutWrapper';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
 }
 
+/**
+ * Authentication group layout that provides consistent styling,
+ * error boundaries, and loading states for all auth pages
+ */
 export default function AuthGroupLayout({ children }: AuthLayoutProps) {
   return (
-    <div className='min-h-screen bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center px-4 py-8'>
-      <div className='max-w-md w-full space-y-8'>
-        {/* Header */}
-        <div className='text-center'>
-          <Link
-            href='/'
-            className='text-3xl font-bold text-primary hover:text-primary/80 transition-colors'
-          >
-            Grupos Estudiantiles
-          </Link>
-          <p className='text-sm text-muted-foreground mt-2'>
-            Universidad Tecmilenio
-          </p>
-        </div>
-
-        {children}
-      </div>
-    </div>
+    <AuthLayoutWrapper
+      showHeader={true}
+      showLoadingState={true}
+      loadingMessage='Verificando autenticación...'
+    >
+      {children}
+    </AuthLayoutWrapper>
   );
 }
