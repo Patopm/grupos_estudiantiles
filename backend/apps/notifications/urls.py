@@ -1,19 +1,12 @@
 from django.urls import include, path
-
 from rest_framework.routers import DefaultRouter
 
-from .views import (
-    EmailNotificationViewSet,
-    EmailTemplateViewSet,
-    EventReminderViewSet,
-    NotificationPreferencesViewSet,
-    TOTPDeviceViewSet,
-)
+from .views import (EmailNotificationViewSet, EmailTemplateViewSet,
+                    EventReminderViewSet, NotificationPreferencesViewSet)
 
 app_name = 'notifications'
 
 router = DefaultRouter()
-router.register(r'totp', TOTPDeviceViewSet, basename='totp')
 router.register(r'templates', EmailTemplateViewSet, basename='email-templates')
 router.register(r'emails',
                 EmailNotificationViewSet,

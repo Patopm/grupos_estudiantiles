@@ -1,119 +1,16 @@
+from apps.core.permissions import IsAdminUser
 from rest_framework import permissions, status
 from rest_framework.decorators import action
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
+from rest_framework.mixins import (ListModelMixin, RetrieveModelMixin,
+                                   UpdateModelMixin)
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
-from apps.core.permissions import IsAdminUser
-
-from .models import (
-    EmailNotification,
-    EmailTemplate,
-    EventReminder,
-    NotificationPreferences,
-    TOTPDevice,
-)
-from .serializers import (
-    EmailNotificationSerializer,
-    EmailTemplateSerializer,
-    EventReminderSerializer,
-    NotificationPreferencesSerializer,
-    TOTPConfirmSerializer,
-    TOTPDeviceSerializer,
-    TOTPSetupSerializer,
-    TOTPVerifySerializer,
-)
-
-
-class TOTPDeviceViewSet(ModelViewSet):
-    """ViewSet for TOTP device management"""
-    serializer_class = TOTPDeviceSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        return TOTPDevice.objects.filter(user=self.request.user)
-
-    def get_serializer_class(self):
-        if self.action == 'create':
-            return TOTPSetupSerializer
-        elif self.action == 'verify':
-            return TOTPVerifySerializer
-        elif self.action == 'confirm':
-            return TOTPConfirmSerializer
-        return super().get_serializer_class()
-
-    def create(self, request, *args, **kwargs):
-        """Create a new TOTP device and return full device data with QR code"""
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        # Create the device using the setup serializer
-        device = serializer.save()
-
-        # Return the full device data using the main serializer
-        device_serializer = TOTPDeviceSerializer(device)
-        headers = self.get_success_headers(device_serializer.data)
-
-        return Response(device_serializer.data,
-                        status=status.HTTP_201_CREATED,
-                        headers=headers)
-
-    @action(detail=True, methods=['post'])
-    def verify(self, request, pk=None):
-        """Verify TOTP token"""
-        device = self.get_object()
-        serializer = self.get_serializer(data=request.data)
-
-        if serializer.is_valid():
-            token = serializer.validated_data['token']
-            if device.verify_token(token):
-                return Response({'valid': True, 'message': 'Token válido'})
-            else:
-                return Response({
-                    'valid': False,
-                    'message': 'Token inválido'
-                },
-                                status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=True, methods=['post'])
-    def confirm(self, request, pk=None):
-        """Confirm and activate TOTP device"""
-        device = self.get_object()
-        serializer = self.get_serializer(data=request.data)
-
-        if serializer.is_valid():
-            device.confirmed = True
-            device.is_active = True
-            device.save()
-
-            return Response({
-                'message': '2FA activado correctamente',
-                'device': TOTPDeviceSerializer(device).data
-            })
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=True, methods=['post'])
-    def disable(self, request, pk=None):
-        """Disable 2FA"""
-        device = self.get_object()
-        serializer = TOTPVerifySerializer(data=request.data)
-
-        if serializer.is_valid():
-            token = serializer.validated_data['token']
-            if device.verify_token(token):
-                device.is_active = False
-                device.confirmed = False
-                device.save()
-
-                return Response({'message': '2FA desactivado correctamente'})
-            else:
-                return Response({'message': 'Token inválido'},
-                                status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+from .models import (EmailNotification, EmailTemplate, EventReminder,
+                     NotificationPreferences)
+from .serializers import (EmailNotificationSerializer, EmailTemplateSerializer,
+                          EventReminderSerializer,
+                          NotificationPreferencesSerializer)
 
 
 class EmailTemplateViewSet(ModelViewSet):

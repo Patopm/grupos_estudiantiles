@@ -1,17 +1,9 @@
-from django.urls import path
-
+from django.urls import include, path
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from .auth_views import (
-    CustomTokenRefreshView,
-    LoginView,
-    LogoutView,
-    MeView,
-    RegisterView,
-    PasswordResetRequestView,
-    PasswordResetConfirmView,
-    PasswordChangeView,
-)
+from .auth_views import (CustomTokenRefreshView, LoginView, LogoutView, MeView,
+                         PasswordChangeView, PasswordResetConfirmView,
+                         PasswordResetRequestView, RegisterView)
 
 app_name = 'auth'
 
@@ -33,4 +25,7 @@ urlpatterns = [
          name='password_reset_confirm'),  # POST /api/auth/password-reset-confirm/
     path('password-change/', PasswordChangeView.as_view(),
          name='password_change'),  # POST /api/auth/password-change/
+    
+    # MFA endpoints
+    path('mfa/', include('apps.users.mfa_urls')),  # /api/auth/mfa/
 ]

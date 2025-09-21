@@ -1,97 +1,12 @@
 from django.contrib.auth import get_user_model
-
 from rest_framework import serializers
 
-from .models import (
-    EmailNotification,
-    EmailTemplate,
-    EventReminder,
-    NotificationPreferences,
-    TOTPDevice,
-)
+from .models import (EmailNotification, EmailTemplate, EventReminder,
+                     NotificationPreferences)
 
 User = get_user_model()
 
 
-class TOTPDeviceSerializer(serializers.ModelSerializer):
-    """Serializer for TOTP device management"""
-    qr_code = serializers.SerializerMethodField()
-    provisioning_uri = serializers.SerializerMethodField()
-
-    class Meta:
-        model = TOTPDevice
-        fields = [
-            'id', 'name', 'is_active', 'confirmed', 'created_at',
-            'last_used_at', 'qr_code', 'provisioning_uri'
-        ]
-        read_only_fields = [
-            'id', 'created_at', 'last_used_at', 'qr_code', 'provisioning_uri'
-        ]
-
-    def get_qr_code(self, obj):
-        """Return QR code only if device is not confirmed yet"""
-        if not obj.confirmed:
-            return obj.get_qr_code()
-        return None
-
-    def get_provisioning_uri(self, obj):
-        """Return provisioning URI only if device is not confirmed yet"""
-        if not obj.confirmed:
-            return obj.get_provisioning_uri()
-        return None
-
-
-class TOTPSetupSerializer(serializers.Serializer):
-    """Serializer for TOTP setup process"""
-    name = serializers.CharField(max_length=100, default='Tecmilenio 2FA')
-
-    def create(self, validated_data):
-        user = self.context['request'].user
-
-        # Deactivate any existing TOTP device
-        TOTPDevice.objects.filter(user=user).update(is_active=False)
-
-        # Create new TOTP device
-        device = TOTPDevice.objects.create(user=user,
-                                           name=validated_data.get(
-                                               'name', 'Tecmilenio 2FA'))
-
-        return device
-
-
-class TOTPVerifySerializer(serializers.Serializer):
-    """Serializer for TOTP token verification"""
-    token = serializers.CharField(max_length=6, min_length=6)
-
-    def validate_token(self, value):
-        """Validate TOTP token format"""
-        if not value.isdigit():
-            raise serializers.ValidationError(
-                'El token debe contener solo números')
-        return value
-
-
-class TOTPConfirmSerializer(TOTPVerifySerializer):
-    """Serializer for TOTP device confirmation"""
-
-    def validate(self, attrs):
-        user = self.context['request'].user
-        token = attrs['token']
-
-        try:
-            device = user.totp_device
-            if device.confirmed:
-                raise serializers.ValidationError(
-                    'El dispositivo TOTP ya está confirmado')
-
-            if not device.verify_token(token):
-                raise serializers.ValidationError('Token inválido')
-
-        except TOTPDevice.DoesNotExist:
-            raise serializers.ValidationError(
-                'No hay dispositivo TOTP configurado')
-
-        return attrs
 
 
 class EmailTemplateSerializer(serializers.ModelSerializer):
