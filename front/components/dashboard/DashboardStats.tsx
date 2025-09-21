@@ -130,11 +130,12 @@ interface PresidentStatsProps {
     total_groups_managed: number;
     total_members: number;
     total_events_created: number;
-    pending_requests: number;
+    pending_requests_count: number;
   };
 }
 
 export function PresidentStats({ stats }: PresidentStatsProps) {
+  console.log(stats);
   return (
     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
       <StatCard
@@ -160,10 +161,10 @@ export function PresidentStats({ stats }: PresidentStatsProps) {
       />
       <StatCard
         title='Solicitudes Pendientes'
-        value={stats.pending_requests}
+        value={stats.pending_requests_count}
         description='Requieren mi aprobación'
         icon={<AlertCircle className='h-4 w-4' />}
-        variant={stats.pending_requests > 0 ? 'warning' : 'default'}
+        variant={stats.pending_requests_count > 0 ? 'warning' : 'default'}
       />
     </div>
   );

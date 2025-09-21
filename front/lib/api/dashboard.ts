@@ -61,7 +61,7 @@ export interface PresidentDashboardData {
     total_groups_managed: number;
     total_members: number;
     total_events_created: number;
-    pending_requests: number;
+    pending_requests_count: number;
   };
 }
 

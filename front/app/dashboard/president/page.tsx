@@ -91,7 +91,7 @@ function PresidentDashboardContent() {
 
         {/* Quick Actions */}
         <PresidentQuickActions
-          pendingRequests={dashboardData?.group_stats.pending_requests}
+          pendingRequests={dashboardData?.group_stats.pending_requests_count}
           groupsManaged={dashboardData?.group_stats.total_groups_managed}
         />
 
