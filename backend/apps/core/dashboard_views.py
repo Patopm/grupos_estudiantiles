@@ -538,6 +538,7 @@ def president_dashboard(request):
         target_groups__president=user).distinct().count()
 
     stats = {
+        'total_groups_managed': my_groups_query.count(),
         'total_members': total_members,
         'total_events_created': total_events_created,
         'pending_requests_count': total_pending_requests
@@ -548,7 +549,7 @@ def president_dashboard(request):
         'my_groups': my_groups,
         'recent_events': recent_events_data,
         'pending_requests': pending_requests_data,
-        'participation_stats': stats
+        'group_stats': stats
     })
 
 
