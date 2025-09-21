@@ -1,17 +1,15 @@
 from datetime import timedelta
 
+from apps.core.permissions import DashboardPermission
+from apps.events.models import Event, EventAttendance
+from apps.students.models import GroupMembership, StudentGroup
 from django.contrib.auth import get_user_model
 from django.db.models import Count, Q
 from django.utils import timezone
-
 from drf_spectacular.utils import extend_schema
 from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-
-from apps.core.permissions import DashboardPermission
-from apps.events.models import Event, EventAttendance
-from apps.students.models import GroupMembership, StudentGroup
 
 User = get_user_model()
 
@@ -550,7 +548,7 @@ def president_dashboard(request):
         'my_groups': my_groups,
         'recent_events': recent_events_data,
         'pending_requests': pending_requests_data,
-        'stats': stats
+        'participation_stats': stats
     })
 
 
