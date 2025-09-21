@@ -11,6 +11,14 @@ from django.core.validators import RegexValidator
 from django.db import models
 from django.utils import timezone
 
+# Import verification models to register them with Django
+from .verification_models import (
+    EmailVerificationToken,  # noqa: F401
+    PhoneVerificationToken,
+    UserVerificationStatus,
+    VerificationRequirement,
+)
+
 USER_ROLES = [
     ("admin", "Administrador"),
     ("president", "Presidente"),

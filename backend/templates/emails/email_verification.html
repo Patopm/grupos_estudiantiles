@@ -1,0 +1,167 @@
+{% extends "emails/base.html" %} {% block title %}Verificación de Email - Grupos
+Estudiantiles{% endblock %} {% block content %}
+<div style="background-color: #f8f9fa; padding: 40px 0">
+  <div
+    style="
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    "
+  >
+    <!-- Header -->
+    <div
+      style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 30px;
+        text-align: center;
+        border-radius: 8px 8px 0 0;
+      "
+    >
+      <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 300">
+        Verificación de Email
+      </h1>
+      <p
+        style="
+          color: rgba(255, 255, 255, 0.9);
+          margin: 10px 0 0 0;
+          font-size: 16px;
+        "
+      >
+        Grupos Estudiantiles - Tecmilenio
+      </p>
+    </div>
+
+    <!-- Content -->
+    <div style="padding: 40px 30px">
+      <h2
+        style="
+          color: #333;
+          margin: 0 0 20px 0;
+          font-size: 24px;
+          font-weight: 400;
+        "
+      >
+        ¡Hola {{ user.first_name }}!
+      </h2>
+
+      <p
+        style="
+          color: #666;
+          line-height: 1.6;
+          margin: 0 0 20px 0;
+          font-size: 16px;
+        "
+      >
+        Necesitamos verificar tu dirección de email
+        <strong>{{ email }}</strong> para completar la configuración de tu
+        cuenta en Grupos Estudiantiles.
+      </p>
+
+      <p
+        style="
+          color: #666;
+          line-height: 1.6;
+          margin: 0 0 30px 0;
+          font-size: 16px;
+        "
+      >
+        Haz clic en el botón de abajo para verificar tu email:
+      </p>
+
+      <!-- Verification Button -->
+      <div style="text-align: center; margin: 30px 0">
+        <a
+          href="{{ verification_url }}"
+          style="
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+          "
+        >
+          Verificar Email
+        </a>
+      </div>
+
+      <!-- Alternative Link -->
+      <div
+        style="
+          background-color: #f8f9fa;
+          padding: 20px;
+          border-radius: 5px;
+          margin: 30px 0;
+        "
+      >
+        <p style="color: #666; margin: 0 0 10px 0; font-size: 14px">
+          Si el botón no funciona, copia y pega este enlace en tu navegador:
+        </p>
+        <p
+          style="
+            word-break: break-all;
+            color: #667eea;
+            margin: 0;
+            font-size: 14px;
+          "
+        >
+          {{ verification_url }}
+        </p>
+      </div>
+
+      <!-- Security Notice -->
+      <div
+        style="
+          border-left: 4px solid #ffc107;
+          padding: 15px;
+          background-color: #fff8e1;
+          margin: 30px 0;
+        "
+      >
+        <p style="color: #856404; margin: 0; font-size: 14px">
+          <strong>Nota de Seguridad:</strong> Este enlace expirará en 24 horas
+          por tu seguridad. Si no solicitaste esta verificación, puedes ignorar
+          este email.
+        </p>
+      </div>
+
+      <!-- Help Section -->
+      <div
+        style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee"
+      >
+        <p style="color: #666; margin: 0 0 10px 0; font-size: 14px">
+          ¿Necesitas ayuda? Contáctanos:
+        </p>
+        <p style="color: #666; margin: 0; font-size: 14px">
+          📧 Email: soporte@tecmilenio.mx<br />
+          🌐 Sitio web:
+          <a href="{{ site_url }}" style="color: #667eea">{{ site_url }}</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div
+      style="
+        background-color: #f8f9fa;
+        padding: 20px 30px;
+        border-radius: 0 0 8px 8px;
+        text-align: center;
+      "
+    >
+      <p style="color: #999; margin: 0; font-size: 12px">
+        © {{ "now"|date:"Y" }} Grupos Estudiantiles - Tecmilenio. Todos los
+        derechos reservados.
+      </p>
+      <p style="color: #999; margin: 5px 0 0 0; font-size: 12px">
+        Este es un email automático, por favor no respondas a este mensaje.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

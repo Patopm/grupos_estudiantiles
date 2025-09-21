@@ -21,82 +21,80 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DJANGO_ENV') == 'dev'
+DEBUG = os.getenv("DJANGO_ENV") == "dev"
 
-ALLOWED_HOSTS = [",".join(os.getenv('DJANGO_ALLOWED_HOSTS', '').split())]
+ALLOWED_HOSTS = [",".join(os.getenv("DJANGO_ALLOWED_HOSTS", "").split())]
 
 # Application definition
 
 INSTALLED_APPS = [
     # Django core apps
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
     # Third-party apps
-    'rest_framework',
-    'rest_framework_simplejwt',
-    'corsheaders',
-    'drf_spectacular',
-
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "corsheaders",
+    "drf_spectacular",
     # Local apps
-    'apps.core',
-    'apps.users',
-    'apps.students',
-    'apps.events',
-    'apps.notifications',
+    "apps.core",
+    "apps.users",
+    "apps.students",
+    "apps.events",
+    "apps.notifications",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'apps.core.middleware.RateLimitMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'apps.core.middleware.SecurityMiddleware',
-    'apps.core.middleware.AuditLoggingMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "apps.core.middleware.RateLimitMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "apps.core.middleware.SecurityMiddleware",
+    "apps.core.middleware.AuditLoggingMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'config.urls'
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+WSGI_APPLICATION = "config.wsgi.application"
 
 # Database
 
 DATABASES = {
-    'default': {
-        'ENGINE': os.getenv('DB_ENGINE'),
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
+    "default": {
+        "ENGINE": os.getenv("DB_ENGINE"),
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
     }
 }
 
@@ -105,29 +103,25 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME':
-        'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME':
-        'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME':
-        'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME':
-        'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -138,56 +132,53 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Custom User Model
-AUTH_USER_MODEL = 'users.CustomUser'
+AUTH_USER_MODEL = "users.CustomUser"
 
 # Django REST Framework
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
     ],
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
     ],
-    'DEFAULT_PARSER_CLASSES': [
-        'rest_framework.parsers.JSONParser',
-        'rest_framework.parsers.FormParser',
-        'rest_framework.parsers.MultiPartParser',
+    "DEFAULT_PARSER_CLASSES": [
+        "rest_framework.parsers.JSONParser",
+        "rest_framework.parsers.FormParser",
+        "rest_framework.parsers.MultiPartParser",
     ],
-    'DEFAULT_PAGINATION_CLASS':
-    'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE':
-    20,
-    'DEFAULT_FILTER_BACKENDS': [
-        'rest_framework.filters.SearchFilter',
-        'rest_framework.filters.OrderingFilter',
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
+    "DEFAULT_FILTER_BACKENDS": [
+        "rest_framework.filters.SearchFilter",
+        "rest_framework.filters.OrderingFilter",
     ],
-    'DEFAULT_SCHEMA_CLASS':
-    'drf_spectacular.openapi.AutoSchema',
-    'DEFAULT_THROTTLE_CLASSES': [
-        'apps.core.throttles.AuthenticationThrottle',
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_THROTTLE_CLASSES": [
+        "apps.core.throttles.AuthenticationThrottle",
     ],
-    'DEFAULT_THROTTLE_RATES': {
-        'auth_login': '10/min',
-        'auth_register': '5/min',
-        'password_reset': '3/min',
-        'auth_default': '30/min',
-        'security_event': '5/min',
-        'user': '1000/hour',
-        'anon': '100/hour',
-    }
+    "DEFAULT_THROTTLE_RATES": {
+        "auth_login": "10/min",
+        "auth_register": "5/min",
+        "password_reset": "3/min",
+        "auth_default": "30/min",
+        "security_event": "5/min",
+        "user": "1000/hour",
+        "anon": "100/hour",
+    },
 }
 
 # CORS settings
@@ -198,105 +189,71 @@ CORS_ALLOWED_ORIGINS = [
 
 # drf-spectacular settings
 SPECTACULAR_SETTINGS = {
-    'TITLE':
-    'Student Management System API',
-    'DESCRIPTION':
-    '''
+    "TITLE": "Student Management System API",
+    "DESCRIPTION": """
     API para el sistema de gestión estudiantil con funcionalidades de:
     - Gestión de usuarios con roles (Admin, Presidente, Estudiante)
     - Administración de grupos de estudiantes
     - Gestión de eventos estudiantiles
     - Autenticación JWT
     - Sistema de permisos basado en roles
-    ''',
-    'VERSION':
-    '1.0.0',
-    'SERVE_INCLUDE_SCHEMA':
-    False,
-    'CONTACT': {
-        'name': 'Patricio Piña',
-        'email': 'patriciog.pina@gmail.com',
+    """,
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "CONTACT": {
+        "name": "Patricio Piña",
+        "email": "patriciog.pina@gmail.com",
     },
-    'LICENSE': {
-        'name': 'MIT License',
+    "LICENSE": {
+        "name": "MIT License",
     },
-
     # Schema customization
-    'COMPONENT_SPLIT_REQUEST':
-    True,
-    'COMPONENT_NO_READ_ONLY_REQUIRED':
-    True,
-
+    "COMPONENT_SPLIT_REQUEST": True,
+    "COMPONENT_NO_READ_ONLY_REQUIRED": True,
     # Authentication
-    'AUTHENTICATION_WHITELIST': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+    "AUTHENTICATION_WHITELIST": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ],
-
     # Tags
-    'TAGS': [
-        {
-            'name': 'Authentication',
-            'description': 'Endpoints de autenticación JWT'
-        },
-        {
-            'name': 'Users',
-            'description': 'Gestión de usuarios'
-        },
-        {
-            'name': 'Students',
-            'description': 'Gestión de estudiantes y grupos'
-        },
-        {
-            'name': 'Events',
-            'description': 'Gestión de eventos estudiantiles'
-        },
+    "TAGS": [
+        {"name": "Authentication", "description": "Endpoints de autenticación JWT"},
+        {"name": "Users", "description": "Gestión de usuarios"},
+        {"name": "Students", "description": "Gestión de estudiantes y grupos"},
+        {"name": "Events", "description": "Gestión de eventos estudiantiles"},
     ],
-
     # Security schemes
-    'APPEND_COMPONENTS': {
-        'securitySchemes': {
-            'jwtAuth': {
-                'type': 'http',
-                'scheme': 'bearer',
-                'bearerFormat': 'JWT',
-                'description': 'Token JWT obtenido del endpoint de login'
+    "APPEND_COMPONENTS": {
+        "securitySchemes": {
+            "jwtAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "Token JWT obtenido del endpoint de login",
             }
         }
     },
-
     # Preprocessing hooks
-    'PREPROCESSING_HOOKS': [],
-
+    "PREPROCESSING_HOOKS": [],
     # Schema path prefix
-    'SCHEMA_PATH_PREFIX':
-    '/api/',
-    'SCHEMA_PATH_PREFIX_TRIM':
-    True,
-
+    "SCHEMA_PATH_PREFIX": "/api/",
+    "SCHEMA_PATH_PREFIX_TRIM": True,
     # Custom extensions
-    'EXTENSIONS_INFO': {
-        'x-logo': {
-            'url': '/static/logo.png',
-            'altText': 'Student Management System Logo'
+    "EXTENSIONS_INFO": {
+        "x-logo": {
+            "url": "/static/logo.png",
+            "altText": "Student Management System Logo",
         }
     },
-
     # Enum generation
-    'ENUM_NAME_OVERRIDES': {
-        'RoleEnum':
-        'apps.users.models.User.Role',
-        'EventTypeEnum':
-        'apps.events.models.Event.EventType',
-        'EventStatusEnum':
-        'apps.events.models.Event.Status',
-        'AttendanceStatusEnum':
-        'apps.events.models.EventAttendee.AttendanceStatus',
+    "ENUM_NAME_OVERRIDES": {
+        "RoleEnum": "apps.users.models.User.Role",
+        "EventTypeEnum": "apps.events.models.Event.EventType",
+        "EventStatusEnum": "apps.events.models.Event.Status",
+        "AttendanceStatusEnum": "apps.events.models.EventAttendee.AttendanceStatus",
     },
-
     # Disable warnings for missing descriptions
-    'DISABLE_ERRORS_AND_WARNINGS':
-    True,
+    "DISABLE_ERRORS_AND_WARNINGS": True,
 }
 
 CORS_ALLOW_CREDENTIALS = True
@@ -304,84 +261,84 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only allow all origins in development
 
 CORS_ALLOWED_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
 ]
 
 CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
 ]
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'UPDATE_LAST_LOGIN': True,
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,
-    'VERIFYING_KEY': None,
-    'AUDIENCE': None,
-    'ISSUER': None,
-    'JWK_URL': None,
-    'LEEWAY': 0,
-    'AUTH_HEADER_TYPES': ('Bearer', ),
-    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-    'USER_AUTHENTICATION_RULE':
-    'rest_framework_simplejwt.authentication.default_user_authentication_rule',
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken', ),
-    'TOKEN_TYPE_CLAIM': 'token_type',
-    'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
-    'JTI_CLAIM': 'jti',
-    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
-    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=60),
-    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=7),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "VERIFYING_KEY": None,
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "JWK_URL": None,
+    "LEEWAY": 0,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
+    "JTI_CLAIM": "jti",
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=60),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=7),
 }
 
 # Media files
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Static files
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    BASE_DIR / "static",
 ]
 
 # Email settings (for password reset, etc.)
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND',
-                          'django.core.mail.backends.console.EmailBackend')
-EMAIL_HOST = os.getenv('EMAIL_HOST', '')
-EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() == 'true'
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@ejemplo.com')
+EMAIL_BACKEND = os.getenv(
+    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
+)
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() == "true"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@ejemplo.com")
 
 # Cache configuration
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': os.getenv('REDIS_URL', 'redis://127.0.0.1:6379'),
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": os.getenv("REDIS_URL", "redis://127.0.0.1:6379"),
     }
 }
 
 # Session configuration
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-SESSION_CACHE_ALIAS = 'default'
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
 SESSION_COOKIE_AGE = 86400  # 24 hours
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = not DEBUG
@@ -395,94 +352,112 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 # Celery Configuration
-CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://127.0.0.1:6379/0')
-CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND',
-                                  'redis://127.0.0.1:6379/0')
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'UTC'
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://127.0.0.1:6379/0")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://127.0.0.1:6379/0")
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = "UTC"
 CELERY_ENABLE_UTC = True
 
 # Celery Beat Configuration (for periodic tasks)
 CELERY_BEAT_SCHEDULE = {
-    'send-event-reminders': {
-        'task': 'apps.notifications.tasks.send_event_reminders',
-        'schedule': 300.0,  # Run every 5 minutes
+    "send-event-reminders": {
+        "task": "apps.notifications.tasks.send_event_reminders",
+        "schedule": 300.0,  # Run every 5 minutes
     },
-    'process-pending-notifications': {
-        'task': 'apps.notifications.tasks.process_pending_notifications',
-        'schedule': 60.0,  # Run every minute
+    "process-pending-notifications": {
+        "task": "apps.notifications.tasks.process_pending_notifications",
+        "schedule": 60.0,  # Run every minute
     },
-    'send-daily-digest': {
-        'task': 'apps.notifications.tasks.send_daily_digest',
-        'schedule': 86400.0,  # Run daily
-        'options': {
-            'hour': 9,
-            'minute': 0
-        }  # At 9 AM
+    "send-daily-digest": {
+        "task": "apps.notifications.tasks.send_daily_digest",
+        "schedule": 86400.0,  # Run daily
+        "options": {"hour": 9, "minute": 0},  # At 9 AM
     },
-    'send-weekly-digest': {
-        'task': 'apps.notifications.tasks.send_weekly_digest',
-        'schedule': 604800.0,  # Run weekly
-        'options': {
-            'day_of_week': 1,
-            'hour': 9,
-            'minute': 0
-        }  # Monday at 9 AM
+    "send-weekly-digest": {
+        "task": "apps.notifications.tasks.send_weekly_digest",
+        "schedule": 604800.0,  # Run weekly
+        "options": {"day_of_week": 1, "hour": 9, "minute": 0},  # Monday at 9 AM
     },
-    'cleanup-old-notifications': {
-        'task': 'apps.notifications.tasks.cleanup_old_notifications',
-        'schedule': 86400.0,  # Run daily
-        'options': {
-            'hour': 2,
-            'minute': 0
-        }  # At 2 AM
+    "cleanup-old-notifications": {
+        "task": "apps.notifications.tasks.cleanup_old_notifications",
+        "schedule": 86400.0,  # Run daily
+        "options": {"hour": 2, "minute": 0},  # At 2 AM
     },
-    'cleanup-expired-password-reset-tokens': {
-        'task': 'apps.users.tasks.cleanup_expired_password_reset_tokens',
-        'schedule': 3600.0,  # Run every hour
+    "cleanup-expired-password-reset-tokens": {
+        "task": "apps.users.tasks.cleanup_expired_password_reset_tokens",
+        "schedule": 3600.0,  # Run every hour
+    },
+    "cleanup-expired-verification-tokens": {
+        "task": "apps.users.tasks.cleanup_expired_verification_tokens",
+        "schedule": 3600.0,  # Run every hour
     },
 }
 
 # Templates configuration
-TEMPLATES[0]['DIRS'] = [BASE_DIR / 'templates']
+TEMPLATES[0]["DIRS"] = [BASE_DIR / "templates"]
 
 # Rate Limiting Configuration
 RATE_LIMITS = {
-    'auth_login': {
-        'requests': 10,  # 10 attempts per window
-        'window': 300,   # 5 minutes
+    "auth_login": {
+        "requests": 10,  # 10 attempts per window
+        "window": 300,  # 5 minutes
     },
-    'auth_register': {
-        'requests': 5,   # 5 registrations per window
-        'window': 300,   # 5 minutes
+    "auth_register": {
+        "requests": 5,  # 5 registrations per window
+        "window": 300,  # 5 minutes
     },
-    'password_reset': {
-        'requests': 3,   # 3 password reset requests per window
-        'window': 300,   # 5 minutes
+    "password_reset": {
+        "requests": 3,  # 3 password reset requests per window
+        "window": 300,  # 5 minutes
     },
-    'auth_default': {
-        'requests': 30,  # 30 requests per window
-        'window': 60,    # 1 minute
+    "auth_default": {
+        "requests": 30,  # 30 requests per window
+        "window": 60,  # 1 minute
     },
-    'security_event': {
-        'requests': 5,   # 5 security events per window
-        'window': 300,   # 5 minutes
+    "security_event": {
+        "requests": 5,  # 5 security events per window
+        "window": 300,  # 5 minutes
     },
-    'default': {
-        'requests': 60,  # 60 requests per window
-        'window': 60,    # 1 minute
-    }
+    "default": {
+        "requests": 60,  # 60 requests per window
+        "window": 60,  # 1 minute
+    },
 }
 
 # Security Configuration
 SECURITY_SETTINGS = {
-    'MAX_LOGIN_ATTEMPTS_PER_IP': 20,
-    'MAX_LOGIN_ATTEMPTS_PER_USER': 10,
-    'IP_LOCKOUT_DURATION': 3600,      # 1 hour
-    'USER_LOCKOUT_DURATION': 1800,    # 30 minutes
-    'SUSPICIOUS_REQUEST_THRESHOLD': 100,  # requests per minute
-    'PROGRESSIVE_DELAY_BASE': 2,       # exponential base for delays
-    'MAX_PROGRESSIVE_DELAY': 3600,     # maximum delay in seconds
+    "MAX_LOGIN_ATTEMPTS_PER_IP": 20,
+    "MAX_LOGIN_ATTEMPTS_PER_USER": 10,
+    "IP_LOCKOUT_DURATION": 3600,  # 1 hour
+    "USER_LOCKOUT_DURATION": 1800,  # 30 minutes
+    "SUSPICIOUS_REQUEST_THRESHOLD": 100,  # requests per minute
+    "PROGRESSIVE_DELAY_BASE": 2,  # exponential base for delays
+    "MAX_PROGRESSIVE_DELAY": 3600,  # maximum delay in seconds
+}
+
+# SMS Configuration
+SMS_PROVIDER = os.getenv("SMS_PROVIDER", "console")  # 'twilio', 'aws_sns', 'console'
+SMS_API_KEY = os.getenv("SMS_API_KEY", "")
+SMS_SENDER_ID = os.getenv("SMS_SENDER_ID", "Tecmilenio")
+
+# Twilio Configuration (if using Twilio)
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "")
+TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER", "")
+
+# AWS SNS Configuration (if using AWS SNS)
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", "")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", "")
+AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
+
+# Verification Settings
+VERIFICATION_SETTINGS = {
+    "EMAIL_TOKEN_EXPIRY_HOURS": 24,
+    "PHONE_TOKEN_EXPIRY_MINUTES": 10,
+    "MAX_PHONE_VERIFICATION_ATTEMPTS": 3,
+    "SMS_RATE_LIMIT_PER_HOUR": 3,
+    "EMAIL_VERIFICATION_REQUIRED_BY_DEFAULT": True,
+    "PHONE_VERIFICATION_REQUIRED_FOR_ROLES": ["admin", "president"],
 }
