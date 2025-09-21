@@ -21,6 +21,18 @@ help:
 	@echo "  lint            Lint both backend and frontend code"
 	@echo "  lint-backend    Lint Python code with flake8"
 	@echo "  lint-frontend   Lint TypeScript/JavaScript code with ESLint"
+	@echo ""
+	@echo "Security and monitoring:"
+	@echo "  audit-report    Generate security audit report"
+	@echo "  cleanup-audit   Clean up old audit logs"
+	@echo "  monitor-security Monitor security events and rate limits"
+	@echo "  clear-security-locks Clear all security locks"
+	@echo ""
+	@echo "Email and notifications:"
+	@echo "  create-email-templates Create default email templates"
+	@echo ""
+	@echo "User management:"
+	@echo "  cleanup-password-tokens Clean up expired password reset tokens"
 
 build:
 	docker-compose build
@@ -106,3 +118,55 @@ prod-up:
 
 prod-down:
 	docker-compose -f docker-compose.prod.yml down
+
+# Security and monitoring commands
+audit-report:
+	docker-compose exec backend python manage.py audit_report
+
+audit-report-json:
+	docker-compose exec backend python manage.py audit_report --format json
+
+cleanup-audit:
+	docker-compose exec backend python manage.py cleanup_audit_logs
+
+cleanup-audit-dry-run:
+	docker-compose exec backend python manage.py cleanup_audit_logs --dry-run
+
+monitor-security:
+	docker-compose exec backend python manage.py monitor_security
+
+clear-security-locks:
+	docker-compose exec backend python manage.py monitor_security --clear-locks
+
+show-security-events:
+	docker-compose exec backend python manage.py monitor_security --show-events
+
+show-rate-limits:
+	docker-compose exec backend python manage.py monitor_security --show-limits
+
+# Email and notifications commands
+create-email-templates:
+	docker-compose exec backend python manage.py create_email_templates
+
+# User management commands
+cleanup-password-tokens:
+	docker-compose exec backend python manage.py cleanup_password_reset_tokens
+
+cleanup-password-tokens-dry-run:
+	docker-compose exec backend python manage.py cleanup_password_reset_tokens --dry-run
+
+# Local development versions (without Docker)
+audit-report-local:
+	cd backend && python manage.py audit_report
+
+cleanup-audit-local:
+	cd backend && python manage.py cleanup_audit_logs --dry-run
+
+monitor-security-local:
+	cd backend && python manage.py monitor_security
+
+create-email-templates-local:
+	cd backend && python manage.py create_email_templates
+
+cleanup-password-tokens-local:
+	cd backend && python manage.py cleanup_password_reset_tokens --dry-run
