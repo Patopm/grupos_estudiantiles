@@ -1,4 +1,6 @@
 from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
@@ -156,3 +158,109 @@ class UserRoleUpdateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 f'Rol inválido. Debe ser uno de: {valid_roles}')
         return value
+
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    """
+    Serializer for password reset request
+    """
+    
+    email = serializers.EmailField(
+        help_text="Correo electrónico del usuario que solicita el restablecimiento"
+    )
+
+    def validate_email(self, value):
+        """Validate that the email exists in the system"""
+        # Note: We don't raise an error if email doesn't exist to prevent user enumeration
+        # The validation is handled in the view
+        return value.lower()
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    """
+    Serializer for password reset confirmation
+    """
+    
+    token = serializers.CharField(
+        max_length=64,
+        help_text="Token de restablecimiento de contraseña"
+    )
+    new_password = serializers.CharField(
+        min_length=8,
+        write_only=True,
+        help_text="Nueva contraseña (mínimo 8 caracteres)"
+    )
+    confirm_password = serializers.CharField(
+        min_length=8,
+        write_only=True,
+        help_text="Confirmación de la nueva contraseña"
+    )
+
+    def validate(self, attrs):
+        """Validate password confirmation and strength"""
+        new_password = attrs.get('new_password')
+        confirm_password = attrs.get('confirm_password')
+
+        if new_password != confirm_password:
+            raise serializers.ValidationError({
+                'confirm_password': 'Las contraseñas no coinciden'
+            })
+
+        # Validate password strength using Django's validators
+        try:
+            validate_password(new_password)
+        except ValidationError as e:
+            raise serializers.ValidationError({
+                'new_password': list(e.messages)
+            })
+
+        return attrs
+
+
+class PasswordChangeSerializer(serializers.Serializer):
+    """
+    Serializer for password change (authenticated users)
+    """
+    
+    current_password = serializers.CharField(
+        write_only=True,
+        help_text="Contraseña actual del usuario"
+    )
+    new_password = serializers.CharField(
+        min_length=8,
+        write_only=True,
+        help_text="Nueva contraseña (mínimo 8 caracteres)"
+    )
+    confirm_password = serializers.CharField(
+        min_length=8,
+        write_only=True,
+        help_text="Confirmación de la nueva contraseña"
+    )
+
+    def validate_current_password(self, value):
+        """Validate current password"""
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError('La contraseña actual es incorrecta')
+        return value
+
+    def validate(self, attrs):
+        """Validate password confirmation and strength"""
+        new_password = attrs.get('new_password')
+        confirm_password = attrs.get('confirm_password')
+
+        if new_password != confirm_password:
+            raise serializers.ValidationError({
+                'confirm_password': 'Las contraseñas no coinciden'
+            })
+
+        # Validate password strength using Django's validators
+        try:
+            user = self.context['request'].user
+            validate_password(new_password, user)
+        except ValidationError as e:
+            raise serializers.ValidationError({
+                'new_password': list(e.messages)
+            })
+
+        return attrs

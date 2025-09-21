@@ -56,10 +56,13 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'apps.core.middleware.RateLimitMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'apps.core.middleware.SecurityMiddleware',
+    'apps.core.middleware.AuditLoggingMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -173,6 +176,18 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_SCHEMA_CLASS':
     'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_THROTTLE_CLASSES': [
+        'apps.core.throttles.AuthenticationThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'auth_login': '10/min',
+        'auth_register': '5/min',
+        'password_reset': '3/min',
+        'auth_default': '30/min',
+        'security_event': '5/min',
+        'user': '1000/hour',
+        'anon': '100/hour',
+    }
 }
 
 # CORS settings
@@ -424,7 +439,50 @@ CELERY_BEAT_SCHEDULE = {
             'minute': 0
         }  # At 2 AM
     },
+    'cleanup-expired-password-reset-tokens': {
+        'task': 'apps.users.tasks.cleanup_expired_password_reset_tokens',
+        'schedule': 3600.0,  # Run every hour
+    },
 }
 
 # Templates configuration
 TEMPLATES[0]['DIRS'] = [BASE_DIR / 'templates']
+
+# Rate Limiting Configuration
+RATE_LIMITS = {
+    'auth_login': {
+        'requests': 10,  # 10 attempts per window
+        'window': 300,   # 5 minutes
+    },
+    'auth_register': {
+        'requests': 5,   # 5 registrations per window
+        'window': 300,   # 5 minutes
+    },
+    'password_reset': {
+        'requests': 3,   # 3 password reset requests per window
+        'window': 300,   # 5 minutes
+    },
+    'auth_default': {
+        'requests': 30,  # 30 requests per window
+        'window': 60,    # 1 minute
+    },
+    'security_event': {
+        'requests': 5,   # 5 security events per window
+        'window': 300,   # 5 minutes
+    },
+    'default': {
+        'requests': 60,  # 60 requests per window
+        'window': 60,    # 1 minute
+    }
+}
+
+# Security Configuration
+SECURITY_SETTINGS = {
+    'MAX_LOGIN_ATTEMPTS_PER_IP': 20,
+    'MAX_LOGIN_ATTEMPTS_PER_USER': 10,
+    'IP_LOCKOUT_DURATION': 3600,      # 1 hour
+    'USER_LOCKOUT_DURATION': 1800,    # 30 minutes
+    'SUSPICIOUS_REQUEST_THRESHOLD': 100,  # requests per minute
+    'PROGRESSIVE_DELAY_BASE': 2,       # exponential base for delays
+    'MAX_PROGRESSIVE_DELAY': 3600,     # maximum delay in seconds
+}

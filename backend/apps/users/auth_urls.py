@@ -8,6 +8,9 @@ from .auth_views import (
     LogoutView,
     MeView,
     RegisterView,
+    PasswordResetRequestView,
+    PasswordResetConfirmView,
+    PasswordChangeView,
 )
 
 app_name = 'auth'
@@ -22,4 +25,12 @@ urlpatterns = [
     path('me/', MeView.as_view(), name='me'),  # GET /api/auth/me/
     path('refresh/', CustomTokenRefreshView.as_view(),
          name='token_refresh'),  # POST /api/auth/refresh/
+    
+    # Password reset endpoints
+    path('password-reset/', PasswordResetRequestView.as_view(),
+         name='password_reset_request'),  # POST /api/auth/password-reset/
+    path('password-reset-confirm/', PasswordResetConfirmView.as_view(),
+         name='password_reset_confirm'),  # POST /api/auth/password-reset-confirm/
+    path('password-change/', PasswordChangeView.as_view(),
+         name='password_change'),  # POST /api/auth/password-change/
 ]
