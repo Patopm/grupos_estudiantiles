@@ -3,6 +3,9 @@
 import React, { ReactNode } from 'react';
 import AuthCard from './AuthCard';
 import AuthErrorBoundary from './AuthErrorBoundary';
+import EnhancedErrorDisplay from './EnhancedErrorDisplay';
+import { useAuthError } from '@/hooks/useAuthError';
+import { AuthError } from '@/lib/errors/types';
 
 interface AuthFormWrapperProps {
   title: string;
@@ -14,14 +17,15 @@ interface AuthFormWrapperProps {
   isLoading?: boolean;
   loadingMessage?: string;
   className?: string;
+  error?: AuthError | null;
+  onErrorDismiss?: () => void;
+  enableRetry?: boolean;
+  showSecurityMeasures?: boolean;
 }
 
 /**
- * Comprehensive wrapper for authentication forms that includes:
- * - Error boundaries for form-specific errors
- * - Consistent card layout
- * - Loading states
- * - Accessibility improvements
+ * Enhanced wrapper for authentication forms with comprehensive error handling
+ * Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6
  */
 export default function AuthFormWrapper({
   title,
@@ -33,9 +37,28 @@ export default function AuthFormWrapper({
   isLoading = false,
   loadingMessage,
   className = '',
+  error,
+  onErrorDismiss,
+  enableRetry = true,
+  showSecurityMeasures = true,
 }: AuthFormWrapperProps) {
+  const {
+    error: boundaryError,
+    recoveryActions,
+    clearError,
+  } = useAuthError({
+    enableRetry,
+    onRecovery: onErrorDismiss,
+  });
+
+  // Use provided error or boundary error
+  const displayError = error || boundaryError;
+
   return (
     <AuthErrorBoundary
+      enableRetry={enableRetry}
+      maxRetries={3}
+      showTechnicalDetails={process.env.NODE_ENV === 'development'}
       fallback={
         <div className='max-w-md w-full'>
           <AuthCard
@@ -61,6 +84,17 @@ export default function AuthFormWrapper({
       }
     >
       <div className={className}>
+        {/* Display error if present */}
+        {displayError && (
+          <div className='mb-6'>
+            <EnhancedErrorDisplay
+              error={displayError}
+              recoveryActions={recoveryActions}
+              onDismiss={onErrorDismiss || clearError}
+            />
+          </div>
+        )}
+
         <AuthCard
           title={title}
           subtitle={subtitle}

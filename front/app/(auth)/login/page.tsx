@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import AuthCard from '@/components/auth/AuthCard';
+import AuthFormWrapper from '@/components/auth/AuthFormWrapper';
 import FormInput from '@/components/forms/FormInput';
 import AuthButton from '@/components/auth/AuthButton';
 import CheckboxField from '@/components/forms/CheckboxField';
@@ -13,6 +13,8 @@ import {
 } from '@/components/auth/AuthFormError';
 import { validateLogin, type LoginFormData } from '@/lib/validations/auth';
 import { useAuth } from '@/contexts/AuthContext';
+import { useAuthError } from '@/hooks/useAuthError';
+import { ProgressiveSecurityManager } from '@/lib/errors/security';
 
 export default function LoginPage() {
   const { login, mfaRequired, clearMFAState } = useAuth();
@@ -26,6 +28,19 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [successMessage, setSuccessMessage] = useState<string>('');
+
+  // Enhanced error handling
+  const {
+    error: authError,
+    executeWithErrorHandling,
+    clearError,
+  } = useAuthError({
+    enableRetry: true,
+    onRecovery: () => {
+      setErrors({});
+      setIsLoading(false);
+    },
+  });
 
   // Check for success message from registration or password reset
   useEffect(() => {
@@ -52,24 +67,48 @@ export default function LoginPage() {
       return;
     }
 
+    // Check security state before attempting login
+    const securityCheck = ProgressiveSecurityManager.canAttemptAuth();
+    if (!securityCheck.allowed) {
+      setErrors({
+        general:
+          securityCheck.reason ||
+          'No se puede intentar iniciar sesión en este momento.',
+      });
+      return;
+    }
+
     // Clear any existing errors and success messages
     setErrors({});
     setSuccessMessage('');
     setIsLoading(true);
 
     try {
-      await login(validationResult.data);
+      await executeWithErrorHandling(
+        () => login(validationResult.data),
+        'authentication'
+      );
       // Redirect is handled by AuthContext based on user role
     } catch (error) {
       console.error('Login error:', error);
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'Hubo un problema al iniciar sesión. Por favor verifica tus datos e intenta de nuevo.';
 
-      setErrors({
-        general: errorMessage,
-      });
+      // Handle specific error types
+      if (error instanceof Error) {
+        if (error.message.includes('MFA')) {
+          // MFA error is handled by the MFA component
+          return;
+        }
+
+        setErrors({
+          general: error.message,
+        });
+      } else {
+        setErrors({
+          general:
+            'Hubo un problema al iniciar sesión. Por favor verifica tus datos e intenta de nuevo.',
+        });
+      }
+
       setIsLoading(false);
     }
   };
@@ -89,6 +128,11 @@ export default function LoginPage() {
         ...errors,
         [name]: '',
       });
+    }
+
+    // Clear auth error when user starts typing
+    if (authError) {
+      clearError();
     }
   };
 
@@ -112,6 +156,12 @@ export default function LoginPage() {
     clearMFAState();
     setErrors({});
     setSuccessMessage('');
+    clearError();
+  };
+
+  const handleErrorDismiss = () => {
+    clearError();
+    setErrors({});
   };
 
   // Show MFA input if MFA is required
@@ -120,12 +170,18 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthCard
+    <AuthFormWrapper
       title='Bienvenido de vuelta'
       subtitle='Inicia sesión en tu cuenta para continuar'
       footerText='¿No tienes una cuenta?'
       footerLinkText='Regístrate aquí'
       footerLinkHref='/register'
+      isLoading={isLoading}
+      loadingMessage='Iniciando sesión...'
+      error={authError}
+      onErrorDismiss={handleErrorDismiss}
+      enableRetry={true}
+      showSecurityMeasures={true}
     >
       <form className='space-y-6' onSubmit={handleSubmit} noValidate>
         {successMessage && <AuthSuccessMessage message={successMessage} />}
@@ -178,7 +234,11 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <AuthButton isLoading={isLoading} loadingText='Iniciando sesión...'>
+        <AuthButton
+          isLoading={isLoading}
+          loadingText='Iniciando sesión...'
+          disabled={isLoading || !!authError}
+        >
           Iniciar Sesión
         </AuthButton>
       </form>
@@ -195,6 +255,6 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-    </AuthCard>
+    </AuthFormWrapper>
   );
 }
