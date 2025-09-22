@@ -8,6 +8,7 @@ export { default as AuthFormWrapper } from './AuthFormWrapper';
 // Core Authentication Components
 export { default as AuthCard } from './AuthCard';
 export { default as AuthButton } from './AuthButton';
+export { default as MFAInput } from './MFAInput';
 
 // Loading States
 export {

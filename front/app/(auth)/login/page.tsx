@@ -6,6 +6,7 @@ import AuthCard from '@/components/auth/AuthCard';
 import FormInput from '@/components/forms/FormInput';
 import AuthButton from '@/components/auth/AuthButton';
 import CheckboxField from '@/components/forms/CheckboxField';
+import MFAInput from '@/components/auth/MFAInput';
 import {
   AuthSuccessMessage,
   AuthErrorMessage,
@@ -14,7 +15,7 @@ import { validateLogin, type LoginFormData } from '@/lib/validations/auth';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, mfaRequired, clearMFAState } = useAuth();
   const searchParams = useSearchParams();
 
   const [formData, setFormData] = useState<LoginFormData>({
@@ -106,6 +107,17 @@ export default function LoginPage() {
       }));
     }
   };
+
+  const handleBackFromMFA = () => {
+    clearMFAState();
+    setErrors({});
+    setSuccessMessage('');
+  };
+
+  // Show MFA input if MFA is required
+  if (mfaRequired) {
+    return <MFAInput onBack={handleBackFromMFA} />;
+  }
 
   return (
     <AuthCard

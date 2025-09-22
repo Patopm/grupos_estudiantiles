@@ -14,6 +14,17 @@ export const loginSchema = z.object({
     .string({ message: 'Por favor ingresa tu contraseña' })
     .min(1, 'La contraseña es obligatoria'),
   rememberMe: z.boolean().default(false),
+  mfaToken: z
+    .string()
+    .optional()
+    .refine(value => {
+      if (!value) return true; // Optional field
+      // TOTP tokens are 6 digits, backup codes are 8 characters
+      return (
+        (value.length === 6 && /^\d{6}$/.test(value)) ||
+        (value.length === 8 && /^[A-Z0-9]{8}$/.test(value.toUpperCase()))
+      );
+    }, 'El código MFA debe ser de 6 dígitos (TOTP) o 8 caracteres (código de respaldo)'),
 });
 
 // Registration form validation schema

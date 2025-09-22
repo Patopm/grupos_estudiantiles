@@ -8,7 +8,13 @@ import React, {
   ReactNode,
 } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { authService, TokenManager, User, AuthResponse } from '@/lib/auth';
+import {
+  authService,
+  TokenManager,
+  User,
+  AuthResponse,
+  MFARequiredResponse,
+} from '@/lib/auth';
 import {
   LoginFormData,
   RegisterFormData,
@@ -20,6 +26,8 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  mfaRequired: boolean;
+  mfaUserId: string | null;
   login: (credentials: LoginFormData) => Promise<void>;
   register: (userData: RegisterFormData) => Promise<void>;
   logout: () => Promise<void>;
@@ -30,6 +38,10 @@ interface AuthContextType {
     uid: string,
     passwordData: ResetPasswordFormData
   ) => Promise<void>;
+  // MFA methods
+  verifyMFA: (token: string) => Promise<void>;
+  verifyBackupCode: (code: string) => Promise<void>;
+  clearMFAState: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -41,6 +53,10 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [mfaRequired, setMfaRequired] = useState(false);
+  const [mfaUserId, setMfaUserId] = useState<string | null>(null);
+  const [pendingCredentials, setPendingCredentials] =
+    useState<LoginFormData | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -101,9 +117,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const response = await authService.login(credentials);
 
-      // Store tokens and user data
-      TokenManager.setTokens(response);
-      setUser(response.user);
+      // Check if MFA is required
+      if ('mfa_required' in response && response.mfa_required) {
+        const mfaResponse = response as MFARequiredResponse;
+        setMfaRequired(true);
+        setMfaUserId(mfaResponse.user_id);
+        setPendingCredentials(credentials); // Store credentials for MFA retry
+        return; // Don't redirect, stay on login page for MFA input
+      }
+
+      // Normal login flow - store tokens and user data
+      const authResponse = response as AuthResponse;
+      TokenManager.setTokens(authResponse);
+      setUser(authResponse.user);
+      setMfaRequired(false);
+      setMfaUserId(null);
+      setPendingCredentials(null);
 
       // Check for redirect URL from middleware
       const redirectUrl = searchParams.get('redirect');
@@ -117,7 +146,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
 
       // Default redirect based on user role
-      redirectToDashboard(response.user.role);
+      redirectToDashboard(authResponse.user.role);
     } catch (error) {
       throw error; // Re-throw to be handled by the component
     }
@@ -195,6 +224,100 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const verifyMFA = async (token: string): Promise<void> => {
+    if (!mfaUserId || !pendingCredentials) {
+      throw new Error('No hay sesión MFA activa');
+    }
+
+    try {
+      // Retry login with MFA token
+      const credentialsWithMFA: LoginFormData = {
+        ...pendingCredentials,
+        mfaToken: token,
+      };
+
+      const response = await authService.login(credentialsWithMFA);
+
+      if ('mfa_required' in response && response.mfa_required) {
+        throw new Error('Token MFA inválido');
+      }
+
+      // Successful MFA verification
+      const authResponse = response as AuthResponse;
+      TokenManager.setTokens(authResponse);
+      setUser(authResponse.user);
+      setMfaRequired(false);
+      setMfaUserId(null);
+      setPendingCredentials(null);
+
+      // Check for redirect URL from middleware
+      const redirectUrl = searchParams.get('redirect');
+
+      if (redirectUrl) {
+        // Validate that the redirect URL is safe (internal to our app)
+        if (redirectUrl.startsWith('/') && !redirectUrl.startsWith('//')) {
+          router.push(redirectUrl);
+          return;
+        }
+      }
+
+      // Default redirect based on user role
+      redirectToDashboard(authResponse.user.role);
+    } catch (error) {
+      throw error; // Re-throw to be handled by the component
+    }
+  };
+
+  const verifyBackupCode = async (code: string): Promise<void> => {
+    if (!mfaUserId || !pendingCredentials) {
+      throw new Error('No hay sesión MFA activa');
+    }
+
+    try {
+      // Retry login with backup code
+      const credentialsWithBackupCode: LoginFormData = {
+        ...pendingCredentials,
+        mfaToken: code,
+      };
+
+      const response = await authService.login(credentialsWithBackupCode);
+
+      if ('mfa_required' in response && response.mfa_required) {
+        throw new Error('Código de respaldo inválido');
+      }
+
+      // Successful backup code verification
+      const authResponse = response as AuthResponse;
+      TokenManager.setTokens(authResponse);
+      setUser(authResponse.user);
+      setMfaRequired(false);
+      setMfaUserId(null);
+      setPendingCredentials(null);
+
+      // Check for redirect URL from middleware
+      const redirectUrl = searchParams.get('redirect');
+
+      if (redirectUrl) {
+        // Validate that the redirect URL is safe (internal to our app)
+        if (redirectUrl.startsWith('/') && !redirectUrl.startsWith('//')) {
+          router.push(redirectUrl);
+          return;
+        }
+      }
+
+      // Default redirect based on user role
+      redirectToDashboard(authResponse.user.role);
+    } catch (error) {
+      throw error; // Re-throw to be handled by the component
+    }
+  };
+
+  const clearMFAState = (): void => {
+    setMfaRequired(false);
+    setMfaUserId(null);
+    setPendingCredentials(null);
+  };
+
   const redirectToDashboard = (role: string): void => {
     // Redirect based on user role as specified in requirements
     switch (role) {
@@ -215,12 +338,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     user,
     isAuthenticated,
     isLoading,
+    mfaRequired,
+    mfaUserId,
     login,
     register,
     logout,
     refreshUser,
     requestPasswordReset,
     resetPassword,
+    verifyMFA,
+    verifyBackupCode,
+    clearMFAState,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

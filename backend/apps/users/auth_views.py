@@ -23,7 +23,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import permissions, status
+from rest_framework import permissions, serializers, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -31,7 +31,8 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from .models import PasswordResetToken
+from .mfa_serializers import MFALoginSerializer
+from .models import BackupCode, MFAEnforcementPolicy, PasswordResetToken, TOTPDevice
 from .serializers import (
     CustomUserSerializer,
     LoginSerializer,
@@ -48,57 +49,169 @@ User = get_user_model()
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     """
     Custom JWT serializer that includes user information in the token response
+    and handles MFA verification
     """
 
+    mfa_token = serializers.CharField(required=False, allow_blank=True)
+
     def validate(self, attrs):
-        try:
-            data = super().validate(attrs)
+        username = attrs.get("username")
+        password = attrs.get("password")
+        mfa_token = attrs.get("mfa_token", "").strip()
+        mfa_method = None
 
-            # Log successful login
-            request = self.context.get("request")
-            if request:
-                AuditLog.log_authentication_event(
-                    event_type="login_success",
-                    request=request,
-                    user=self.user,
-                    extra_data={
-                        "login_method": "username_password",
-                        "user_role": self.user.role,
-                        "user_id": str(self.user.id),
-                    },
-                )
+        # First, authenticate with username and password
+        user = authenticate(
+            request=self.context.get("request"), username=username, password=password
+        )
 
-            # Add extra user information to the response
-            data["user"] = {
-                "id": self.user.id,
-                "email": self.user.email,
-                "username": self.user.username,
-                "first_name": self.user.first_name,
-                "last_name": self.user.last_name,
-                "full_name": self.user.get_full_name(),
-                "role": self.user.role,
-                "role_display": self.user.get_role_display(),
-                "student_id": self.user.student_id,
-                "phone": self.user.phone,
-                "is_active_student": self.user.is_active_student,
-            }
-
-            return data
-        except Exception as e:
+        if not user:
             # Log failed login attempt
             request = self.context.get("request")
             if request:
-                username = attrs.get("username", "unknown")
                 AuditLog.log_authentication_event(
                     event_type="login_failed",
                     request=request,
                     extra_data={
                         "username": username,
-                        "error": str(e),
+                        "error": "invalid_credentials",
                         "login_method": "username_password",
                     },
                 )
-            raise
+            raise serializers.ValidationError(
+                "No active account found with the given credentials"
+            )
+
+        # Check if MFA is required for this user
+        mfa_required = MFAEnforcementPolicy.is_mfa_required_for_role(user.role)
+
+        # Check if user has MFA enabled
+        user_has_mfa = False
+        try:
+            totp_device = user.totp_device
+            user_has_mfa = totp_device.is_active and totp_device.confirmed
+        except TOTPDevice.DoesNotExist:
+            user_has_mfa = False
+
+        # If MFA is required or user has MFA enabled, verify MFA token
+        if (mfa_required or user_has_mfa) and user_has_mfa:
+            if not mfa_token:
+                # MFA token required but not provided
+                request = self.context.get("request")
+                if request:
+                    AuditLog.log_authentication_event(
+                        event_type="login_mfa_required",
+                        request=request,
+                        user=user,
+                        extra_data={
+                            "username": username,
+                            "user_role": user.role,
+                            "mfa_required": mfa_required,
+                            "user_has_mfa": user_has_mfa,
+                        },
+                    )
+
+                # Return MFA required response
+                raise serializers.ValidationError(
+                    {
+                        "mfa_required": True,
+                        "message": "Se requiere autenticación de dos factores",
+                        "user_id": str(user.id),
+                    }
+                )
+
+            # Verify MFA token
+            mfa_valid = False
+
+            try:
+                totp_device = user.totp_device
+
+                # Try TOTP first (6 digits)
+                if len(mfa_token) == 6 and mfa_token.isdigit():
+                    if totp_device.verify_token(mfa_token):
+                        mfa_valid = True
+                        mfa_method = "totp"
+
+                # Try backup code (8 characters)
+                elif len(mfa_token) == 8:
+                    backup_code = BackupCode.objects.filter(
+                        user=user, code=mfa_token.upper(), is_used=False
+                    ).first()
+
+                    if backup_code:
+                        backup_code.mark_as_used()
+                        mfa_valid = True
+                        mfa_method = "backup_code"
+
+                if not mfa_valid:
+                    # Log failed MFA verification
+                    request = self.context.get("request")
+                    if request:
+                        AuditLog.log_security_event(
+                            event_type="login_mfa_failed",
+                            request=request,
+                            user=user,
+                            message=f"Failed MFA verification for user {user.username}",
+                            extra_data={
+                                "username": username,
+                                "mfa_token_length": len(mfa_token),
+                                "attempted_method": (
+                                    "totp" if len(mfa_token) == 6 else "backup_code"
+                                ),
+                            },
+                        )
+                    raise serializers.ValidationError("Token MFA inválido")
+
+            except TOTPDevice.DoesNotExist:
+                raise serializers.ValidationError(
+                    "MFA no está configurado para este usuario"
+                )
+
+        # Set user for token generation
+        self.user = user
+
+        # Generate tokens
+        refresh = RefreshToken.for_user(user)
+        data = {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        }
+
+        # Log successful login
+        request = self.context.get("request")
+        if request:
+            AuditLog.log_authentication_event(
+                event_type="login_success",
+                request=request,
+                user=user,
+                extra_data={
+                    "login_method": "username_password"
+                    + (f"_mfa_{mfa_method}" if mfa_method else ""),
+                    "user_role": user.role,
+                    "user_id": str(user.id),
+                    "mfa_used": bool(mfa_method),
+                    "mfa_method": mfa_method,
+                },
+            )
+
+        # Add extra user information to the response
+        data["user"] = {
+            "id": user.id,
+            "email": user.email,
+            "username": user.username,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "full_name": user.get_full_name(),
+            "role": user.role,
+            "role_display": user.get_role_display(),
+            "student_id": user.student_id,
+            "phone": user.phone,
+            "is_active_student": user.is_active_student,
+            "mfa_enabled": user_has_mfa,
+            "mfa_required": mfa_required,
+        }
+
+        return data
 
 
 @extend_schema_view(
@@ -107,13 +220,29 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         description="""
         Autentica un usuario y devuelve tokens JWT (access y refresh) junto con información del usuario.
         
+        Soporta autenticación de dos factores (MFA):
+        - Si MFA es requerido pero no se proporciona token, devuelve status 202 con mfa_required=true
+        - Si se proporciona mfa_token, verifica TOTP (6 dígitos) o código de respaldo (8 caracteres)
+        
         El token de acceso debe incluirse en el header Authorization como:
         `Authorization: Bearer <access_token>`
         
         El token de acceso expira en 60 minutos, usa el refresh token para obtener uno nuevo.
         """,
         tags=["Authentication"],
-        request=LoginSerializer,
+        request={
+            "type": "object",
+            "properties": {
+                "username": {"type": "string", "description": "Email del usuario"},
+                "password": {"type": "string", "description": "Contraseña"},
+                "mfa_token": {
+                    "type": "string",
+                    "description": "Token MFA (opcional)",
+                    "required": False,
+                },
+            },
+            "required": ["username", "password"],
+        },
         responses={
             200: {
                 "type": "object",
@@ -140,8 +269,28 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                             "student_id": {"type": "string"},
                             "phone": {"type": "string"},
                             "is_active_student": {"type": "boolean"},
+                            "mfa_enabled": {"type": "boolean"},
+                            "mfa_required": {"type": "boolean"},
                         },
                     },
+                },
+            },
+            202: {
+                "type": "object",
+                "properties": {
+                    "mfa_required": {"type": "boolean", "example": True},
+                    "message": {
+                        "type": "string",
+                        "example": "Se requiere autenticación de dos factores",
+                    },
+                    "user_id": {"type": "string"},
+                },
+            },
+            400: {
+                "type": "object",
+                "properties": {
+                    "detail": {"type": "string", "example": "Token MFA inválido"},
+                    "non_field_errors": {"type": "array", "items": {"type": "string"}},
                 },
             },
             401: {
@@ -158,12 +307,21 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 )
 class LoginView(TokenObtainPairView):
     """
-    Vista de login personalizada con información de usuario
+    Vista de login personalizada con información de usuario y soporte MFA
     """
 
     serializer_class = CustomTokenObtainPairSerializer
     throttle_classes = [AuthenticationThrottle, IPBasedThrottle]
     throttle_scope = "auth_login"
+
+    def post(self, request, *args, **kwargs):
+        try:
+            return super().post(request, *args, **kwargs)
+        except serializers.ValidationError as e:
+            # Check if this is an MFA required error
+            if isinstance(e.detail, dict) and e.detail.get("mfa_required"):
+                return Response(e.detail, status=status.HTTP_202_ACCEPTED)
+            raise
 
 
 @extend_schema(

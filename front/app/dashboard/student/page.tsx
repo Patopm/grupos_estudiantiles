@@ -138,7 +138,9 @@ function StudentDashboardContent() {
 
         {/* Quick Actions */}
         <StudentQuickActions
-          pendingRequests={dashboardData?.participation_stats.pending_requests}
+          pendingRequests={
+            dashboardData?.participation_stats.pending_requests_count
+          }
           upcomingEvents={dashboardData?.upcoming_events.length}
         />
 

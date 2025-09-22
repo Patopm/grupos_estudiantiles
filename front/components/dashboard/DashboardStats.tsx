@@ -93,7 +93,7 @@ interface StudentStatsProps {
   stats: {
     total_groups: number;
     total_events_attended: number;
-    pending_requests: number;
+    pending_requests_count: number;
   };
 }
 
@@ -116,10 +116,10 @@ export function StudentStats({ stats }: StudentStatsProps) {
       />
       <StatCard
         title='Solicitudes Pendientes'
-        value={stats.pending_requests}
+        value={stats.pending_requests_count}
         description='Solicitudes de ingreso pendientes'
         icon={<Clock className='h-4 w-4' />}
-        variant={stats.pending_requests > 0 ? 'warning' : 'default'}
+        variant={stats.pending_requests_count > 0 ? 'warning' : 'default'}
       />
     </div>
   );

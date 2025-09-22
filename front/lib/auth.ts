@@ -18,12 +18,25 @@ export interface User {
   student_id: string;
   phone: string;
   is_active_student: boolean;
+  // MFA and verification status
+  email_verified?: boolean;
+  phone_verified?: boolean;
+  mfa_enabled?: boolean;
+  mfa_required?: boolean;
 }
 
 export interface AuthResponse {
   access: string;
   refresh: string;
   user: User;
+  mfa_required?: boolean;
+}
+
+export interface MFARequiredResponse {
+  mfa_required: true;
+  message: string;
+  user_id: string;
+  temp_token?: string;
 }
 
 export interface RegisterResponse {
@@ -55,9 +68,11 @@ class AuthService {
   }
 
   /**
-   * Login user with email and password
+   * Login user with email and password, with optional MFA token
    */
-  async login(credentials: LoginFormData): Promise<AuthResponse> {
+  async login(
+    credentials: LoginFormData
+  ): Promise<AuthResponse | MFARequiredResponse> {
     const response = await fetch(`${this.baseURL}/login/`, {
       method: 'POST',
       headers: {
@@ -66,10 +81,21 @@ class AuthService {
       body: JSON.stringify({
         username: credentials.email, // Backend expects username field
         password: credentials.password,
+        mfa_token: credentials.mfaToken, // Include MFA token if provided
       }),
     });
 
     const data = await response.json();
+
+    // Handle MFA required response (202 status)
+    if (response.status === 202) {
+      return {
+        mfa_required: true,
+        message: data.message || 'Se requiere autenticación de dos factores',
+        user_id: data.user_id,
+        temp_token: data.temp_token,
+      } as MFARequiredResponse;
+    }
 
     if (!response.ok) {
       // Handle different types of errors
@@ -311,6 +337,96 @@ class AuthService {
         throw new Error('Error del servidor. Por favor intenta más tarde.');
       }
     }
+  }
+
+  /**
+   * Get MFA status for the current user
+   */
+  async getMFAStatus(accessToken: string): Promise<{
+    mfa_enabled: boolean;
+    totp_configured: boolean;
+    backup_codes_count: number;
+    mfa_required: boolean;
+  }> {
+    const response = await fetch(`${this.baseURL}/mfa/status/`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get MFA status');
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Verify MFA token (TOTP or backup code)
+   */
+  async verifyMFAToken(
+    token: string,
+    accessToken?: string
+  ): Promise<{
+    valid: boolean;
+    message: string;
+  }> {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    if (accessToken) {
+      headers.Authorization = `Bearer ${accessToken}`;
+    }
+
+    const response = await fetch(`${this.baseURL}/mfa/totp/verify/`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ token }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Token MFA inválido');
+    }
+
+    return data;
+  }
+
+  /**
+   * Verify backup code
+   */
+  async verifyBackupCode(
+    code: string,
+    accessToken?: string
+  ): Promise<{
+    valid: boolean;
+    message: string;
+    remaining_codes?: number;
+  }> {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+
+    if (accessToken) {
+      headers.Authorization = `Bearer ${accessToken}`;
+    }
+
+    const response = await fetch(`${this.baseURL}/mfa/backup-codes/verify/`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ code }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Código de respaldo inválido');
+    }
+
+    return data;
   }
 }
 

@@ -24,7 +24,7 @@ export interface StudentDashboardData {
   participation_stats: {
     total_groups: number;
     total_events_attended: number;
-    pending_requests: number;
+    pending_requests_count: number;
   };
 }
 
