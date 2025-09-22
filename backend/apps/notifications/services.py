@@ -23,59 +23,56 @@ class NotificationService:
     """
 
     @staticmethod
-    def create_notification(user,
-                            template_type,
-                            context_data=None,
-                            priority='normal',
-                            scheduled_at=None):
+    def create_notification(
+        user, template_type, context_data=None, priority="normal", scheduled_at=None
+    ):
         """
         Create an email notification from a template
         """
         try:
             # Get user preferences
-            preferences = NotificationPreferences.objects.filter(
-                user=user).first()
+            preferences = NotificationPreferences.objects.filter(user=user).first()
             if not preferences:
                 # Create default preferences
                 preferences = NotificationPreferences.objects.create(user=user)
 
             # Check if user wants this type of notification
             if not NotificationService._should_send_notification(
-                    preferences, template_type):
+                preferences, template_type
+            ):
                 logger.info(
-                    f'User {user.email} has disabled {template_type} notifications'
+                    f"User {user.email} has disabled {template_type} notifications"
                 )
                 return None
 
             # Get template
             template = EmailTemplate.objects.filter(
-                template_type=template_type, is_active=True).first()
+                template_type=template_type, is_active=True
+            ).first()
 
             if not template:
-                logger.error(
-                    f'No active template found for type: {template_type}')
+                logger.error(f"No active template found for type: {template_type}")
                 return None
 
             # Prepare context
             context = {
-                'user': user,
-                'site_name': 'Grupos Estudiantiles - Tecmilenio',
-                'site_url': getattr(settings, 'SITE_URL',
-                                    'http://localhost:3000'),
-                **(context_data or {})
+                "user": user,
+                "site_name": "Grupos Estudiantiles - Tecmilenio",
+                "site_url": getattr(settings, "SITE_URL", "http://localhost:3000"),
+                **(context_data or {}),
             }
 
             # Render content
-            html_content = render_to_string('emails/base.html', {
-                'template': template,
-                **context
-            })
+            html_content = render_to_string(
+                "emails/base.html", {"template": template, **context}
+            )
             text_content = strip_tags(html_content)
 
             # Handle email frequency preferences
-            if preferences.email_frequency != 'immediate':
+            if preferences.email_frequency != "immediate":
                 scheduled_at = NotificationService._calculate_scheduled_time(
-                    preferences.email_frequency)
+                    preferences.email_frequency
+                )
 
             # Create notification
             notification = EmailNotification.objects.create(
@@ -86,17 +83,17 @@ class NotificationService:
                 text_content=text_content,
                 priority=priority,
                 scheduled_at=scheduled_at or timezone.now(),
-                context_data=context_data or {})
+                context_data=context_data or {},
+            )
 
             # Send immediately if user prefers immediate notifications
-            if preferences.email_frequency == 'immediate':
+            if preferences.email_frequency == "immediate":
                 send_email_notification.delay(str(notification.id))
 
             return notification
 
         except Exception as e:
-            logger.error(
-                f'Failed to create notification for {user.email}: {str(e)}')
+            logger.error(f"Failed to create notification for {user.email}: {str(e)}")
             return None
 
     @staticmethod
@@ -105,19 +102,19 @@ class NotificationService:
         Check if user wants to receive this type of notification
         """
         notification_map = {
-            'event_reminder': preferences.event_reminders,
-            'event_created': preferences.event_updates,
-            'event_updated': preferences.event_updates,
-            'event_cancelled': preferences.event_cancellations,
-            'group_request_approved': preferences.group_requests,
-            'group_request_rejected': preferences.group_requests,
-            'group_new_member': preferences.new_members,
-            'group_member_left': preferences.group_updates,
-            '2fa_enabled': preferences.security_alerts,
-            '2fa_disabled': preferences.security_alerts,
-            'account_security': preferences.security_alerts,
-            'welcome': True,  # Always send welcome emails
-            'password_reset': True,  # Always send password reset emails
+            "event_reminder": preferences.event_reminders,
+            "event_created": preferences.event_updates,
+            "event_updated": preferences.event_updates,
+            "event_cancelled": preferences.event_cancellations,
+            "group_request_approved": preferences.group_requests,
+            "group_request_rejected": preferences.group_requests,
+            "group_new_member": preferences.new_members,
+            "group_member_left": preferences.group_updates,
+            "2fa_enabled": preferences.security_alerts,
+            "2fa_disabled": preferences.security_alerts,
+            "account_security": preferences.security_alerts,
+            "welcome": True,  # Always send welcome emails
+            "password_reset": True,  # Always send password reset emails
         }
 
         return notification_map.get(template_type, True)
@@ -129,19 +126,20 @@ class NotificationService:
         """
         now = timezone.now()
 
-        if frequency == 'daily':
+        if frequency == "daily":
             # Send at 9 AM next day
-            next_day = now.replace(hour=9, minute=0, second=0,
-                                   microsecond=0) + timedelta(days=1)
+            next_day = now.replace(
+                hour=9, minute=0, second=0, microsecond=0
+            ) + timedelta(days=1)
             return next_day
-        elif frequency == 'weekly':
+        elif frequency == "weekly":
             # Send on Monday at 9 AM
             days_until_monday = (7 - now.weekday()) % 7
             if days_until_monday == 0:  # Today is Monday
                 days_until_monday = 7
             next_monday = now.replace(
-                hour=9, minute=0, second=0,
-                microsecond=0) + timedelta(days=days_until_monday)
+                hour=9, minute=0, second=0, microsecond=0
+            ) + timedelta(days=days_until_monday)
             return next_monday
 
         return now
@@ -153,64 +151,60 @@ class NotificationService:
         """Send welcome email to new user"""
         return NotificationService.create_notification(
             user=user,
-            template_type='welcome',
+            template_type="welcome",
             context_data={
-                'login_url':
-                f"{getattr(settings, 'SITE_URL', 'http://localhost:3000')}/auth/login"
+                "login_url": f"{getattr(settings, 'SITE_URL', 'http://localhost:3000')}/auth/login"
             },
-            priority='normal')
+            priority="normal",
+        )
 
     @staticmethod
     def send_2fa_enabled_notification(user):
         """Send notification when 2FA is enabled"""
         return NotificationService.create_notification(
             user=user,
-            template_type='2fa_enabled',
+            template_type="2fa_enabled",
             context_data={
-                'enabled_at':
-                timezone.now().isoformat(),
-                'settings_url':
-                f"{getattr(settings, 'SITE_URL', 'http://localhost:3000')}/profile/security"
+                "enabled_at": timezone.now().isoformat(),
+                "settings_url": f"{getattr(settings, 'SITE_URL', 'http://localhost:3000')}/profile/security",
             },
-            priority='high')
+            priority="high",
+        )
 
     @staticmethod
     def send_2fa_disabled_notification(user):
         """Send notification when 2FA is disabled"""
         return NotificationService.create_notification(
             user=user,
-            template_type='2fa_disabled',
+            template_type="2fa_disabled",
             context_data={
-                'disabled_at':
-                timezone.now().isoformat(),
-                'settings_url':
-                f"{getattr(settings, 'SITE_URL', 'http://localhost:3000')}/profile/security"
+                "disabled_at": timezone.now().isoformat(),
+                "settings_url": f"{getattr(settings, 'SITE_URL', 'http://localhost:3000')}/profile/security",
             },
-            priority='high')
+            priority="high",
+        )
 
     @staticmethod
     def send_event_reminder(user, event, reminder_type):
         """Send event reminder notification"""
         reminder_text = {
-            '1_week': '1 semana',
-            '3_days': '3 días',
-            '1_day': '1 día',
-            '2_hours': '2 horas',
-            '30_minutes': '30 minutos'
+            "1_week": "1 semana",
+            "3_days": "3 días",
+            "1_day": "1 día",
+            "2_hours": "2 horas",
+            "30_minutes": "30 minutos",
         }
 
         return NotificationService.create_notification(
             user=user,
-            template_type='event_reminder',
+            template_type="event_reminder",
             context_data={
-                'event':
-                event,
-                'reminder_time':
-                reminder_text.get(reminder_type, reminder_type),
-                'event_url':
-                f"{getattr(settings, 'SITE_URL', 'http://localhost:3000')}/events/{event.event_id}"
+                "event": event,
+                "reminder_time": reminder_text.get(reminder_type, reminder_type),
+                "event_url": f"{getattr(settings, 'SITE_URL', 'http://localhost:3000')}/events/{event.event_id}",
             },
-            priority='normal')
+            priority="normal",
+        )
 
     @staticmethod
     def send_event_created_notification(users, event):
@@ -219,16 +213,16 @@ class NotificationService:
         for user in users:
             notification = NotificationService.create_notification(
                 user=user,
-                template_type='event_created',
+                template_type="event_created",
                 context_data={
-                    'event':
-                    event,
-                    'event_url':
-                    f"{getattr(settings, 'SITE_URL', 'http://localhost:3000')}/events/{event.event_id}",
-                    'creator':
-                    event.created_by if hasattr(event, 'created_by') else None
+                    "event": event,
+                    "event_url": f"{getattr(settings, 'SITE_URL', 'http://localhost:3000')}/events/{event.event_id}",
+                    "creator": (
+                        event.created_by if hasattr(event, "created_by") else None
+                    ),
                 },
-                priority='normal')
+                priority="normal",
+            )
             if notification:
                 notifications.append(notification)
 
@@ -241,14 +235,14 @@ class NotificationService:
         for user in users:
             notification = NotificationService.create_notification(
                 user=user,
-                template_type='event_updated',
+                template_type="event_updated",
                 context_data={
-                    'event': event,
-                    'event_url':
-                    f"{getattr(settings, 'SITE_URL', 'http://localhost:3000')}/events/{event.event_id}",
-                    'updated_at': timezone.now().isoformat()
+                    "event": event,
+                    "event_url": f"{getattr(settings, 'SITE_URL', 'http://localhost:3000')}/events/{event.event_id}",
+                    "updated_at": timezone.now().isoformat(),
                 },
-                priority='normal')
+                priority="normal",
+            )
             if notification:
                 notifications.append(notification)
 
@@ -261,12 +255,13 @@ class NotificationService:
         for user in users:
             notification = NotificationService.create_notification(
                 user=user,
-                template_type='event_cancelled',
+                template_type="event_cancelled",
                 context_data={
-                    'event': event,
-                    'cancelled_at': timezone.now().isoformat()
+                    "event": event,
+                    "cancelled_at": timezone.now().isoformat(),
                 },
-                priority='high')
+                priority="high",
+            )
             if notification:
                 notifications.append(notification)
 
@@ -277,27 +272,28 @@ class NotificationService:
         """Send notification when group request is approved"""
         return NotificationService.create_notification(
             user=user,
-            template_type='group_request_approved',
+            template_type="group_request_approved",
             context_data={
-                'group': group,
-                'group_url':
-                f"{getattr(settings, 'SITE_URL', 'http://localhost:3000')}/groups/{group.group_id}",
-                'approved_at': timezone.now().isoformat()
+                "group": group,
+                "group_url": f"{getattr(settings, 'SITE_URL', 'http://localhost:3000')}/groups/{group.group_id}",
+                "approved_at": timezone.now().isoformat(),
             },
-            priority='normal')
+            priority="normal",
+        )
 
     @staticmethod
     def send_group_request_rejected_notification(user, group, reason=None):
         """Send notification when group request is rejected"""
         return NotificationService.create_notification(
             user=user,
-            template_type='group_request_rejected',
+            template_type="group_request_rejected",
             context_data={
-                'group': group,
-                'reason': reason,
-                'rejected_at': timezone.now().isoformat()
+                "group": group,
+                "reason": reason,
+                "rejected_at": timezone.now().isoformat(),
             },
-            priority='normal')
+            priority="normal",
+        )
 
     @staticmethod
     def send_new_group_member_notification(users, group, new_member):
@@ -307,15 +303,15 @@ class NotificationService:
             if user != new_member:  # Don't send to the new member themselves
                 notification = NotificationService.create_notification(
                     user=user,
-                    template_type='group_new_member',
+                    template_type="group_new_member",
                     context_data={
-                        'group': group,
-                        'new_member': new_member,
-                        'group_url':
-                        f"{getattr(settings, 'SITE_URL', 'http://localhost:3000')}/groups/{group.group_id}",
-                        'joined_at': timezone.now().isoformat()
+                        "group": group,
+                        "new_member": new_member,
+                        "group_url": f"{getattr(settings, 'SITE_URL', 'http://localhost:3000')}/groups/{group.group_id}",
+                        "joined_at": timezone.now().isoformat(),
                     },
-                    priority='low')
+                    priority="low",
+                )
                 if notification:
                     notifications.append(notification)
 
@@ -329,15 +325,15 @@ class NotificationService:
             if user != left_member:  # Don't send to the member who left
                 notification = NotificationService.create_notification(
                     user=user,
-                    template_type='group_member_left',
+                    template_type="group_member_left",
                     context_data={
-                        'group': group,
-                        'left_member': left_member,
-                        'group_url':
-                        f"{getattr(settings, 'SITE_URL', 'http://localhost:3000')}/groups/{group.group_id}",
-                        'left_at': timezone.now().isoformat()
+                        "group": group,
+                        "left_member": left_member,
+                        "group_url": f"{getattr(settings, 'SITE_URL', 'http://localhost:3000')}/groups/{group.group_id}",
+                        "left_at": timezone.now().isoformat(),
                     },
-                    priority='low')
+                    priority="low",
+                )
                 if notification:
                     notifications.append(notification)
 
@@ -347,19 +343,18 @@ class NotificationService:
     def create_event_reminders(event, attendees):
         """Create event reminders for attendees"""
         reminder_times = {
-            '1_week': timedelta(weeks=1),
-            '3_days': timedelta(days=3),
-            '1_day': timedelta(days=1),
-            '2_hours': timedelta(hours=2),
-            '30_minutes': timedelta(minutes=30)
+            "1_week": timedelta(weeks=1),
+            "3_days": timedelta(days=3),
+            "1_day": timedelta(days=1),
+            "2_hours": timedelta(hours=2),
+            "30_minutes": timedelta(minutes=30),
         }
 
         reminders_created = 0
 
         for attendee in attendees:
             # Check user preferences for event reminders
-            preferences = NotificationPreferences.objects.filter(
-                user=attendee).first()
+            preferences = NotificationPreferences.objects.filter(user=attendee).first()
             if not preferences or not preferences.event_reminders:
                 continue
 
@@ -372,13 +367,14 @@ class NotificationService:
                         event=event,
                         recipient=attendee,
                         reminder_type=reminder_type,
-                        defaults={'scheduled_at': scheduled_time})
+                        defaults={"scheduled_at": scheduled_time},
+                    )
 
                     if created:
                         reminders_created += 1
 
         logger.info(
-            f'Created {reminders_created} event reminders for event {event.title}'
+            f"Created {reminders_created} event reminders for event {event.title}"
         )
         return reminders_created
 
@@ -389,39 +385,40 @@ class NotificationService:
             # Group notifications by type
             grouped_notifications = {}
             for notification in notifications:
-                template_type = notification.template.template_type if notification.template else 'other'
+                template_type = (
+                    notification.template.template_type
+                    if notification.template
+                    else "other"
+                )
                 if template_type not in grouped_notifications:
                     grouped_notifications[template_type] = []
                 grouped_notifications[template_type].append(notification)
 
             # Create digest email
             html_content = render_to_string(
-                'emails/daily_digest.html', {
-                    'user':
-                    user,
-                    'notifications':
-                    grouped_notifications,
-                    'date':
-                    timezone.now().date(),
-                    'site_url':
-                    getattr(settings, 'SITE_URL', 'http://localhost:3000')
-                })
+                "emails/daily_digest.html",
+                {
+                    "user": user,
+                    "notifications": grouped_notifications,
+                    "date": timezone.now().date(),
+                    "site_url": getattr(settings, "SITE_URL", "http://localhost:3000"),
+                },
+            )
 
             digest_notification = EmailNotification.objects.create(
                 recipient=user,
-                subject=
-                f'Resumen diario - {timezone.now().strftime("%d/%m/%Y")}',
+                subject=f'Resumen diario - {timezone.now().strftime("%d/%m/%Y")}',
                 html_content=html_content,
                 text_content=strip_tags(html_content),
-                priority='low')
+                priority="low",
+            )
 
             # Send immediately
             send_email_notification.delay(str(digest_notification.id))
             return True
 
         except Exception as e:
-            logger.error(
-                f'Failed to send daily digest to {user.email}: {str(e)}')
+            logger.error(f"Failed to send daily digest to {user.email}: {str(e)}")
             return False
 
     @staticmethod
@@ -435,41 +432,40 @@ class NotificationService:
                 if date_key not in grouped_notifications:
                     grouped_notifications[date_key] = {}
 
-                template_type = notification.template.template_type if notification.template else 'other'
+                template_type = (
+                    notification.template.template_type
+                    if notification.template
+                    else "other"
+                )
                 if template_type not in grouped_notifications[date_key]:
                     grouped_notifications[date_key][template_type] = []
 
-                grouped_notifications[date_key][template_type].append(
-                    notification)
+                grouped_notifications[date_key][template_type].append(notification)
 
             # Create digest email
             html_content = render_to_string(
-                'emails/weekly_digest.html', {
-                    'user':
-                    user,
-                    'notifications_by_date':
-                    grouped_notifications,
-                    'week_start':
-                    timezone.now().date() - timedelta(days=7),
-                    'week_end':
-                    timezone.now().date(),
-                    'site_url':
-                    getattr(settings, 'SITE_URL', 'http://localhost:3000')
-                })
+                "emails/weekly_digest.html",
+                {
+                    "user": user,
+                    "notifications_by_date": grouped_notifications,
+                    "week_start": timezone.now().date() - timedelta(days=7),
+                    "week_end": timezone.now().date(),
+                    "site_url": getattr(settings, "SITE_URL", "http://localhost:3000"),
+                },
+            )
 
             digest_notification = EmailNotification.objects.create(
                 recipient=user,
-                subject=
-                f'Resumen semanal - {timezone.now().strftime("%d/%m/%Y")}',
+                subject=f'Resumen semanal - {timezone.now().strftime("%d/%m/%Y")}',
                 html_content=html_content,
                 text_content=strip_tags(html_content),
-                priority='low')
+                priority="low",
+            )
 
             # Send immediately
             send_email_notification.delay(str(digest_notification.id))
             return True
 
         except Exception as e:
-            logger.error(
-                f'Failed to send weekly digest to {user.email}: {str(e)}')
+            logger.error(f"Failed to send weekly digest to {user.email}: {str(e)}")
             return False

@@ -59,7 +59,6 @@ export default function GroupList({
   const [filteredGroups, setFilteredGroups] = useState<Group[]>(groups || []);
 
   useEffect(() => {
-    console.log('groups', groups);
     if (!groups || !Array.isArray(groups) || groups.length === 0) return;
     let filtered = [...groups];
 

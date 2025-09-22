@@ -4,18 +4,15 @@ from apps.notifications.models import EmailTemplate
 
 
 class Command(BaseCommand):
-    help = 'Create default email templates'
+    help = "Create default email templates"
 
     def handle(self, *args, **options):
-        templates = [{
-            'name':
-            'Bienvenida al Sistema',
-            'template_type':
-            'welcome',
-            'subject':
-            '¡Bienvenido a Grupos Estudiantiles - Tecmilenio!',
-            'html_content':
-            '''
+        templates = [
+            {
+                "name": "Bienvenida al Sistema",
+                "template_type": "welcome",
+                "subject": "¡Bienvenido a Grupos Estudiantiles - Tecmilenio!",
+                "html_content": """
                 <div class="content">
                     <p>¡Te damos la bienvenida a <strong>Grupos Estudiantiles - Tecmilenio</strong>!</p>
                     
@@ -44,9 +41,8 @@ class Command(BaseCommand):
                     
                     <p>Si tienes alguna pregunta o necesitas ayuda, no dudes en contactarnos. ¡Estamos aquí para apoyarte en tu experiencia universitaria!</p>
                 </div>
-                ''',
-            'text_content':
-            '''
+                """,
+                "text_content": """
                 ¡Te damos la bienvenida a Grupos Estudiantiles - Tecmilenio!
                 
                 Estamos emocionados de tenerte como parte de nuestra comunidad estudiantil. A través de esta plataforma podrás explorar grupos estudiantiles, conectar con otros estudiantes, participar en eventos y desarrollar nuevas habilidades.
@@ -60,16 +56,13 @@ class Command(BaseCommand):
                 Accede a tu dashboard: {{ login_url }}
                 
                 Si tienes alguna pregunta o necesitas ayuda, no dudes en contactarnos.
-                '''
-        }, {
-            'name':
-            '2FA Habilitado',
-            'template_type':
-            '2fa_enabled',
-            'subject':
-            '🔐 Autenticación de dos factores activada',
-            'html_content':
-            '''
+                """,
+            },
+            {
+                "name": "2FA Habilitado",
+                "template_type": "2fa_enabled",
+                "subject": "🔐 Autenticación de dos factores activada",
+                "html_content": """
                 <div class="content">
                     <div class="info-box">
                         <p>✅ <strong>Tu cuenta ahora está más segura</strong></p>
@@ -97,9 +90,8 @@ class Command(BaseCommand):
                     
                     <p>Si no fuiste tú quien activó esta función, <strong>contacta inmediatamente al soporte técnico</strong>.</p>
                 </div>
-                ''',
-            'text_content':
-            '''
+                """,
+                "text_content": """
                 Tu cuenta ahora está más segura
                 
                 La autenticación de dos factores (2FA) ha sido activada exitosamente en tu cuenta el {{ enabled_at|date:"d/m/Y" }} a las {{ enabled_at|time:"H:i" }}.
@@ -114,16 +106,13 @@ class Command(BaseCommand):
                 Gestiona tu configuración: {{ settings_url }}
                 
                 Si no fuiste tú quien activó esta función, contacta inmediatamente al soporte técnico.
-                '''
-        }, {
-            'name':
-            '2FA Deshabilitado',
-            'template_type':
-            '2fa_disabled',
-            'subject':
-            '🔓 Autenticación de dos factores desactivada',
-            'html_content':
-            '''
+                """,
+            },
+            {
+                "name": "2FA Deshabilitado",
+                "template_type": "2fa_disabled",
+                "subject": "🔓 Autenticación de dos factores desactivada",
+                "html_content": """
                 <div class="content">
                     <div class="warning-box">
                         <p>⚠️ <strong>Tu cuenta es menos segura ahora</strong></p>
@@ -149,9 +138,8 @@ class Command(BaseCommand):
                     
                     <p>Si no fuiste tú quien desactivó esta función, <strong>contacta inmediatamente al soporte técnico</strong> y cambia tu contraseña.</p>
                 </div>
-                ''',
-            'text_content':
-            '''
+                """,
+                "text_content": """
                 Tu cuenta es menos segura ahora
                 
                 La autenticación de dos factores (2FA) ha sido desactivada en tu cuenta el {{ disabled_at|date:"d/m/Y" }} a las {{ disabled_at|time:"H:i" }}.
@@ -163,16 +151,13 @@ class Command(BaseCommand):
                 Configuración de seguridad: {{ settings_url }}
                 
                 Si no fuiste tú quien desactivó esta función, contacta inmediatamente al soporte técnico y cambia tu contraseña.
-                '''
-        }, {
-            'name':
-            'Recordatorio de Evento',
-            'template_type':
-            'event_reminder',
-            'subject':
-            '🔔 Recordatorio: {{ event.title }} - {{ reminder_time }}',
-            'html_content':
-            '''
+                """,
+            },
+            {
+                "name": "Recordatorio de Evento",
+                "template_type": "event_reminder",
+                "subject": "🔔 Recordatorio: {{ event.title }} - {{ reminder_time }}",
+                "html_content": """
                 <div class="content">
                     <p>Te recordamos que tienes un evento próximo en <strong>{{ reminder_time }}</strong>:</p>
                     
@@ -203,9 +188,8 @@ class Command(BaseCommand):
                     
                     <p>¡No olvides marcar tu calendario y prepararte para el evento!</p>
                 </div>
-                ''',
-            'text_content':
-            '''
+                """,
+                "text_content": """
                 Recordatorio: {{ event.title }} - {{ reminder_time }}
                 
                 Te recordamos que tienes un evento próximo:
@@ -220,21 +204,23 @@ class Command(BaseCommand):
                 Ver detalles: {{ event_url }}
                 
                 ¡No olvides marcar tu calendario y prepararte para el evento!
-                '''
-        }]
+                """,
+            },
+        ]
 
         created_count = 0
         updated_count = 0
 
         for template_data in templates:
             template, created = EmailTemplate.objects.get_or_create(
-                template_type=template_data['template_type'],
-                defaults=template_data)
+                template_type=template_data["template_type"], defaults=template_data
+            )
 
             if created:
                 created_count += 1
                 self.stdout.write(
-                    self.style.SUCCESS(f'Created template: {template.name}'))
+                    self.style.SUCCESS(f"Created template: {template.name}")
+                )
             else:
                 # Update existing template
                 for key, value in template_data.items():
@@ -242,9 +228,11 @@ class Command(BaseCommand):
                 template.save()
                 updated_count += 1
                 self.stdout.write(
-                    self.style.WARNING(f'Updated template: {template.name}'))
+                    self.style.WARNING(f"Updated template: {template.name}")
+                )
 
         self.stdout.write(
             self.style.SUCCESS(
-                f'\nSummary: {created_count} templates created, {updated_count} templates updated'
-            ))
+                f"\nSummary: {created_count} templates created, {updated_count} templates updated"
+            )
+        )

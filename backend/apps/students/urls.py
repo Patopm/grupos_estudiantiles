@@ -4,15 +4,14 @@ from rest_framework.routers import DefaultRouter
 
 from .views import GroupMembershipViewSet, StudentGroupViewSet
 
-app_name = 'groups'
+app_name = "groups"
 
 # Router for groups endpoints according to specifications
 router = DefaultRouter()
-router.register(r'', StudentGroupViewSet, basename='groups')  # /api/groups/
+router.register(r"", StudentGroupViewSet, basename="groups")  # /api/groups/
 
 urlpatterns = [
-    path('', include(router.urls)),
-
+    path("", include(router.urls)),
     # Additional endpoints that don't fit the standard REST pattern
     # These are handled by the custom actions in StudentGroupViewSet:
     # POST /api/groups/{id}/join/

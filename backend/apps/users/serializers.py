@@ -19,18 +19,25 @@ class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id', 'username', 'email', 'first_name', 'last_name', 'role',
-            'role_display', 'full_name', 'student_id', 'phone',
-            'is_active_student', 'is_active', 'created_at', 'updated_at'
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "role",
+            "role_display",
+            "full_name",
+            "student_id",
+            "phone",
+            "is_active_student",
+            "is_active",
+            "created_at",
+            "updated_at",
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ["id", "created_at", "updated_at"]
         extra_kwargs = {
-            'password': {
-                'write_only': True
-            },
-            'email': {
-                'required': True
-            },
+            "password": {"write_only": True},
+            "email": {"required": True},
         }
 
     @extend_schema_field(serializers.CharField)
@@ -55,32 +62,36 @@ class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'username', 'email', 'first_name', 'last_name', 'role',
-            'student_id', 'phone', 'password', 'password_confirm'
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "role",
+            "student_id",
+            "phone",
+            "password",
+            "password_confirm",
         ]
         extra_kwargs = {
-            'password': {
-                'write_only': True
-            },
-            'email': {
-                'required': True
-            },
+            "password": {"write_only": True},
+            "email": {"required": True},
         }
 
     def validate(self, attrs):
-        if attrs['password'] != attrs['password_confirm']:
+        if attrs["password"] != attrs["password_confirm"]:
             raise serializers.ValidationError("Las contraseñas no coinciden")
 
         # Validate student_id is required for students
-        if attrs.get('role') == 'student' and not attrs.get('student_id'):
+        if attrs.get("role") == "student" and not attrs.get("student_id"):
             raise serializers.ValidationError(
-                "La matrícula es requerida para estudiantes")
+                "La matrícula es requerida para estudiantes"
+            )
 
         return attrs
 
     def create(self, validated_data):
-        validated_data.pop('password_confirm')
-        password = validated_data.pop('password')
+        validated_data.pop("password_confirm")
+        password = validated_data.pop("password")
         user = User.objects.create_user(**validated_data)
         user.set_password(password)
         user.save()
@@ -98,13 +109,20 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id', 'username', 'email', 'first_name', 'last_name', 'role',
-            'role_display', 'full_name', 'student_id', 'phone',
-            'is_active_student', 'created_at'
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "role",
+            "role_display",
+            "full_name",
+            "student_id",
+            "phone",
+            "is_active_student",
+            "created_at",
         ]
-        read_only_fields = [
-            'id', 'username', 'role', 'student_id', 'created_at'
-        ]
+        read_only_fields = ["id", "username", "role", "student_id", "created_at"]
 
     @extend_schema_field(serializers.CharField)
     def get_full_name(self, obj):
@@ -124,23 +142,22 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
-        username = attrs.get('username')
-        password = attrs.get('password')
+        username = attrs.get("username")
+        password = attrs.get("password")
 
         if username and password:
             user = authenticate(username=username, password=password)
 
             if not user:
-                raise serializers.ValidationError('Credenciales inválidas')
+                raise serializers.ValidationError("Credenciales inválidas")
 
             if not user.is_active:
-                raise serializers.ValidationError('Cuenta desactivada')
+                raise serializers.ValidationError("Cuenta desactivada")
 
-            attrs['user'] = user
+            attrs["user"] = user
             return attrs
         else:
-            raise serializers.ValidationError(
-                'Debe incluir username y password')
+            raise serializers.ValidationError("Debe incluir username y password")
 
 
 class UserRoleUpdateSerializer(serializers.ModelSerializer):
@@ -150,13 +167,14 @@ class UserRoleUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['role']
+        fields = ["role"]
 
     def validate_role(self, value):
-        valid_roles = ['admin', 'president', 'student']
+        valid_roles = ["admin", "president", "student"]
         if value not in valid_roles:
             raise serializers.ValidationError(
-                f'Rol inválido. Debe ser uno de: {valid_roles}')
+                f"Rol inválido. Debe ser uno de: {valid_roles}"
+            )
         return value
 
 
@@ -164,7 +182,7 @@ class PasswordResetRequestSerializer(serializers.Serializer):
     """
     Serializer for password reset request
     """
-    
+
     email = serializers.EmailField(
         help_text="Correo electrónico del usuario que solicita el restablecimiento"
     )
@@ -180,39 +198,34 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
     """
     Serializer for password reset confirmation
     """
-    
+
     token = serializers.CharField(
-        max_length=64,
-        help_text="Token de restablecimiento de contraseña"
+        max_length=64, help_text="Token de restablecimiento de contraseña"
     )
     new_password = serializers.CharField(
         min_length=8,
         write_only=True,
-        help_text="Nueva contraseña (mínimo 8 caracteres)"
+        help_text="Nueva contraseña (mínimo 8 caracteres)",
     )
     confirm_password = serializers.CharField(
-        min_length=8,
-        write_only=True,
-        help_text="Confirmación de la nueva contraseña"
+        min_length=8, write_only=True, help_text="Confirmación de la nueva contraseña"
     )
 
     def validate(self, attrs):
         """Validate password confirmation and strength"""
-        new_password = attrs.get('new_password')
-        confirm_password = attrs.get('confirm_password')
+        new_password = attrs.get("new_password")
+        confirm_password = attrs.get("confirm_password")
 
         if new_password != confirm_password:
-            raise serializers.ValidationError({
-                'confirm_password': 'Las contraseñas no coinciden'
-            })
+            raise serializers.ValidationError(
+                {"confirm_password": "Las contraseñas no coinciden"}
+            )
 
         # Validate password strength using Django's validators
         try:
             validate_password(new_password)
         except ValidationError as e:
-            raise serializers.ValidationError({
-                'new_password': list(e.messages)
-            })
+            raise serializers.ValidationError({"new_password": list(e.messages)})
 
         return attrs
 
@@ -221,46 +234,41 @@ class PasswordChangeSerializer(serializers.Serializer):
     """
     Serializer for password change (authenticated users)
     """
-    
+
     current_password = serializers.CharField(
-        write_only=True,
-        help_text="Contraseña actual del usuario"
+        write_only=True, help_text="Contraseña actual del usuario"
     )
     new_password = serializers.CharField(
         min_length=8,
         write_only=True,
-        help_text="Nueva contraseña (mínimo 8 caracteres)"
+        help_text="Nueva contraseña (mínimo 8 caracteres)",
     )
     confirm_password = serializers.CharField(
-        min_length=8,
-        write_only=True,
-        help_text="Confirmación de la nueva contraseña"
+        min_length=8, write_only=True, help_text="Confirmación de la nueva contraseña"
     )
 
     def validate_current_password(self, value):
         """Validate current password"""
-        user = self.context['request'].user
+        user = self.context["request"].user
         if not user.check_password(value):
-            raise serializers.ValidationError('La contraseña actual es incorrecta')
+            raise serializers.ValidationError("La contraseña actual es incorrecta")
         return value
 
     def validate(self, attrs):
         """Validate password confirmation and strength"""
-        new_password = attrs.get('new_password')
-        confirm_password = attrs.get('confirm_password')
+        new_password = attrs.get("new_password")
+        confirm_password = attrs.get("confirm_password")
 
         if new_password != confirm_password:
-            raise serializers.ValidationError({
-                'confirm_password': 'Las contraseñas no coinciden'
-            })
+            raise serializers.ValidationError(
+                {"confirm_password": "Las contraseñas no coinciden"}
+            )
 
         # Validate password strength using Django's validators
         try:
-            user = self.context['request'].user
+            user = self.context["request"].user
             validate_password(new_password, user)
         except ValidationError as e:
-            raise serializers.ValidationError({
-                'new_password': list(e.messages)
-            })
+            raise serializers.ValidationError({"new_password": list(e.messages)})
 
         return attrs

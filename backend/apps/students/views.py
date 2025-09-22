@@ -29,33 +29,34 @@ User = get_user_model()
 @extend_schema_view(
     list=extend_schema(
         summary="Listar grupos estudiantiles",
-        description=
-        "Obtiene la lista pública de grupos estudiantiles disponibles.",
-        tags=["Groups"]),
+        description="Obtiene la lista pública de grupos estudiantiles disponibles.",
+        tags=["Groups"],
+    ),
     create=extend_schema(
         summary="Crear grupo estudiantil",
-        description=
-        "Crea un nuevo grupo estudiantil. Solo accesible por administradores.",
-        tags=["Groups"]),
+        description="Crea un nuevo grupo estudiantil. Solo accesible por administradores.",
+        tags=["Groups"],
+    ),
     retrieve=extend_schema(
         summary="Obtener detalles de grupo",
         description="Obtiene los detalles de un grupo estudiantil específico.",
-        tags=["Groups"]),
+        tags=["Groups"],
+    ),
     update=extend_schema(
         summary="Actualizar grupo",
-        description=
-        "Actualiza la información de un grupo estudiantil. Solo administradores o presidente del grupo.",
-        tags=["Groups"]),
+        description="Actualiza la información de un grupo estudiantil. Solo administradores o presidente del grupo.",
+        tags=["Groups"],
+    ),
     partial_update=extend_schema(
         summary="Actualizar parcialmente grupo",
-        description=
-        "Actualiza parcialmente la información de un grupo estudiantil. Solo administradores o presidente del grupo.",
-        tags=["Groups"]),
+        description="Actualiza parcialmente la información de un grupo estudiantil. Solo administradores o presidente del grupo.",
+        tags=["Groups"],
+    ),
     destroy=extend_schema(
         summary="Eliminar grupo",
-        description=
-        "Elimina un grupo estudiantil. Solo accesible por administradores.",
-        tags=["Groups"]),
+        description="Elimina un grupo estudiantil. Solo accesible por administradores.",
+        tags=["Groups"],
+    ),
 )
 class StudentGroupViewSet(viewsets.ModelViewSet):
     """
@@ -67,46 +68,41 @@ class StudentGroupViewSet(viewsets.ModelViewSet):
     serializer_class = StudentGroupSerializer
 
     def get_serializer_class(self):
-        if self.action == 'create':
+        if self.action == "create":
             return StudentGroupCreateSerializer
         return StudentGroupSerializer
 
     def get_permissions(self):
         """Permisos basados en la acción"""
-        if self.action in ['create', 'destroy']:
+        if self.action in ["create", "destroy"]:
             permission_classes = [IsAdminUser]
-        elif self.action in ['update', 'partial_update']:
+        elif self.action in ["update", "partial_update"]:
             permission_classes = [IsGroupPresidentOrAdmin]
-        elif self.action in ['join', 'leave']:
+        elif self.action in ["join", "leave"]:
             permission_classes = [permissions.IsAuthenticated]
         elif self.action in [
-                'requests', 'approve_request', 'reject_request', 'members'
+            "requests",
+            "approve_request",
+            "reject_request",
+            "members",
         ]:
             permission_classes = [IsGroupPresidentOrAdmin]
         else:
-            permission_classes = [permissions.AllowAny
-                                  ]  # list, retrieve son públicos
+            permission_classes = [permissions.AllowAny]  # list, retrieve son públicos
 
         return [permission() for permission in permission_classes]
 
     @extend_schema(
         summary="Solicitar ingreso a grupo",
-        description=
-        "Permite a un estudiante solicitar ingreso a un grupo estudiantil.",
+        description="Permite a un estudiante solicitar ingreso a un grupo estudiantil.",
         request=None,
         responses={
             201: GroupMembershipSerializer,
-            400: {
-                "type": "object",
-                "properties": {
-                    "error": {
-                        "type": "string"
-                    }
-                }
-            }
+            400: {"type": "object", "properties": {"error": {"type": "string"}}},
         },
-        tags=["Groups"])
-    @action(detail=True, methods=['post'])
+        tags=["Groups"],
+    )
+    @action(detail=True, methods=["post"])
     def join(self, request, pk=None):
         """
         Endpoint para solicitar ingreso a un grupo
@@ -117,28 +113,27 @@ class StudentGroupViewSet(viewsets.ModelViewSet):
         # Verificar que el usuario sea estudiante
         if not request.user.is_student:
             return Response(
-                {
-                    'error':
-                    'Solo los estudiantes pueden solicitar ingreso a grupos'
-                },
-                status=status.HTTP_403_FORBIDDEN)
+                {"error": "Solo los estudiantes pueden solicitar ingreso a grupos"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
 
         # Verificar que no tenga ya una membresía
-        if GroupMembership.objects.filter(user=request.user,
-                                          group=group).exists():
+        if GroupMembership.objects.filter(user=request.user, group=group).exists():
             return Response(
-                {'error': 'Ya tienes una solicitud o membresía en este grupo'},
-                status=status.HTTP_400_BAD_REQUEST)
+                {"error": "Ya tienes una solicitud o membresía en este grupo"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # Verificar que el grupo no esté lleno
         if group.is_full:
-            return Response({'error': 'El grupo está lleno'},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "El grupo está lleno"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         # Crear la membresía pendiente
-        membership = GroupMembership.objects.create(user=request.user,
-                                                    group=group,
-                                                    status='pending')
+        membership = GroupMembership.objects.create(
+            user=request.user, group=group, status="pending"
+        )
 
         serializer = GroupMembershipSerializer(membership)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -148,25 +143,12 @@ class StudentGroupViewSet(viewsets.ModelViewSet):
         description="Permite a un miembro salirse de un grupo estudiantil.",
         request=None,
         responses={
-            200: {
-                "type": "object",
-                "properties": {
-                    "message": {
-                        "type": "string"
-                    }
-                }
-            },
-            404: {
-                "type": "object",
-                "properties": {
-                    "error": {
-                        "type": "string"
-                    }
-                }
-            }
+            200: {"type": "object", "properties": {"message": {"type": "string"}}},
+            404: {"type": "object", "properties": {"error": {"type": "string"}}},
         },
-        tags=["Groups"])
-    @action(detail=True, methods=['post'])
+        tags=["Groups"],
+    )
+    @action(detail=True, methods=["post"])
     def leave(self, request, pk=None):
         """
         Endpoint para salirse de un grupo
@@ -175,58 +157,53 @@ class StudentGroupViewSet(viewsets.ModelViewSet):
         group = self.get_object()
 
         try:
-            membership = GroupMembership.objects.get(user=request.user,
-                                                     group=group,
-                                                     status='active')
-            membership.status = 'inactive'
+            membership = GroupMembership.objects.get(
+                user=request.user, group=group, status="active"
+            )
+            membership.status = "inactive"
             membership.save()
 
             return Response(
-                {'message': 'Te has salido del grupo exitosamente'},
-                status=status.HTTP_200_OK)
+                {"message": "Te has salido del grupo exitosamente"},
+                status=status.HTTP_200_OK,
+            )
         except GroupMembership.DoesNotExist:
-            return Response({'error': 'No eres miembro de este grupo'},
-                            status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "No eres miembro de este grupo"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
     @extend_schema(
         summary="Ver solicitudes pendientes",
-        description=
-        "Obtiene las solicitudes de ingreso pendientes del grupo. Solo presidente del grupo o administradores.",
+        description="Obtiene las solicitudes de ingreso pendientes del grupo. Solo presidente del grupo o administradores.",
         responses={200: GroupMembershipSerializer(many=True)},
-        tags=["Groups"])
-    @action(detail=True, methods=['get'])
+        tags=["Groups"],
+    )
+    @action(detail=True, methods=["get"])
     def requests(self, request, pk=None):
         """
         Endpoint para ver solicitudes pendientes
         GET /api/groups/{id}/requests/
         """
         group = self.get_object()
-        pending_requests = GroupMembership.objects.filter(group=group,
-                                                          status='pending')
+        pending_requests = GroupMembership.objects.filter(group=group, status="pending")
 
         serializer = GroupMembershipSerializer(pending_requests, many=True)
         return Response(serializer.data)
 
     @extend_schema(
         summary="Aprobar solicitud de ingreso",
-        description=
-        "Aprueba una solicitud de ingreso al grupo. Solo presidente del grupo o administradores.",
+        description="Aprueba una solicitud de ingreso al grupo. Solo presidente del grupo o administradores.",
         request=None,
         responses={
             200: GroupMembershipSerializer,
-            404: {
-                "type": "object",
-                "properties": {
-                    "error": {
-                        "type": "string"
-                    }
-                }
-            }
+            404: {"type": "object", "properties": {"error": {"type": "string"}}},
         },
-        tags=["Groups"])
-    @action(detail=True,
-            methods=['post'],
-            url_path='requests/(?P<user_id>[^/.]+)/approve')
+        tags=["Groups"],
+    )
+    @action(
+        detail=True, methods=["post"], url_path="requests/(?P<user_id>[^/.]+)/approve"
+    )
     def approve_request(self, request, pk=None, user_id=None):
         """
         Endpoint para aprobar solicitud de ingreso
@@ -235,52 +212,40 @@ class StudentGroupViewSet(viewsets.ModelViewSet):
         group = self.get_object()
 
         try:
-            membership = GroupMembership.objects.get(group=group,
-                                                     user_id=user_id,
-                                                     status='pending')
+            membership = GroupMembership.objects.get(
+                group=group, user_id=user_id, status="pending"
+            )
 
             # Verificar que el grupo no esté lleno
             if group.is_full:
-                return Response({'error': 'El grupo está lleno'},
-                                status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {"error": "El grupo está lleno"}, status=status.HTTP_400_BAD_REQUEST
+                )
 
-            membership.status = 'active'
+            membership.status = "active"
             membership.save()
 
             serializer = GroupMembershipSerializer(membership)
             return Response(serializer.data)
 
         except GroupMembership.DoesNotExist:
-            return Response({'error': 'Solicitud no encontrada'},
-                            status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Solicitud no encontrada"}, status=status.HTTP_404_NOT_FOUND
+            )
 
     @extend_schema(
         summary="Rechazar solicitud de ingreso",
-        description=
-        "Rechaza una solicitud de ingreso al grupo. Solo presidente del grupo o administradores.",
+        description="Rechaza una solicitud de ingreso al grupo. Solo presidente del grupo o administradores.",
         request=None,
         responses={
-            200: {
-                "type": "object",
-                "properties": {
-                    "message": {
-                        "type": "string"
-                    }
-                }
-            },
-            404: {
-                "type": "object",
-                "properties": {
-                    "error": {
-                        "type": "string"
-                    }
-                }
-            }
+            200: {"type": "object", "properties": {"message": {"type": "string"}}},
+            404: {"type": "object", "properties": {"error": {"type": "string"}}},
         },
-        tags=["Groups"])
-    @action(detail=True,
-            methods=['post'],
-            url_path='requests/(?P<user_id>[^/.]+)/reject')
+        tags=["Groups"],
+    )
+    @action(
+        detail=True, methods=["post"], url_path="requests/(?P<user_id>[^/.]+)/reject"
+    )
     def reject_request(self, request, pk=None, user_id=None):
         """
         Endpoint para rechazar solicitud de ingreso
@@ -289,32 +254,36 @@ class StudentGroupViewSet(viewsets.ModelViewSet):
         group = self.get_object()
 
         try:
-            membership = GroupMembership.objects.get(group=group,
-                                                     user_id=user_id,
-                                                     status='pending')
+            membership = GroupMembership.objects.get(
+                group=group, user_id=user_id, status="pending"
+            )
 
             membership.delete()
 
-            return Response({'message': 'Solicitud rechazada exitosamente'},
-                            status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Solicitud rechazada exitosamente"},
+                status=status.HTTP_200_OK,
+            )
 
         except GroupMembership.DoesNotExist:
-            return Response({'error': 'Solicitud no encontrada'},
-                            status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Solicitud no encontrada"}, status=status.HTTP_404_NOT_FOUND
+            )
 
     @extend_schema(
         summary="Ver miembros del grupo",
         description="Obtiene la lista de miembros activos del grupo.",
         responses={200: GroupMembersListSerializer(many=True)},
-        tags=["Groups"])
-    @action(detail=True, methods=['get'])
+        tags=["Groups"],
+    )
+    @action(detail=True, methods=["get"])
     def members(self, request, pk=None):
         """
         Endpoint para ver miembros del grupo
         GET /api/groups/{id}/members/
         """
         group = self.get_object()
-        members = GroupMembership.objects.filter(group=group, status='active')
+        members = GroupMembership.objects.filter(group=group, status="active")
 
         serializer = GroupMembersListSerializer(members, many=True)
         return Response(serializer.data)
@@ -324,24 +293,28 @@ class StudentGroupViewSet(viewsets.ModelViewSet):
     list=extend_schema(
         summary="Listar membresías del usuario",
         description="Obtiene las membresías del usuario autenticado.",
-        tags=["Memberships"]),
+        tags=["Memberships"],
+    ),
     create=extend_schema(
         summary="Crear solicitud de membresía",
         description="Crea una nueva solicitud de membresía a un grupo.",
-        tags=["Memberships"]),
+        tags=["Memberships"],
+    ),
     retrieve=extend_schema(
         summary="Obtener detalles de membresía",
         description="Obtiene los detalles de una membresía específica.",
-        tags=["Memberships"]),
+        tags=["Memberships"],
+    ),
     update=extend_schema(
         summary="Actualizar membresía",
-        description=
-        "Actualiza el estado de una membresía. Solo presidentes del grupo o administradores.",
-        tags=["Memberships"]),
+        description="Actualiza el estado de una membresía. Solo presidentes del grupo o administradores.",
+        tags=["Memberships"],
+    ),
     destroy=extend_schema(
         summary="Eliminar membresía",
         description="Elimina una membresía (salirse del grupo).",
-        tags=["Memberships"]),
+        tags=["Memberships"],
+    ),
 )
 class GroupMembershipViewSet(viewsets.ModelViewSet):
     """
@@ -366,8 +339,8 @@ class GroupMembershipViewSet(viewsets.ModelViewSet):
             return GroupMembership.objects.filter(user=user)
 
     def get_serializer_class(self):
-        if self.action == 'create':
+        if self.action == "create":
             return GroupMembershipCreateSerializer
-        elif self.action in ['update', 'partial_update']:
+        elif self.action in ["update", "partial_update"]:
             return GroupMembershipUpdateSerializer
         return GroupMembershipSerializer

@@ -21,34 +21,34 @@ User = get_user_model()
 @extend_schema_view(
     list=extend_schema(
         summary="Listar usuarios",
-        description=
-        "Obtiene la lista de todos los usuarios del sistema. Solo accesible por administradores.",
-        tags=["Users"]),
+        description="Obtiene la lista de todos los usuarios del sistema. Solo accesible por administradores.",
+        tags=["Users"],
+    ),
     create=extend_schema(
         summary="Crear usuario",
-        description=
-        "Crea un nuevo usuario en el sistema. Solo accesible por administradores.",
-        tags=["Users"]),
+        description="Crea un nuevo usuario en el sistema. Solo accesible por administradores.",
+        tags=["Users"],
+    ),
     retrieve=extend_schema(
         summary="Obtener usuario",
-        description=
-        "Obtiene los detalles de un usuario específico. Solo accesible por administradores.",
-        tags=["Users"]),
+        description="Obtiene los detalles de un usuario específico. Solo accesible por administradores.",
+        tags=["Users"],
+    ),
     update=extend_schema(
         summary="Actualizar usuario",
-        description=
-        "Actualiza completamente la información de un usuario. Solo accesible por administradores.",
-        tags=["Users"]),
+        description="Actualiza completamente la información de un usuario. Solo accesible por administradores.",
+        tags=["Users"],
+    ),
     partial_update=extend_schema(
         summary="Actualizar parcialmente usuario",
-        description=
-        "Actualiza parcialmente la información de un usuario. Solo accesible por administradores.",
-        tags=["Users"]),
+        description="Actualiza parcialmente la información de un usuario. Solo accesible por administradores.",
+        tags=["Users"],
+    ),
     destroy=extend_schema(
         summary="Eliminar usuario",
-        description=
-        "Elimina un usuario del sistema. Solo accesible por administradores.",
-        tags=["Users"]),
+        description="Elimina un usuario del sistema. Solo accesible por administradores.",
+        tags=["Users"],
+    ),
 )
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -61,18 +61,18 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [UserManagementPermission]
 
     def get_serializer_class(self):
-        if self.action == 'create':
+        if self.action == "create":
             return UserCreateSerializer
         return CustomUserSerializer
 
     @extend_schema(
         summary="Cambiar rol de usuario",
-        description=
-        "Cambia el rol de un usuario específico. Solo accesible por administradores.",
+        description="Cambia el rol de un usuario específico. Solo accesible por administradores.",
         request=UserRoleUpdateSerializer,
         responses={200: CustomUserSerializer},
-        tags=["Users"])
-    @action(detail=True, methods=['put'])
+        tags=["Users"],
+    )
+    @action(detail=True, methods=["put"])
     def role(self, request, pk=None):
         """
         Endpoint para cambiar el rol de un usuario
@@ -82,7 +82,7 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = UserRoleUpdateSerializer(data=request.data)
 
         if serializer.is_valid():
-            user.role = serializer.validated_data['role']
+            user.role = serializer.validated_data["role"]
             user.save()
 
             response_serializer = self.get_serializer(user)

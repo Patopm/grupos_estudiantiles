@@ -7,8 +7,9 @@ class IsAdminUser(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated
-                    and request.user.is_admin)
+        return bool(
+            request.user and request.user.is_authenticated and request.user.is_admin
+        )
 
 
 class IsPresidentUser(permissions.BasePermission):
@@ -17,8 +18,9 @@ class IsPresidentUser(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated
-                    and request.user.is_president)
+        return bool(
+            request.user and request.user.is_authenticated and request.user.is_president
+        )
 
 
 class IsStudentUser(permissions.BasePermission):
@@ -27,8 +29,9 @@ class IsStudentUser(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated
-                    and request.user.is_student)
+        return bool(
+            request.user and request.user.is_authenticated and request.user.is_student
+        )
 
 
 class IsAdminOrPresident(permissions.BasePermission):
@@ -37,8 +40,11 @@ class IsAdminOrPresident(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated
-                    and (request.user.is_admin or request.user.is_president))
+        return bool(
+            request.user
+            and request.user.is_authenticated
+            and (request.user.is_admin or request.user.is_president)
+        )
 
 
 class IsOwnerOrAdminOrPresident(permissions.BasePermission):
@@ -59,11 +65,11 @@ class IsOwnerOrAdminOrPresident(permissions.BasePermission):
             return True
 
         # El propietario puede acceder a sus propios objetos
-        if hasattr(obj, 'user'):
+        if hasattr(obj, "user"):
             return obj.user == request.user
-        elif hasattr(obj, 'organizer'):
+        elif hasattr(obj, "organizer"):
             return obj.organizer == request.user
-        elif hasattr(obj, 'owner'):
+        elif hasattr(obj, "owner"):
             return obj.owner == request.user
 
         return False
@@ -85,10 +91,10 @@ class IsGroupPresidentOrAdmin(permissions.BasePermission):
         # Presidentes pueden acceder a su grupo
         if request.user.is_president:
             # Para objetos StudentGroup
-            if hasattr(obj, 'president'):
+            if hasattr(obj, "president"):
                 return obj.president == request.user
             # Para objetos relacionados con grupo (como membresías)
-            elif hasattr(obj, 'group') and hasattr(obj.group, 'president'):
+            elif hasattr(obj, "group") and hasattr(obj.group, "president"):
                 return obj.group.president == request.user
 
         return False
@@ -116,9 +122,10 @@ class GroupMembershipPermission(permissions.BasePermission):
 
         # Estudiantes pueden crear solicitudes y ver las suyas
         if request.user.is_student:
-            return view.action in [
-                'create', 'list', 'retrieve'
-            ] or request.method in permissions.SAFE_METHODS
+            return (
+                view.action in ["create", "list", "retrieve"]
+                or request.method in permissions.SAFE_METHODS
+            )
 
         return False
 
@@ -160,8 +167,12 @@ class EventPermission(permissions.BasePermission):
 
         # Estudiantes solo pueden leer y gestionar asistencia
         if request.user.is_student:
-            return (request.method in permissions.SAFE_METHODS or view.action
-                    in ['attend', 'unattend', 'list', 'retrieve'])
+            return request.method in permissions.SAFE_METHODS or view.action in [
+                "attend",
+                "unattend",
+                "list",
+                "retrieve",
+            ]
 
         return False
 
@@ -217,8 +228,7 @@ class EventAttendancePermission(permissions.BasePermission):
 
         # Presidentes pueden gestionar asistencias de eventos de sus grupos
         if request.user.is_president:
-            user_groups = obj.event.target_groups.filter(
-                president=request.user)
+            user_groups = obj.event.target_groups.filter(president=request.user)
             if user_groups.exists():
                 return True
 
@@ -264,8 +274,9 @@ class UserManagementPermission(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated
-                    and request.user.is_admin)
+        return bool(
+            request.user and request.user.is_authenticated and request.user.is_admin
+        )
 
     def has_object_permission(self, request, view, obj):
         # Solo administradores pueden gestionar usuarios

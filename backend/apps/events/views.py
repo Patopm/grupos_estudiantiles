@@ -26,32 +26,34 @@ User = get_user_model()
 @extend_schema_view(
     list=extend_schema(
         summary="Listar eventos",
-        description=
-        "Obtiene la lista de eventos disponibles. Filtros opcionales por estado, tipo, etc.",
-        tags=["Events"]),
+        description="Obtiene la lista de eventos disponibles. Filtros opcionales por estado, tipo, etc.",
+        tags=["Events"],
+    ),
     create=extend_schema(
         summary="Crear evento",
-        description=
-        "Crea un nuevo evento. Solo presidentes pueden crear eventos.",
-        tags=["Events"]),
+        description="Crea un nuevo evento. Solo presidentes pueden crear eventos.",
+        tags=["Events"],
+    ),
     retrieve=extend_schema(
         summary="Obtener detalles de evento",
         description="Obtiene los detalles de un evento específico.",
-        tags=["Events"]),
+        tags=["Events"],
+    ),
     update=extend_schema(
         summary="Actualizar evento",
-        description=
-        "Actualiza completamente un evento. Solo el creador, presidentes de grupos objetivo o administradores.",
-        tags=["Events"]),
+        description="Actualiza completamente un evento. Solo el creador, presidentes de grupos objetivo o administradores.",
+        tags=["Events"],
+    ),
     partial_update=extend_schema(
         summary="Actualizar parcialmente evento",
-        description=
-        "Actualiza parcialmente un evento. Solo el creador, presidentes de grupos objetivo o administradores.",
-        tags=["Events"]),
+        description="Actualiza parcialmente un evento. Solo el creador, presidentes de grupos objetivo o administradores.",
+        tags=["Events"],
+    ),
     destroy=extend_schema(
         summary="Eliminar evento",
         description="Elimina un evento. Solo el creador o administradores.",
-        tags=["Events"]),
+        tags=["Events"],
+    ),
 )
 class EventViewSet(viewsets.ModelViewSet):
     """
@@ -63,26 +65,26 @@ class EventViewSet(viewsets.ModelViewSet):
     permission_classes = [EventPermission]
 
     def get_serializer_class(self):
-        if self.action == 'list':
+        if self.action == "list":
             return EventListSerializer
-        elif self.action == 'create':
+        elif self.action == "create":
             return EventCreateSerializer
-        elif self.action in ['update', 'partial_update']:
+        elif self.action in ["update", "partial_update"]:
             return EventUpdateSerializer
-        elif self.action == 'attendees':
+        elif self.action == "attendees":
             return EventAttendeesListSerializer
         return EventSerializer
 
     def get_queryset(self):
         """Filtrar eventos según parámetros de consulta"""
-        queryset = Event.objects.filter(status='published')
+        queryset = Event.objects.filter(status="published")
 
         # Filtros opcionales
-        event_type = self.request.query_params.get('type', None)
+        event_type = self.request.query_params.get("type", None)
         if event_type:
             queryset = queryset.filter(event_type=event_type)
 
-        status_filter = self.request.query_params.get('status', None)
+        status_filter = self.request.query_params.get("status", None)
         if status_filter:
             queryset = queryset.filter(status=status_filter)
 
@@ -90,7 +92,7 @@ class EventViewSet(viewsets.ModelViewSet):
         if self.request.user.is_authenticated and self.request.user.is_admin:
             queryset = Event.objects.all()
 
-        return queryset.order_by('-start_datetime')
+        return queryset.order_by("-start_datetime")
 
     def perform_create(self, serializer):
         """Asignar el usuario actual como organizador del evento"""
@@ -104,17 +106,11 @@ class EventViewSet(viewsets.ModelViewSet):
         request=EventAttendanceCreateSerializer,
         responses={
             201: EventAttendanceSerializer,
-            400: {
-                "type": "object",
-                "properties": {
-                    "error": {
-                        "type": "string"
-                    }
-                }
-            }
+            400: {"type": "object", "properties": {"error": {"type": "string"}}},
         },
-        tags=["Events"])
-    @action(detail=True, methods=['post'])
+        tags=["Events"],
+    )
+    @action(detail=True, methods=["post"])
     def attend(self, request, pk=None):
         """
         Endpoint para confirmar asistencia a evento
@@ -123,29 +119,28 @@ class EventViewSet(viewsets.ModelViewSet):
         event = self.get_object()
 
         # Verificar si ya está inscrito
-        if EventAttendance.objects.filter(user=request.user,
-                                          event=event).exists():
-            return Response({'error': 'Ya estás inscrito en este evento'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        if EventAttendance.objects.filter(user=request.user, event=event).exists():
+            return Response(
+                {"error": "Ya estás inscrito en este evento"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # Verificar si las inscripciones están abiertas
         if event.requires_registration and not event.registration_open:
             return Response(
-                {'error': 'Las inscripciones para este evento están cerradas'},
-                status=status.HTTP_400_BAD_REQUEST)
+                {"error": "Las inscripciones para este evento están cerradas"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # Crear la asistencia
-        serializer = EventAttendanceCreateSerializer(data=request.data,
-                                                     context={
-                                                         'request': request,
-                                                         'event': event
-                                                     })
+        serializer = EventAttendanceCreateSerializer(
+            data=request.data, context={"request": request, "event": event}
+        )
 
         if serializer.is_valid():
             attendance = serializer.save()
             response_serializer = EventAttendanceSerializer(attendance)
-            return Response(response_serializer.data,
-                            status=status.HTTP_201_CREATED)
+            return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -154,25 +149,12 @@ class EventViewSet(viewsets.ModelViewSet):
         description="Permite a un usuario cancelar su asistencia a un evento.",
         request=None,
         responses={
-            200: {
-                "type": "object",
-                "properties": {
-                    "message": {
-                        "type": "string"
-                    }
-                }
-            },
-            404: {
-                "type": "object",
-                "properties": {
-                    "error": {
-                        "type": "string"
-                    }
-                }
-            }
+            200: {"type": "object", "properties": {"message": {"type": "string"}}},
+            404: {"type": "object", "properties": {"error": {"type": "string"}}},
         },
-        tags=["Events"])
-    @action(detail=True, methods=['post'])
+        tags=["Events"],
+    )
+    @action(detail=True, methods=["post"])
     def unattend(self, request, pk=None):
         """
         Endpoint para cancelar asistencia a evento
@@ -181,28 +163,31 @@ class EventViewSet(viewsets.ModelViewSet):
         event = self.get_object()
 
         try:
-            attendance = EventAttendance.objects.get(user=request.user,
-                                                     event=event)
+            attendance = EventAttendance.objects.get(user=request.user, event=event)
 
             # Cambiar estado a cancelado en lugar de eliminar
-            attendance.status = 'cancelled'
+            attendance.status = "cancelled"
             attendance.save()
 
-            return Response({'message': 'Asistencia cancelada exitosamente'},
-                            status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Asistencia cancelada exitosamente"},
+                status=status.HTTP_200_OK,
+            )
         except EventAttendance.DoesNotExist:
-            return Response({'error': 'No estás inscrito en este evento'},
-                            status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "No estás inscrito en este evento"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
     @extend_schema(
         summary="Ver asistentes del evento",
-        description=
-        "Obtiene la lista de asistentes del evento. Solo presidentes de grupos objetivo o administradores.",
+        description="Obtiene la lista de asistentes del evento. Solo presidentes de grupos objetivo o administradores.",
         responses={200: EventAttendeesListSerializer(many=True)},
-        tags=["Events"])
-    @action(detail=True,
-            methods=['get'],
-            permission_classes=[EventAttendancePermission])
+        tags=["Events"],
+    )
+    @action(
+        detail=True, methods=["get"], permission_classes=[EventAttendancePermission]
+    )
     def attendees(self, request, pk=None):
         """
         Endpoint para ver asistentes del evento
@@ -210,7 +195,8 @@ class EventViewSet(viewsets.ModelViewSet):
         """
         event = self.get_object()
         attendees = EventAttendance.objects.filter(
-            event=event, status__in=['registered', 'confirmed', 'attended'])
+            event=event, status__in=["registered", "confirmed", "attended"]
+        )
 
         serializer = EventAttendeesListSerializer(attendees, many=True)
         return Response(serializer.data)
@@ -219,26 +205,29 @@ class EventViewSet(viewsets.ModelViewSet):
 @extend_schema_view(
     list=extend_schema(
         summary="Listar asistencias del usuario",
-        description=
-        "Obtiene las asistencias a eventos del usuario autenticado.",
-        tags=["Event Attendance"]),
+        description="Obtiene las asistencias a eventos del usuario autenticado.",
+        tags=["Event Attendance"],
+    ),
     create=extend_schema(
         summary="Crear asistencia a evento",
         description="Registra la asistencia del usuario a un evento.",
-        tags=["Event Attendance"]),
+        tags=["Event Attendance"],
+    ),
     retrieve=extend_schema(
         summary="Obtener detalles de asistencia",
         description="Obtiene los detalles de una asistencia específica.",
-        tags=["Event Attendance"]),
+        tags=["Event Attendance"],
+    ),
     update=extend_schema(
         summary="Actualizar asistencia",
-        description=
-        "Actualiza el estado de una asistencia. Solo presidentes de grupos objetivo o administradores.",
-        tags=["Event Attendance"]),
+        description="Actualiza el estado de una asistencia. Solo presidentes de grupos objetivo o administradores.",
+        tags=["Event Attendance"],
+    ),
     destroy=extend_schema(
         summary="Eliminar asistencia",
         description="Elimina una asistencia (cancelar inscripción).",
-        tags=["Event Attendance"]),
+        tags=["Event Attendance"],
+    ),
 )
 class EventAttendanceViewSet(viewsets.ModelViewSet):
     """
@@ -258,20 +247,21 @@ class EventAttendanceViewSet(viewsets.ModelViewSet):
         elif user.is_president:
             # Presidentes ven asistencias de eventos de sus grupos
             return EventAttendance.objects.filter(
-                event__target_groups__president=user).distinct()
+                event__target_groups__president=user
+            ).distinct()
         else:
             # Estudiantes solo ven sus propias asistencias
             return EventAttendance.objects.filter(user=user)
 
     def get_serializer_class(self):
-        if self.action == 'create':
+        if self.action == "create":
             return EventAttendanceCreateSerializer
-        elif self.action in ['update', 'partial_update']:
+        elif self.action in ["update", "partial_update"]:
             return EventAttendanceUpdateSerializer
         return EventAttendanceSerializer
 
     def perform_create(self, serializer):
         """Asignar el usuario actual a la asistencia"""
-        event_id = self.request.data.get('event')
+        event_id = self.request.data.get("event")
         event = get_object_or_404(Event, pk=event_id)
         serializer.save(user=self.request.user, event=event)
