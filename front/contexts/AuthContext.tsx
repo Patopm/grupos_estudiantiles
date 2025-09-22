@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useState,
   ReactNode,
+  Suspense,
 } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
@@ -21,6 +22,15 @@ import {
   ForgotPasswordFormData,
   ResetPasswordFormData,
 } from '@/lib/validations/auth';
+import {
+  verificationApi,
+  VerificationStatus,
+  EmailVerificationRequest,
+  EmailVerificationConfirm,
+  PhoneVerificationRequest,
+  PhoneVerificationConfirm,
+  ResendVerificationRequest,
+} from '@/lib/api/verification';
 
 interface AuthContextType {
   user: User | null;
@@ -28,6 +38,7 @@ interface AuthContextType {
   isLoading: boolean;
   mfaRequired: boolean;
   mfaUserId: string | null;
+  verificationStatus: VerificationStatus | null;
   login: (credentials: LoginFormData) => Promise<void>;
   register: (userData: RegisterFormData) => Promise<void>;
   logout: () => Promise<void>;
@@ -42,6 +53,13 @@ interface AuthContextType {
   verifyMFA: (token: string) => Promise<void>;
   verifyBackupCode: (code: string) => Promise<void>;
   clearMFAState: () => void;
+  // Verification methods
+  getVerificationStatus: () => Promise<VerificationStatus>;
+  requestEmailVerification: (data?: EmailVerificationRequest) => Promise<void>;
+  confirmEmailVerification: (data: EmailVerificationConfirm) => Promise<void>;
+  requestPhoneVerification: (data?: PhoneVerificationRequest) => Promise<void>;
+  confirmPhoneVerification: (data: PhoneVerificationConfirm) => Promise<void>;
+  resendVerification: (data: ResendVerificationRequest) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -50,11 +68,13 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-export function AuthProvider({ children }: AuthProviderProps) {
+function AuthProviderContent({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [mfaRequired, setMfaRequired] = useState(false);
   const [mfaUserId, setMfaUserId] = useState<string | null>(null);
+  const [verificationStatus, setVerificationStatus] =
+    useState<VerificationStatus | null>(null);
   const [pendingCredentials, setPendingCredentials] =
     useState<LoginFormData | null>(null);
   const router = useRouter();
@@ -99,6 +119,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
           } else {
             // Token is still valid
             setUser(storedUser);
+            // Load verification status for authenticated user
+            try {
+              const status = await verificationApi.getStatus();
+              setVerificationStatus(status);
+            } catch (error) {
+              console.error('Failed to load verification status:', error);
+            }
           }
         }
       } catch (error) {
@@ -318,6 +345,77 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setPendingCredentials(null);
   };
 
+  // Verification methods
+  const getVerificationStatus = async (): Promise<VerificationStatus> => {
+    try {
+      const status = await verificationApi.getStatus();
+      setVerificationStatus(status);
+      return status;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const requestEmailVerification = async (
+    data: EmailVerificationRequest = {}
+  ): Promise<void> => {
+    try {
+      await verificationApi.requestEmailVerification(data);
+      // Refresh verification status after request
+      await getVerificationStatus();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const confirmEmailVerification = async (
+    data: EmailVerificationConfirm
+  ): Promise<void> => {
+    try {
+      await verificationApi.confirmEmailVerification(data);
+      // Refresh verification status and user data after confirmation
+      await Promise.all([getVerificationStatus(), refreshUser()]);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const requestPhoneVerification = async (
+    data: PhoneVerificationRequest = {}
+  ): Promise<void> => {
+    try {
+      await verificationApi.requestPhoneVerification(data);
+      // Refresh verification status after request
+      await getVerificationStatus();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const confirmPhoneVerification = async (
+    data: PhoneVerificationConfirm
+  ): Promise<void> => {
+    try {
+      await verificationApi.confirmPhoneVerification(data);
+      // Refresh verification status and user data after confirmation
+      await Promise.all([getVerificationStatus(), refreshUser()]);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const resendVerification = async (
+    data: ResendVerificationRequest
+  ): Promise<void> => {
+    try {
+      await verificationApi.resendVerification(data);
+      // Refresh verification status after resend
+      await getVerificationStatus();
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const redirectToDashboard = (role: string): void => {
     // Redirect based on user role as specified in requirements
     switch (role) {
@@ -340,6 +438,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isLoading,
     mfaRequired,
     mfaUserId,
+    verificationStatus,
     login,
     register,
     logout,
@@ -349,9 +448,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
     verifyMFA,
     verifyBackupCode,
     clearMFAState,
+    getVerificationStatus,
+    requestEmailVerification,
+    confirmEmailVerification,
+    requestPhoneVerification,
+    confirmPhoneVerification,
+    resendVerification,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AuthProviderContent>{children}</AuthProviderContent>
+    </Suspense>
+  );
 }
 
 export function useAuth(): AuthContextType {

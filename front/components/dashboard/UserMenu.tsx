@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import VerificationStatusIndicator from '@/components/auth/VerificationStatusIndicator';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +25,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 export default function UserMenu() {
-  const { user, logout } = useAuth();
+  const { user, logout, verificationStatus } = useAuth();
 
   if (!user) return null;
 
@@ -46,9 +47,15 @@ export default function UserMenu() {
               <span className='text-sm font-medium'>
                 {user.first_name} {user.last_name}
               </span>
-              <span className='text-xs text-muted-foreground capitalize'>
-                {user.role_display}
-              </span>
+              <div className='flex items-center gap-2'>
+                <span className='text-xs text-muted-foreground capitalize'>
+                  {user.role_display}
+                </span>
+                <VerificationStatusIndicator
+                  status={verificationStatus}
+                  compact={true}
+                />
+              </div>
             </div>
             <FontAwesomeIcon
               icon={faChevronDown}
