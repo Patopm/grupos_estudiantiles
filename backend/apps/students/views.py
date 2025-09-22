@@ -1,24 +1,24 @@
-from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
-
-from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import permissions, status, viewsets
-from rest_framework.decorators import action
-from rest_framework.response import Response
-
 from apps.core.permissions import (
     GroupMembershipPermission,
     IsAdminUser,
     IsGroupPresidentOrAdmin,
     ReadOnlyForStudents,
 )
+from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import extend_schema, extend_schema_view
+from rest_framework import permissions, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from .models import GroupMembership, StudentGroup
 from .serializers import (
+    GroupDetailedSerializer,
     GroupMembershipCreateSerializer,
     GroupMembershipSerializer,
     GroupMembershipUpdateSerializer,
     GroupMembersListSerializer,
+    GroupStatisticsSerializer,
     StudentGroupCreateSerializer,
     StudentGroupSerializer,
 )
@@ -84,9 +84,14 @@ class StudentGroupViewSet(viewsets.ModelViewSet):
             "requests",
             "approve_request",
             "reject_request",
-            "members",
         ]:
             permission_classes = [IsGroupPresidentOrAdmin]
+        elif self.action in [
+            "members",
+            "detailed",
+            "statistics",
+        ]:
+            permission_classes = [permissions.IsAuthenticated]
         else:
             permission_classes = [permissions.AllowAny]  # list, retrieve son públicos
 
@@ -286,6 +291,44 @@ class StudentGroupViewSet(viewsets.ModelViewSet):
         members = GroupMembership.objects.filter(group=group, status="active")
 
         serializer = GroupMembersListSerializer(members, many=True)
+        return Response(serializer.data)
+
+    @extend_schema(
+        summary="Obtener información detallada del grupo",
+        description="Obtiene información completa del grupo incluyendo miembros, eventos y estadísticas.",
+        responses={200: GroupDetailedSerializer},
+        tags=["Groups"],
+    )
+    @action(detail=True, methods=["get"])
+    def detailed(self, request, pk=None):
+        """
+        Endpoint para obtener información detallada del grupo
+        GET /api/groups/{id}/detailed/
+        """
+        group = self.get_object()
+        serializer = GroupDetailedSerializer(group, context={"request": request})
+        return Response(serializer.data)
+
+    @extend_schema(
+        summary="Obtener estadísticas del grupo",
+        description="Obtiene estadísticas y métricas del grupo incluyendo miembros, eventos y actividad.",
+        responses={200: GroupStatisticsSerializer},
+        tags=["Groups"],
+    )
+    @action(detail=True, methods=["get"])
+    def statistics(self, request, pk=None):
+        """
+        Endpoint para obtener estadísticas del grupo
+        GET /api/groups/{id}/statistics/
+        """
+        group = self.get_object()
+        detailed_serializer = GroupDetailedSerializer(
+            group, context={"request": request}
+        )
+        statistics_data = detailed_serializer.get_statistics(group)
+
+        serializer = GroupStatisticsSerializer(data=statistics_data)
+        serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
 
 

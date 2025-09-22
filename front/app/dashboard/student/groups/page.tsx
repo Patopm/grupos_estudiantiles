@@ -131,6 +131,7 @@ function StudentGroupsContent() {
               showSearch={true}
               showFilters={true}
               showViewToggle={true}
+              enablePagination={false} // Don't paginate user's own groups
               emptyMessage='Aún no perteneces a ningún grupo. ¡Explora los grupos disponibles!'
               onLeave={handleLeaveGroup}
               onView={handleViewGroup}
@@ -145,6 +146,8 @@ function StudentGroupsContent() {
               showSearch={true}
               showFilters={true}
               showViewToggle={true}
+              enablePagination={true}
+              itemsPerPage={12}
               emptyMessage='No hay grupos disponibles en este momento'
               onJoin={handleJoinGroup}
               onView={handleViewGroup}

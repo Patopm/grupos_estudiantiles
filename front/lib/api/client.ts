@@ -74,11 +74,21 @@ class ApiClient {
 
     // Prepare headers
     const requestHeaders: Record<string, string> = {
-      'Content-Type': 'application/json',
       'X-Correlation-ID': correlationId,
       'X-Request-ID': generateCorrelationId(),
       ...headers,
     };
+
+    // Set Content-Type based on body type, unless explicitly overridden
+    if (!('Content-Type' in headers)) {
+      if (body instanceof FormData) {
+        // Don't set Content-Type for FormData - let browser set it with boundary
+      } else {
+        requestHeaders['Content-Type'] = 'application/json';
+      }
+    } else if (headers['Content-Type']) {
+      requestHeaders['Content-Type'] = headers['Content-Type'];
+    }
 
     // Add authentication token if available
     const token = TokenManager.getAccessToken();
@@ -95,7 +105,11 @@ class ApiClient {
 
     // Add body for non-GET requests
     if (body && method !== 'GET') {
-      requestOptions.body = JSON.stringify(body);
+      if (body instanceof FormData) {
+        requestOptions.body = body;
+      } else {
+        requestOptions.body = JSON.stringify(body);
+      }
     }
 
     const executeRequest = async (): Promise<T> => {
