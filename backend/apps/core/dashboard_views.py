@@ -785,7 +785,7 @@ def admin_dashboard(request):
     }
 
     # Enhanced Events Analytics
-    from apps.events.models import EventAttendee
+    from apps.events.models import EventAttendance
     from apps.students.models import GroupMembership
 
     # Events analytics
@@ -840,10 +840,17 @@ def admin_dashboard(request):
     for event in published_events.order_by('-attendee_count')[:5]:
         event_attendance_rate = (event.attendee_count /
                                  (event.max_attendees or 1)) * 100
+        # Get the first target group name, or use "Múltiples grupos" if multiple
+        target_groups = event.target_groups.all()
+        group_name = target_groups[
+            0].name if target_groups else "Sin grupo asignado"
+        if len(target_groups) > 1:
+            group_name = f"{group_name} (+{len(target_groups)-1} más)"
+
         top_performing_events.append({
             "event_id": str(event.event_id),
             "title": event.title,
-            "group_name": event.group.name,
+            "group_name": group_name,
             "attendee_count": event.attendee_count,
             "attendance_rate": event_attendance_rate
         })
@@ -851,13 +858,20 @@ def admin_dashboard(request):
     # Recent events
     recent_events_data = []
     for event in all_events.order_by('-created_at')[:10]:
+        # Get the first target group name, or use "Múltiples grupos" if multiple
+        target_groups = event.target_groups.all()
+        group_name = target_groups[
+            0].name if target_groups else "Sin grupo asignado"
+        if len(target_groups) > 1:
+            group_name = f"{group_name} (+{len(target_groups)-1} más)"
+
         recent_events_data.append({
             "event_id":
             str(event.event_id),
             "title":
             event.title,
             "group_name":
-            event.group.name,
+            group_name,
             "start_datetime":
             event.start_datetime.isoformat(),
             "attendee_count":
@@ -907,7 +921,7 @@ def admin_dashboard(request):
     top_performing_groups = []
     for group in StudentGroup.objects.filter(
             is_active=True).order_by('-member_count')[:5]:
-        group_events = Event.objects.filter(group=group)
+        group_events = Event.objects.filter(target_groups=group)
         event_count = len(group_events)
         avg_attendance = sum(
             event.attendee_count
@@ -1030,7 +1044,7 @@ def admin_dashboard(request):
         login_count = 50 + (user.id % 100)  # Mock data
         groups_joined = GroupMembership.objects.filter(
             user=user, status='active').count()
-        events_attended = EventAttendee.objects.filter(
+        events_attended = EventAttendance.objects.filter(
             user=user, status='attended').count()
 
         most_active_users.append({
@@ -1076,9 +1090,10 @@ def admin_dashboard(request):
     for user in User.objects.all()[:10]:
         groups_joined = GroupMembership.objects.filter(
             user=user, status='active').count()
-        events_attended = EventAttendee.objects.filter(
+        events_attended = EventAttendance.objects.filter(
             user=user, status='attended').count()
-        events_created = Event.objects.filter(group__president=user).count()
+        events_created = Event.objects.filter(
+            target_groups__president=user).distinct().count()
         engagement_score = min(100, (groups_joined * 20) +
                                (events_attended * 10) + (events_created * 15))
 
@@ -1118,9 +1133,8 @@ def admin_dashboard(request):
                 president__in=presidents_data).count() /
             len(presidents_data) if presidents_data else 0,
             "averageEventsCreated":
-            Event.objects.filter(
-                group__president__in=presidents_data).count() /
-            len(presidents_data) if presidents_data else 0
+            Event.objects.filter(target_groups__president__in=presidents_data).
+            distinct().count() / len(presidents_data) if presidents_data else 0
         },
         "admins": {
             "total":

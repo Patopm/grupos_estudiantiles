@@ -301,6 +301,13 @@ export const eventsApi = {
   },
 
   /**
+   * Get all events (admin only) - alias for getAll
+   */
+  getAllEvents: async (): Promise<Event[]> => {
+    return await eventsApi.getAll();
+  },
+
+  /**
    * Get event details by ID
    * Returns complete event information including target groups and attendance status
    */

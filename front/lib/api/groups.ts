@@ -120,6 +120,11 @@ export const groupsApi = {
     return response.results as Group[];
   },
 
+  // Get all groups (admin only) - alias for getAll
+  getAllGroups: async (): Promise<Group[]> => {
+    return await groupsApi.getAll();
+  },
+
   // Get group details
   getById: async (id: string): Promise<Group> => {
     const response = await apiClient.get<Group>(`/api/groups/${id}/`);
@@ -143,14 +148,14 @@ export const groupsApi = {
   },
 
   // Create new group (admin only)
-  create: async (data: CreateGroupData): Promise<Group> => {
+  create: async (data: CreateGroupData, image?: File): Promise<Group> => {
     const formData = new FormData();
     formData.append('name', data.name);
     formData.append('description', data.description);
     formData.append('category', data.category);
     formData.append('max_members', data.max_members.toString());
-    if (data.image) {
-      formData.append('image', data.image);
+    if (image) {
+      formData.append('image', image);
     }
 
     const response = await apiClient.post<Group>('/api/groups/', formData);
