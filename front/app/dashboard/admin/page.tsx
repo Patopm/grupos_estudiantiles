@@ -5,13 +5,32 @@ import { useAuth, ProtectedRoute } from '@/contexts/AuthContext';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import { AdminStats } from '@/components/dashboard/DashboardStats';
 import { AdminQuickActions } from '@/components/dashboard/QuickActions';
+import {
+  SystemEventsAnalytics,
+  GroupEventPerformance,
+  UserEngagementReports,
+  PlatformHealthIndicators,
+  AdministrativeTools,
+} from '@/components/dashboard';
 import { dashboardApi, AdminDashboardData } from '@/lib/api/dashboard';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRouter } from 'next/navigation';
-import { Users, UserCheck, Calendar, Settings, Eye, Edit } from 'lucide-react';
+import {
+  Users,
+  UserCheck,
+  Calendar,
+  Settings,
+  Eye,
+  Edit,
+  BarChart3,
+  Activity,
+  Shield,
+  Wrench,
+} from 'lucide-react';
 
 export default function AdminDashboard() {
   return (
@@ -93,6 +112,73 @@ function AdminDashboardContent() {
           totalGroups={dashboardData?.system_stats.total_groups}
           totalUsers={dashboardData?.system_stats.total_users}
         />
+
+        {/* Enhanced Analytics Tabs */}
+        {dashboardData && (
+          <Tabs defaultValue='analytics' className='w-full'>
+            <TabsList className='grid w-full grid-cols-5'>
+              <TabsTrigger
+                value='analytics'
+                className='flex items-center gap-2'
+              >
+                <BarChart3 className='w-4 h-4' />
+                Analytics
+              </TabsTrigger>
+              <TabsTrigger
+                value='performance'
+                className='flex items-center gap-2'
+              >
+                <Activity className='w-4 h-4' />
+                Rendimiento
+              </TabsTrigger>
+              <TabsTrigger
+                value='engagement'
+                className='flex items-center gap-2'
+              >
+                <Users className='w-4 h-4' />
+                Participación
+              </TabsTrigger>
+              <TabsTrigger value='health' className='flex items-center gap-2'>
+                <Shield className='w-4 h-4' />
+                Salud
+              </TabsTrigger>
+              <TabsTrigger value='tools' className='flex items-center gap-2'>
+                <Wrench className='w-4 h-4' />
+                Herramientas
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value='analytics' className='space-y-6'>
+              <SystemEventsAnalytics
+                analyticsData={dashboardData.events_analytics}
+              />
+            </TabsContent>
+
+            <TabsContent value='performance' className='space-y-6'>
+              <GroupEventPerformance
+                performanceData={dashboardData.performance_metrics}
+              />
+            </TabsContent>
+
+            <TabsContent value='engagement' className='space-y-6'>
+              <UserEngagementReports
+                engagementData={dashboardData.user_engagement}
+              />
+            </TabsContent>
+
+            <TabsContent value='health' className='space-y-6'>
+              <PlatformHealthIndicators
+                healthData={dashboardData.platform_health}
+              />
+            </TabsContent>
+
+            <TabsContent value='tools' className='space-y-6'>
+              <AdministrativeTools
+                toolsData={dashboardData.administrative_tools}
+              />
+            </TabsContent>
+          </Tabs>
+        )}
 
         {/* Recent Groups Section */}
         {dashboardData && dashboardData.recent_groups.length > 0 && (

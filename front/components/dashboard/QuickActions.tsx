@@ -95,6 +95,18 @@ export function StudentQuickActions({
           badge={upcomingEvents > 0 ? upcomingEvents : undefined}
         />
         <QuickActionCard
+          title='Mis Eventos'
+          description='Gestionar mis eventos registrados'
+          icon={<Calendar className='w-5 h-5' />}
+          href='/dashboard/student/events/my-events'
+        />
+        <QuickActionCard
+          title='Registro Rápido'
+          description='Registrarse en eventos próximos'
+          icon={<UserPlus className='w-5 h-5' />}
+          href='/dashboard/student/events?tab=upcoming'
+        />
+        <QuickActionCard
           title='Solicitudes'
           description='Estado de mis solicitudes de ingreso'
           icon={<ClipboardList className='w-5 h-5' />}
@@ -137,13 +149,19 @@ export function PresidentQuickActions({
           title='Crear Evento'
           description='Organizar un nuevo evento para el grupo'
           icon={<Plus className='w-5 h-5' />}
-          href='/dashboard/president/events/new'
+          href='/dashboard/president/events/create'
         />
         <QuickActionCard
           title='Gestionar Eventos'
           description='Ver y administrar eventos creados'
           icon={<Calendar className='w-5 h-5' />}
           href='/dashboard/president/events'
+        />
+        <QuickActionCard
+          title='Eventos Rápidos'
+          description='Crear eventos con plantillas predefinidas'
+          icon={<Plus className='w-5 h-5' />}
+          href='/dashboard/president/events/quick-create'
         />
         <QuickActionCard
           title='Miembros'
