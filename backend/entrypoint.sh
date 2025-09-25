@@ -1,27 +1,33 @@
-#!/bin/bash
-
+#!/bin/sh
 set -e
+
+echo "=== DEBUG: Environment Variables ==="
+echo "DB_HOST='$DB_HOST'"
+echo "DB_PORT='$DB_PORT'"
+echo "REDIS_URL='$REDIS_URL'"
+echo "=== END DEBUG ==="
 
 echo "Waiting for database..."
 while ! nc -z $DB_HOST $DB_PORT; do
   sleep 0.1
 done
-echo "Database is ready!"
+echo "DB ready!"
 
-echo "Waiting for Redis..."
-while ! nc -z $(echo $REDIS_URL | cut -d'/' -f3 | cut -d':' -f1) $(echo $REDIS_URL | cut -d'/' -f3 | cut -d':' -f2); do
-  sleep 0.1
-done
-echo "Redis is ready!"
+if [ -n "$REDIS_URL" ]; then
+  REDIS_HOST=$(echo $REDIS_URL | cut -d'/' -f3 | cut -d':' -f1)
+  REDIS_PORT=$(echo $REDIS_URL | cut -d'/' -f3 | cut -d':' -f2)
+  echo "Waiting for Redis $REDIS_HOST:$REDIS_PORT..."
+  while ! nc -z $REDIS_HOST $REDIS_PORT; do
+    sleep 0.1
+  done
+  echo "Redis ready!"
+fi
 
-echo "Running migrations..."
+echo "Run migrations..."
 python manage.py migrate --noinput
 
-echo "Creating cache table..."
-python manage.py createcachetable
-
-echo "Collecting static files..."
+echo "Collect static files..."
 python manage.py collectstatic --noinput
 
-echo "Starting Django server..."
+echo "Starting server..."
 exec "$@"

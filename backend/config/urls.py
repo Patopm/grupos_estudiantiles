@@ -18,19 +18,26 @@ urlpatterns = [
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
     ),
-    path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
+    path("api/redoc/",
+         SpectacularRedocView.as_view(url_name="schema"),
+         name="redoc"),
     # API endpoints according to specifications
-    path("api/auth/", include("apps.users.auth_urls")),  # Authentication endpoints
+    path("api/auth/",
+         include("apps.users.auth_urls")),  # Authentication endpoints
     path("api/groups/", include("apps.students.urls")),  # Groups endpoints
     path("api/events/", include("apps.events.urls")),  # Events endpoints
-    path("api/dashboard/", include("apps.core.dashboard_urls")),  # Dashboard endpoints
-    path("api/users/", include("apps.users.urls")),  # User management endpoints
-    path(
-        "api/notifications/", include("apps.notifications.urls")
-    ),  # Notifications endpoints
+    path("api/dashboard/",
+         include("apps.core.dashboard_urls")),  # Dashboard endpoints
+    path("api/users/",
+         include("apps.users.urls")),  # User management endpoints
+    path("api/notifications/",
+         include("apps.notifications.urls")),  # Notifications endpoints
+    path("api/health/", include("apps.core.health_urls")),  # Health endpoints
 ]
 
 # Serve media files in development
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL,
+                          document_root=settings.STATIC_ROOT)

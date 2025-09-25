@@ -103,16 +103,20 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME":
+        "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "NAME":
+        "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+        "NAME":
+        "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        "NAME":
+        "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -160,13 +164,16 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.FormParser",
         "rest_framework.parsers.MultiPartParser",
     ],
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 20,
+    "DEFAULT_PAGINATION_CLASS":
+    "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE":
+    20,
     "DEFAULT_FILTER_BACKENDS": [
         "rest_framework.filters.SearchFilter",
         "rest_framework.filters.OrderingFilter",
     ],
-    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_SCHEMA_CLASS":
+    "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_THROTTLE_CLASSES": [
         "apps.core.throttles.AuthenticationThrottle",
     ],
@@ -189,8 +196,10 @@ CORS_ALLOWED_ORIGINS = [
 
 # drf-spectacular settings
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Student Management System API",
-    "DESCRIPTION": """
+    "TITLE":
+    "Student Management System API",
+    "DESCRIPTION":
+    """
     API para el sistema de gestión estudiantil con funcionalidades de:
     - Gestión de usuarios con roles (Admin, Presidente, Estudiante)
     - Administración de grupos de estudiantes
@@ -198,8 +207,10 @@ SPECTACULAR_SETTINGS = {
     - Autenticación JWT
     - Sistema de permisos basado en roles
     """,
-    "VERSION": "1.0.0",
-    "SERVE_INCLUDE_SCHEMA": False,
+    "VERSION":
+    "1.0.0",
+    "SERVE_INCLUDE_SCHEMA":
+    False,
     "CONTACT": {
         "name": "Patricio Piña",
         "email": "patriciog.pina@gmail.com",
@@ -208,8 +219,10 @@ SPECTACULAR_SETTINGS = {
         "name": "MIT License",
     },
     # Schema customization
-    "COMPONENT_SPLIT_REQUEST": True,
-    "COMPONENT_NO_READ_ONLY_REQUIRED": True,
+    "COMPONENT_SPLIT_REQUEST":
+    True,
+    "COMPONENT_NO_READ_ONLY_REQUIRED":
+    True,
     # Authentication
     "AUTHENTICATION_WHITELIST": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -217,10 +230,22 @@ SPECTACULAR_SETTINGS = {
     ],
     # Tags
     "TAGS": [
-        {"name": "Authentication", "description": "Endpoints de autenticación JWT"},
-        {"name": "Users", "description": "Gestión de usuarios"},
-        {"name": "Students", "description": "Gestión de estudiantes y grupos"},
-        {"name": "Events", "description": "Gestión de eventos estudiantiles"},
+        {
+            "name": "Authentication",
+            "description": "Endpoints de autenticación JWT"
+        },
+        {
+            "name": "Users",
+            "description": "Gestión de usuarios"
+        },
+        {
+            "name": "Students",
+            "description": "Gestión de estudiantes y grupos"
+        },
+        {
+            "name": "Events",
+            "description": "Gestión de eventos estudiantiles"
+        },
     ],
     # Security schemes
     "APPEND_COMPONENTS": {
@@ -236,8 +261,10 @@ SPECTACULAR_SETTINGS = {
     # Preprocessing hooks
     "PREPROCESSING_HOOKS": [],
     # Schema path prefix
-    "SCHEMA_PATH_PREFIX": "/api/",
-    "SCHEMA_PATH_PREFIX_TRIM": True,
+    "SCHEMA_PATH_PREFIX":
+    "/api/",
+    "SCHEMA_PATH_PREFIX_TRIM":
+    True,
     # Custom extensions
     "EXTENSIONS_INFO": {
         "x-logo": {
@@ -247,13 +274,18 @@ SPECTACULAR_SETTINGS = {
     },
     # Enum generation
     "ENUM_NAME_OVERRIDES": {
-        "RoleEnum": "apps.users.models.User.Role",
-        "EventTypeEnum": "apps.events.models.Event.EventType",
-        "EventStatusEnum": "apps.events.models.Event.Status",
-        "AttendanceStatusEnum": "apps.events.models.EventAttendee.AttendanceStatus",
+        "RoleEnum":
+        "apps.users.models.User.Role",
+        "EventTypeEnum":
+        "apps.events.models.Event.EventType",
+        "EventStatusEnum":
+        "apps.events.models.Event.Status",
+        "AttendanceStatusEnum":
+        "apps.events.models.EventAttendee.AttendanceStatus",
     },
     # Disable warnings for missing descriptions
-    "DISABLE_ERRORS_AND_WARNINGS": True,
+    "DISABLE_ERRORS_AND_WARNINGS":
+    True,
 }
 
 CORS_ALLOW_CREDENTIALS = True
@@ -289,12 +321,13 @@ SIMPLE_JWT = {
     "ISSUER": None,
     "JWK_URL": None,
     "LEEWAY": 0,
-    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_TYPES": ("Bearer", ),
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
     "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "user_id",
-    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
-    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "USER_AUTHENTICATION_RULE":
+    "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken", ),
     "TOKEN_TYPE_CLAIM": "token_type",
     "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
     "JTI_CLAIM": "jti",
@@ -313,9 +346,8 @@ STATICFILES_DIRS = [
 ]
 
 # Email settings (for password reset, etc.)
-EMAIL_BACKEND = os.getenv(
-    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
-)
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND",
+                          "django.core.mail.backends.console.EmailBackend")
 EMAIL_HOST = os.getenv("EMAIL_HOST", "")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() == "true"
@@ -348,7 +380,8 @@ CSRF_TRUSTED_ORIGINS = [
 
 # Celery Configuration
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://127.0.0.1:6379/0")
-CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://127.0.0.1:6379/0")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND",
+                                  "redis://127.0.0.1:6379/0")
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
@@ -368,17 +401,27 @@ CELERY_BEAT_SCHEDULE = {
     "send-daily-digest": {
         "task": "apps.notifications.tasks.send_daily_digest",
         "schedule": 86400.0,  # Run daily
-        "options": {"hour": 9, "minute": 0},  # At 9 AM
+        "options": {
+            "hour": 9,
+            "minute": 0
+        },  # At 9 AM
     },
     "send-weekly-digest": {
         "task": "apps.notifications.tasks.send_weekly_digest",
         "schedule": 604800.0,  # Run weekly
-        "options": {"day_of_week": 1, "hour": 9, "minute": 0},  # Monday at 9 AM
+        "options": {
+            "day_of_week": 1,
+            "hour": 9,
+            "minute": 0
+        },  # Monday at 9 AM
     },
     "cleanup-old-notifications": {
         "task": "apps.notifications.tasks.cleanup_old_notifications",
         "schedule": 86400.0,  # Run daily
-        "options": {"hour": 2, "minute": 0},  # At 2 AM
+        "options": {
+            "hour": 2,
+            "minute": 0
+        },  # At 2 AM
     },
     "cleanup-expired-password-reset-tokens": {
         "task": "apps.users.tasks.cleanup_expired_password_reset_tokens",
@@ -433,7 +476,8 @@ SECURITY_SETTINGS = {
 }
 
 # SMS Configuration
-SMS_PROVIDER = os.getenv("SMS_PROVIDER", "console")  # 'twilio', 'aws_sns', 'console'
+SMS_PROVIDER = os.getenv("SMS_PROVIDER",
+                         "console")  # 'twilio', 'aws_sns', 'console'
 SMS_API_KEY = os.getenv("SMS_API_KEY", "")
 SMS_SENDER_ID = os.getenv("SMS_SENDER_ID", "Tecmilenio")
 
