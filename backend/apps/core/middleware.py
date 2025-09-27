@@ -2,27 +2,28 @@
 Custom middleware for security and rate limiting with comprehensive audit logging
 """
 
-import time
 import json
+import time
+
+from django.conf import settings
 from django.core.cache import cache
 from django.http import JsonResponse
 from django.utils.deprecation import MiddlewareMixin
-from django.conf import settings
 
+from .models import AuditLog
 from .security_utils import (
+    check_suspicious_patterns,
+    create_security_response,
     get_client_ip,
+    get_failure_count,
+    increment_failure_count,
     is_ip_locked,
     is_user_locked,
     lock_ip,
     lock_user,
-    increment_failure_count,
-    get_failure_count,
     log_security_event,
-    check_suspicious_patterns,
     validate_request_integrity,
-    create_security_response,
 )
-from .models import AuditLog
 
 
 class SecurityMiddleware(MiddlewareMixin):
@@ -50,9 +51,8 @@ class SecurityMiddleware(MiddlewareMixin):
                     "request_method": request.method,
                 },
             )
-            return create_security_response(
-                "Request validation failed", status_code=400
-            )
+            return create_security_response("Request validation failed",
+                                            status_code=400)
 
         # Check for suspicious patterns
         if check_suspicious_patterns(request):
@@ -90,7 +90,8 @@ class SecurityMiddleware(MiddlewareMixin):
                     event_type="account_locked",
                     request=request,
                     user=request.user,
-                    message=f"Request blocked from locked user account: {request.user.username}",
+                    message=
+                    f"Request blocked from locked user account: {request.user.username}",
                     extra_data={
                         "user_id": str(request.user.id),
                         "lockout_active": True,
@@ -107,7 +108,9 @@ class SecurityMiddleware(MiddlewareMixin):
         Process responses for security monitoring
         """
         # Monitor failed authentication attempts
-        if self._is_auth_endpoint(request) and response.status_code in [401, 403]:
+        if self._is_auth_endpoint(request) and response.status_code in [
+                401, 403
+        ]:
             self._handle_failed_auth(request, response)
 
         # Monitor successful authentication
@@ -158,30 +161,36 @@ class SecurityMiddleware(MiddlewareMixin):
                     user_failures = increment_failure_count(username, "user")
 
                     # Lock user account after too many failures
-                    security_settings = getattr(settings, "SECURITY_SETTINGS", {})
+                    security_settings = getattr(settings, "SECURITY_SETTINGS",
+                                                {})
                     max_user_attempts = security_settings.get(
-                        "MAX_LOGIN_ATTEMPTS_PER_USER", 10
-                    )
+                        "MAX_LOGIN_ATTEMPTS_PER_USER", 10)
 
                     if user_failures >= max_user_attempts:
                         lock_user(username)
                         log_security_event(
                             request,
                             "user_locked",
-                            {"username": username, "failure_count": user_failures},
+                            {
+                                "username": username,
+                                "failure_count": user_failures
+                            },
                         )
             except Exception as e:
-                log_security_event(request, "auth_monitoring_error", {"error": str(e)})
+                log_security_event(request, "auth_monitoring_error",
+                                   {"error": str(e)})
 
         # Lock IP after too many failures
         security_settings = getattr(settings, "SECURITY_SETTINGS", {})
-        max_ip_attempts = security_settings.get("MAX_LOGIN_ATTEMPTS_PER_IP", 20)
+        max_ip_attempts = security_settings.get("MAX_LOGIN_ATTEMPTS_PER_IP",
+                                                20)
 
         if ip_failures >= max_ip_attempts:
             lock_ip(ip)
-            log_security_event(
-                request, "ip_locked", {"ip": ip, "failure_count": ip_failures}
-            )
+            log_security_event(request, "ip_locked", {
+                "ip": ip,
+                "failure_count": ip_failures
+            })
 
         # Log failed authentication event
         log_security_event(
@@ -216,11 +225,8 @@ class SecurityMiddleware(MiddlewareMixin):
         """
         Handle permission violations (403 errors)
         """
-        user = (
-            request.user
-            if hasattr(request, "user") and request.user.is_authenticated
-            else None
-        )
+        user = (request.user if hasattr(request, "user")
+                and request.user.is_authenticated else None)
 
         # Determine the resource and action being attempted
         resource = request.path
@@ -280,7 +286,8 @@ class SecurityMiddleware(MiddlewareMixin):
                     request=request,
                     message="Invalid or manipulated token detected",
                     extra_data={
-                        "token_prefix": auth_header[:20] + "...",  # Log partial token
+                        "token_prefix":
+                        auth_header[:20] + "...",  # Log partial token
                         "attempted_resource": request.path,
                     },
                 )
@@ -294,15 +301,13 @@ class SecurityMiddleware(MiddlewareMixin):
 
         # Check if non-admin user is trying to access admin resources
         if user.role != "admin" and any(
-            request.path.startswith(path) for path in admin_paths
-        ):
+                request.path.startswith(path) for path in admin_paths):
             return True
 
         # Check if student is trying to access president resources
         president_paths = ["/api/groups/", "/api/events/create/"]
         if user.role == "student" and any(
-            request.path.startswith(path) for path in president_paths
-        ):
+                request.path.startswith(path) for path in president_paths):
             return True
 
         return False
@@ -322,14 +327,17 @@ class RateLimitMiddleware(MiddlewareMixin):
         Apply global rate limiting
         """
         # Skip rate limiting for certain paths
-        skip_paths = ["/admin/", "/static/", "/media/"]
+        skip_paths = ["/admin/", "/static/", "/media/", "/api/health/"]
         if any(request.path.startswith(path) for path in skip_paths):
             return None
 
         # Apply global rate limit
         if not self._check_global_rate_limit(request):
             return JsonResponse(
-                {"error": "Rate limit exceeded. Please slow down your requests."},
+                {
+                    "error":
+                    "Rate limit exceeded. Please slow down your requests."
+                },
                 status=429,
             )
 
@@ -339,19 +347,23 @@ class RateLimitMiddleware(MiddlewareMixin):
         """
         Check global rate limit per IP
         """
-        ip = self._get_client_ip(request)
-        rate_key = f"global_rate:{ip}"
+        try:
+            ip = self._get_client_ip(request)
+            rate_key = f"global_rate:{ip}"
 
-        # Get current count
-        current_count = cache.get(rate_key, 0)
+            # Get current count
+            current_count = cache.get(rate_key, 0)
 
-        # Global limit: 1000 requests per hour per IP
-        if current_count >= 1000:
-            return False
+            # Global limit: 1000 requests per hour per IP
+            if current_count >= 1000:
+                return False
 
-        # Increment counter
-        cache.set(rate_key, current_count + 1, 3600)  # 1 hour
-        return True
+            # Increment counter
+            cache.set(rate_key, current_count + 1, 3600)  # 1 hour
+            return True
+        except Exception as e:
+            print(f"Error checking global rate limit: {e}")
+            return True
 
     def _get_client_ip(self, request):
         """Get client IP address from request"""
@@ -377,20 +389,20 @@ class AuditLoggingMiddleware(MiddlewareMixin):
         # Log access to sensitive endpoints
         if self._is_sensitive_endpoint(request):
             AuditLog.log_event(
-                event_type=(
-                    "admin_action"
-                    if self._is_admin_endpoint(request)
-                    else "unauthorized_access"
-                ),
+                event_type=("admin_action" if self._is_admin_endpoint(request)
+                            else "unauthorized_access"),
                 request=request,
                 message=f"Access attempt to sensitive endpoint: {request.path}",
                 extra_data={
-                    "endpoint_type": self._get_endpoint_type(request),
-                    "request_method": request.method,
-                    "is_authenticated": hasattr(request, "user")
-                    and request.user.is_authenticated,
+                    "endpoint_type":
+                    self._get_endpoint_type(request),
+                    "request_method":
+                    request.method,
+                    "is_authenticated":
+                    hasattr(request, "user") and request.user.is_authenticated,
                 },
-                severity="medium" if self._is_admin_endpoint(request) else "high",
+                severity="medium"
+                if self._is_admin_endpoint(request) else "high",
             )
 
         return None
@@ -400,7 +412,8 @@ class AuditLoggingMiddleware(MiddlewareMixin):
         Log response information for audit trail
         """
         # Calculate request duration
-        duration = time.time() - getattr(request, "_audit_start_time", time.time())
+        duration = time.time() - getattr(request, "_audit_start_time",
+                                         time.time())
 
         # Log slow requests as potential security issues
         if duration > 5.0:  # Requests taking more than 5 seconds
@@ -417,11 +430,8 @@ class AuditLoggingMiddleware(MiddlewareMixin):
 
         # Log bulk operations
         if self._is_bulk_operation(request, response):
-            user = (
-                request.user
-                if hasattr(request, "user") and request.user.is_authenticated
-                else None
-            )
+            user = (request.user if hasattr(request, "user")
+                    and request.user.is_authenticated else None)
             AuditLog.log_event(
                 event_type="bulk_operation",
                 request=request,

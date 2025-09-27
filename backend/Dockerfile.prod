@@ -24,10 +24,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project
 COPY . /app/
 
-# Copy and set permissions for entrypoint script
-COPY entrypoint.sh /app/
-RUN chmod +x /app/entrypoint.sh
-
 # Collect static files
 RUN python manage.py collectstatic --noinput --clear
 

@@ -2,6 +2,7 @@ FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV DJANGO_SETTINGS_MODULE=config.settings.dev
 
 WORKDIR /app
 
@@ -20,7 +21,7 @@ COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt \
     && pip install gunicorn
 
-# Copy project files (NO entrypoint.sh handling)
+# Copy project files
 COPY . /app/
 # Create non-root user
 RUN adduser --disabled-password --gecos '' appuser && chown -R appuser /app
@@ -28,5 +29,9 @@ USER appuser
 
 EXPOSE 8000
 
-# Run Gunicorn directly (skips entrypoint)
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]
+# Keep your existing Dockerfile
+CMD ["sh", "-c", "\
+    echo 'Running Django setup...' && \
+    python manage.py migrate --noinput && \
+    echo 'Starting Gunicorn...' && \
+    gunicorn --bind 0.0.0.0:8000 --timeout 120 --workers 2 config.wsgi:application"]
