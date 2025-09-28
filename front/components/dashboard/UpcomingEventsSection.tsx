@@ -86,7 +86,6 @@ export default function UpcomingEventsSection({
 
   const formatEventDateTime = (event: DashboardEvent) => {
     const startDate = new Date(event.start_datetime);
-    const endDate = new Date(event.end_datetime);
 
     const date = startDate.toLocaleDateString('es-ES', {
       weekday: 'short',
@@ -182,14 +181,14 @@ export default function UpcomingEventsSection({
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className='h-full'>
         <CardHeader>
           <CardTitle className='flex items-center gap-2'>
             <Calendar className='w-5 h-5' />
             Próximos Eventos
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className='flex-1'>
           <div className='space-y-4'>
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className='animate-pulse'>
@@ -205,14 +204,14 @@ export default function UpcomingEventsSection({
 
   if (events.length === 0) {
     return (
-      <Card>
+      <Card className='h-full'>
         <CardHeader>
           <CardTitle className='flex items-center gap-2'>
             <Calendar className='w-5 h-5' />
             Próximos Eventos
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className='flex-1'>
           <div className='text-center py-8'>
             <Calendar className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
             <h3 className='text-lg font-semibold mb-2'>
@@ -231,7 +230,7 @@ export default function UpcomingEventsSection({
   }
 
   return (
-    <Card>
+    <Card className='h-full'>
       <CardHeader>
         <div className='flex items-center justify-between'>
           <CardTitle className='flex items-center gap-2'>
@@ -243,7 +242,7 @@ export default function UpcomingEventsSection({
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className='flex-1'>
         <div className='space-y-4'>
           {events.slice(0, 3).map(event => {
             const dateTime = formatEventDateTime(event);

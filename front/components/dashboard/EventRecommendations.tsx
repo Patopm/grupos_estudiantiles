@@ -137,7 +137,7 @@ export default function EventRecommendations({
 
   if (events.length === 0) {
     return (
-      <Card>
+      <Card className='h-full'>
         <CardHeader>
           <CardTitle className='flex items-center gap-2'>
             <Sparkles className='w-5 h-5' />
@@ -145,8 +145,8 @@ export default function EventRecommendations({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className='text-center py-6'>
-            <Sparkles className='w-10 h-10 text-muted-foreground mx-auto mb-3' />
+          <div className='text-center py-8'>
+            <Sparkles className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
             <h3 className='text-lg font-semibold mb-2'>
               No hay recomendaciones
             </h3>
@@ -167,7 +167,7 @@ export default function EventRecommendations({
             <Sparkles className='w-5 h-5' />
             Eventos Recomendados
           </CardTitle>
-          <Button variant='outline' size='sm' asChild>
+          <Button asChild>
             <Link href='/dashboard/student/events'>Explorar Más</Link>
           </Button>
         </div>

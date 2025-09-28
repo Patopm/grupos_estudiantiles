@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Search,
   Grid,
@@ -32,11 +33,17 @@ import { useDebounce } from '@/hooks/useDebounce';
 interface GroupListProps {
   groups: Group[];
   title?: string;
+  label?: string;
   showSearch?: boolean;
   showFilters?: boolean;
   showViewToggle?: boolean;
   variant?: 'default' | 'compact';
-  emptyMessage?: string;
+  noGroupsMessage?: string;
+  noGroupsAction?: {
+    label: string;
+    href?: string;
+    onClick?: () => void;
+  };
   onJoin?: (groupId: string) => void;
   onLeave?: (groupId: string) => void;
   onView?: (groupId: string) => void;
@@ -69,11 +76,13 @@ const SORT_OPTIONS = [
 export default function GroupList({
   groups,
   title,
+  label,
   showSearch = true,
   showFilters = true,
   showViewToggle = false,
   variant = 'default',
-  emptyMessage = 'No hay grupos disponibles',
+  noGroupsMessage = 'No tienes grupos registrados',
+  noGroupsAction,
   onJoin,
   onLeave,
   onView,
@@ -239,25 +248,42 @@ export default function GroupList({
 
   if (isLoading) {
     return (
-      <div className='space-y-4'>
-        {title && <h2 className='text-2xl font-bold'>{title}</h2>}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className='animate-pulse'>
-              <div className='bg-muted rounded-lg h-64'></div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <Card className='h-full'>
+        <CardHeader>
+          <div className='flex items-center justify-between'>
+            {label && (
+              <CardTitle className='flex items-center gap-2'>
+                <Users className='w-5 h-5' />
+                {label}
+              </CardTitle>
+            )}
+            {title && !label && <CardTitle>{title}</CardTitle>}
+          </div>
+        </CardHeader>
+        <CardContent className='flex-1'>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className='animate-pulse'>
+                <div className='bg-muted rounded-lg h-64'></div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className='space-y-6'>
-      {/* Header with title and view toggle */}
-      {title && (
+    <Card className='h-full'>
+      <CardHeader>
         <div className='flex items-center justify-between'>
-          <h2 className='text-2xl font-bold'>{title}</h2>
+          {label && (
+            <CardTitle className='flex items-center gap-2'>
+              <Users className='w-5 h-5' />
+              {label}
+            </CardTitle>
+          )}
+          {title && !label && <CardTitle>{title}</CardTitle>}
           {showViewToggle && (
             <div className='flex items-center gap-2'>
               <Button
@@ -279,270 +305,296 @@ export default function GroupList({
             </div>
           )}
         </div>
-      )}
-
-      {/* Search and filters */}
-      {(showSearch || showFilters) && (
-        <div className='space-y-4'>
-          {/* Search bar */}
-          {showSearch && (
-            <div className='relative'>
-              <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4' />
-              <Input
-                placeholder='Buscar grupos por nombre, descripción o presidente...'
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                className='pl-10'
-                aria-label='Buscar grupos'
-              />
-            </div>
-          )}
-
-          {/* Filters row */}
-          {showFilters && (
-            <div className='flex flex-col sm:flex-row gap-4 items-start sm:items-center'>
-              {/* Filter toggle button for mobile */}
-              <div className='flex items-center gap-2 sm:hidden'>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={() => setShowFiltersPanel(!showFiltersPanel)}
-                  className='flex items-center gap-2'
-                >
-                  <Filter className='w-4 h-4' />
-                  Filtros
-                  {activeFiltersCount > 0 && (
-                    <Badge variant='secondary' className='ml-1'>
-                      {activeFiltersCount}
-                    </Badge>
-                  )}
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform ${showFiltersPanel ? 'rotate-180' : ''}`}
-                  />
-                </Button>
+      </CardHeader>
+      <CardContent className='space-y-6 flex-1'>
+        {/* Search and filters */}
+        {(showSearch || showFilters) && (
+          <div className='space-y-4'>
+            {/* Search bar */}
+            {showSearch && (
+              <div className='relative'>
+                <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4' />
+                <Input
+                  placeholder='Buscar grupos por nombre, descripción o presidente...'
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className='pl-10'
+                  aria-label='Buscar grupos'
+                />
               </div>
+            )}
 
-              {/* Desktop filters */}
-              <div
-                className={`flex flex-wrap gap-2 ${showFiltersPanel ? 'block' : 'hidden sm:flex'}`}
-              >
-                {/* Sort dropdown */}
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className='w-[180px]'>
-                    <SelectValue placeholder='Ordenar por' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {SORT_OPTIONS.map(option => (
-                      <SelectItem key={option.value} value={option.value}>
-                        <div className='flex items-center gap-2'>
-                          {option.icon && <option.icon className='w-4 h-4' />}
-                          {option.label}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                {/* Additional filter toggles */}
-                <div className='flex items-center gap-4'>
-                  <label className='flex items-center gap-2 text-sm cursor-pointer'>
-                    <Checkbox
-                      checked={hasSpaceOnly}
-                      onCheckedChange={checked =>
-                        setHasSpaceOnly(checked === true)
-                      }
+            {/* Filters row */}
+            {showFilters && (
+              <div className='flex flex-col sm:flex-row gap-4 items-start sm:items-center'>
+                {/* Filter toggle button for mobile */}
+                <div className='flex items-center gap-2 sm:hidden'>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={() => setShowFiltersPanel(!showFiltersPanel)}
+                    className='flex items-center gap-2'
+                  >
+                    <Filter className='w-4 h-4' />
+                    Filtros
+                    {activeFiltersCount > 0 && (
+                      <Badge variant='secondary' className='ml-1'>
+                        {activeFiltersCount}
+                      </Badge>
+                    )}
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform ${showFiltersPanel ? 'rotate-180' : ''}`}
                     />
-                    Solo con cupos
-                  </label>
-                  <label className='flex items-center gap-2 text-sm cursor-pointer'>
-                    <Checkbox
-                      checked={activeOnly}
-                      onCheckedChange={checked =>
-                        setActiveOnly(checked === true)
-                      }
-                    />
-                    Solo activos
-                  </label>
+                  </Button>
                 </div>
 
-                {/* Clear filters */}
-                {activeFiltersCount > 0 && (
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    onClick={clearAllFilters}
-                    className='flex items-center gap-1'
-                  >
-                    <X className='w-4 h-4' />
-                    Limpiar
-                  </Button>
+                {/* Desktop filters */}
+                <div
+                  className={`flex flex-wrap gap-2 ${showFiltersPanel ? 'block' : 'hidden sm:flex'}`}
+                >
+                  {/* Sort dropdown */}
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className='w-[180px]'>
+                      <SelectValue placeholder='Ordenar por' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SORT_OPTIONS.map(option => (
+                        <SelectItem key={option.value} value={option.value}>
+                          <div className='flex items-center gap-2'>
+                            {option.icon && <option.icon className='w-4 h-4' />}
+                            {option.label}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {/* Additional filter toggles */}
+                  <div className='flex items-center gap-4'>
+                    <label className='flex items-center gap-2 text-sm cursor-pointer'>
+                      <Checkbox
+                        checked={hasSpaceOnly}
+                        onCheckedChange={checked =>
+                          setHasSpaceOnly(checked === true)
+                        }
+                      />
+                      Solo con cupos
+                    </label>
+                    <label className='flex items-center gap-2 text-sm cursor-pointer'>
+                      <Checkbox
+                        checked={activeOnly}
+                        onCheckedChange={checked =>
+                          setActiveOnly(checked === true)
+                        }
+                      />
+                      Solo activos
+                    </label>
+                  </div>
+
+                  {/* Clear filters */}
+                  {activeFiltersCount > 0 && (
+                    <Button
+                      variant='ghost'
+                      size='sm'
+                      onClick={clearAllFilters}
+                      className='flex items-center gap-1'
+                    >
+                      <X className='w-4 h-4' />
+                      Limpiar
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Category filters */}
+            {showFilters && (
+              <div
+                className={`space-y-2 ${showFiltersPanel ? 'block' : 'hidden sm:block'}`}
+              >
+                <div className='text-sm font-medium text-muted-foreground'>
+                  Categorías:
+                </div>
+                <div className='flex flex-wrap gap-2'>
+                  {CATEGORIES.map(category => (
+                    <Button
+                      key={category.value}
+                      variant={
+                        selectedCategories.includes(category.value)
+                          ? 'default'
+                          : 'outline'
+                      }
+                      size='sm'
+                      onClick={() => handleCategoryToggle(category.value)}
+                      className='text-xs'
+                    >
+                      {category.label}
+                      {selectedCategories.includes(category.value) &&
+                        category.value !== 'all' && (
+                          <X className='w-3 h-3 ml-1' />
+                        )}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Active filters summary */}
+            {activeFiltersCount > 0 && (
+              <div className='flex items-center gap-2 text-sm text-muted-foreground'>
+                <Filter className='w-4 h-4' />
+                {activeFiltersCount} filtro{activeFiltersCount > 1 ? 's' : ''}{' '}
+                activo{activeFiltersCount > 1 ? 's' : ''}
+                {!selectedCategories.includes('all') && (
+                  <span>• Categorías: {selectedCategories.join(', ')}</span>
                 )}
               </div>
-            </div>
-          )}
+            )}
+          </div>
+        )}
 
-          {/* Category filters */}
-          {showFilters && (
-            <div
-              className={`space-y-2 ${showFiltersPanel ? 'block' : 'hidden sm:block'}`}
-            >
-              <div className='text-sm font-medium text-muted-foreground'>
-                Categorías:
-              </div>
-              <div className='flex flex-wrap gap-2'>
-                {CATEGORIES.map(category => (
-                  <Button
-                    key={category.value}
-                    variant={
-                      selectedCategories.includes(category.value)
-                        ? 'default'
-                        : 'outline'
-                    }
-                    size='sm'
-                    onClick={() => handleCategoryToggle(category.value)}
-                    className='text-xs'
-                  >
-                    {category.label}
-                    {selectedCategories.includes(category.value) &&
-                      category.value !== 'all' && (
-                        <X className='w-3 h-3 ml-1' />
-                      )}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Active filters summary */}
-          {activeFiltersCount > 0 && (
-            <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-              <Filter className='w-4 h-4' />
-              {activeFiltersCount} filtro{activeFiltersCount > 1 ? 's' : ''}{' '}
-              activo{activeFiltersCount > 1 ? 's' : ''}
-              {!selectedCategories.includes('all') && (
-                <span>• Categorías: {selectedCategories.join(', ')}</span>
+        {/* Results */}
+        {filteredAndSortedGroups.length === 0 ? (
+          <div className='text-center py-12'>
+            <div className='w-16 h-16 mx-auto flex items-center justify-center'>
+              {activeFiltersCount > 0 || debouncedSearchTerm.trim() ? (
+                <Search className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
+              ) : (
+                <Users className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
               )}
             </div>
-          )}
-        </div>
-      )}
-
-      {/* Results */}
-      {filteredAndSortedGroups.length === 0 ? (
-        <div className='text-center py-12'>
-          <div className='w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center'>
-            <Search className='w-8 h-8 text-muted-foreground' />
-          </div>
-          <h3 className='text-lg font-semibold mb-2'>
-            No se encontraron grupos
-          </h3>
-          <p className='text-muted-foreground mb-4'>
-            {activeFiltersCount > 0
-              ? 'Intenta ajustar los filtros de búsqueda'
-              : emptyMessage}
-          </p>
-          {activeFiltersCount > 0 && (
-            <Button variant='outline' onClick={clearAllFilters}>
-              Limpiar filtros
-            </Button>
-          )}
-        </div>
-      ) : (
-        <>
-          {/* Groups grid/list */}
-          <div
-            className={
-              viewMode === 'grid'
-                ? `grid grid-cols-1 ${variant === 'compact' ? 'md:grid-cols-2 lg:grid-cols-4' : 'md:grid-cols-2 lg:grid-cols-3'} gap-4`
-                : 'space-y-4'
-            }
-          >
-            {paginatedGroups.map(group => (
-              <GroupCard
-                key={group.group_id}
-                group={group}
-                variant={viewMode === 'list' ? 'compact' : variant}
-                onJoin={onJoin}
-                onLeave={onLeave}
-                onView={onView}
-                onManage={onManage}
-              />
-            ))}
-          </div>
-
-          {/* Pagination */}
-          {enablePagination && totalPages > 1 && (
-            <div className='flex items-center justify-between'>
-              <div className='text-sm text-muted-foreground'>
-                Mostrando {(currentPage - 1) * itemsPerPage + 1} -{' '}
-                {Math.min(
-                  currentPage * itemsPerPage,
-                  filteredAndSortedGroups.length
-                )}{' '}
-                de {filteredAndSortedGroups.length} grupos
-              </div>
-              <div className='flex items-center gap-2'>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                  disabled={!hasPrevPage}
-                  aria-label='Página anterior'
-                >
-                  <ChevronLeft className='w-4 h-4' />
+            <h3 className='text-lg font-semibold mb-2'>
+              {activeFiltersCount > 0 || debouncedSearchTerm.trim()
+                ? 'No se encontraron grupos'
+                : 'No tienes grupos registrados'}
+            </h3>
+            <p className='text-muted-foreground mb-4'>
+              {activeFiltersCount > 0 || debouncedSearchTerm.trim()
+                ? 'Intenta ajustar los filtros de búsqueda'
+                : noGroupsMessage}
+            </p>
+            <div className='flex flex-col sm:flex-row gap-2 justify-center'>
+              {activeFiltersCount > 0 && (
+                <Button variant='outline' onClick={clearAllFilters}>
+                  Limpiar filtros
                 </Button>
-                <div className='flex items-center gap-1'>
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let pageNum;
-                    if (totalPages <= 5) {
-                      pageNum = i + 1;
-                    } else if (currentPage <= 3) {
-                      pageNum = i + 1;
-                    } else if (currentPage >= totalPages - 2) {
-                      pageNum = totalPages - 4 + i;
-                    } else {
-                      pageNum = currentPage - 2 + i;
-                    }
-
-                    return (
-                      <Button
-                        key={pageNum}
-                        variant={
-                          currentPage === pageNum ? 'default' : 'outline'
-                        }
-                        size='sm'
-                        onClick={() => setCurrentPage(pageNum)}
-                        className='w-8 h-8 p-0'
-                      >
-                        {pageNum}
+              )}
+              {!activeFiltersCount &&
+                !debouncedSearchTerm.trim() &&
+                noGroupsAction && (
+                  <>
+                    {noGroupsAction.href ? (
+                      <Button asChild>
+                        <a href={noGroupsAction.href}>{noGroupsAction.label}</a>
                       </Button>
-                    );
-                  })}
-                </div>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={() =>
-                    setCurrentPage(prev => Math.min(totalPages, prev + 1))
-                  }
-                  disabled={!hasNextPage}
-                  aria-label='Página siguiente'
-                >
-                  <ChevronRight className='w-4 h-4' />
-                </Button>
-              </div>
+                    ) : (
+                      <Button onClick={noGroupsAction.onClick}>
+                        {noGroupsAction.label}
+                      </Button>
+                    )}
+                  </>
+                )}
             </div>
-          )}
+          </div>
+        ) : (
+          <>
+            {/* Groups grid/list */}
+            <div
+              className={
+                viewMode === 'grid'
+                  ? `grid grid-cols-1 ${variant === 'compact' ? 'md:grid-cols-2 lg:grid-cols-4' : 'md:grid-cols-2 lg:grid-cols-3'} gap-4`
+                  : 'space-y-4'
+              }
+            >
+              {paginatedGroups.map(group => (
+                <GroupCard
+                  key={group.group_id}
+                  group={group}
+                  variant={viewMode === 'list' ? 'compact' : variant}
+                  onJoin={onJoin}
+                  onLeave={onLeave}
+                  onView={onView}
+                  onManage={onManage}
+                />
+              ))}
+            </div>
 
-          {/* Results summary */}
-          {!enablePagination && (
-            <div className='text-center text-sm text-muted-foreground'>
-              Mostrando {filteredAndSortedGroups.length} de{' '}
-              {groups?.length || 0} grupos
-            </div>
-          )}
-        </>
-      )}
-    </div>
+            {/* Pagination */}
+            {enablePagination && totalPages > 1 && (
+              <div className='flex items-center justify-between'>
+                <div className='text-sm text-muted-foreground'>
+                  Mostrando {(currentPage - 1) * itemsPerPage + 1} -{' '}
+                  {Math.min(
+                    currentPage * itemsPerPage,
+                    filteredAndSortedGroups.length
+                  )}{' '}
+                  de {filteredAndSortedGroups.length} grupos
+                </div>
+                <div className='flex items-center gap-2'>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={() =>
+                      setCurrentPage(prev => Math.max(1, prev - 1))
+                    }
+                    disabled={!hasPrevPage}
+                    aria-label='Página anterior'
+                  >
+                    <ChevronLeft className='w-4 h-4' />
+                  </Button>
+                  <div className='flex items-center gap-1'>
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum;
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+
+                      return (
+                        <Button
+                          key={pageNum}
+                          variant={
+                            currentPage === pageNum ? 'default' : 'outline'
+                          }
+                          size='sm'
+                          onClick={() => setCurrentPage(pageNum)}
+                          className='w-8 h-8 p-0'
+                        >
+                          {pageNum}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={() =>
+                      setCurrentPage(prev => Math.min(totalPages, prev + 1))
+                    }
+                    disabled={!hasNextPage}
+                    aria-label='Página siguiente'
+                  >
+                    <ChevronRight className='w-4 h-4' />
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Results summary */}
+            {!enablePagination && (
+              <div className='text-center text-sm text-muted-foreground'>
+                Mostrando {filteredAndSortedGroups.length} de{' '}
+                {groups?.length || 0} grupos
+              </div>
+            )}
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 }

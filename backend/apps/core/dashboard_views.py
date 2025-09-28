@@ -275,15 +275,66 @@ def student_dashboard(request):
         try:
             attendance = EventAttendance.objects.get(user=user, event=event)
             attendance_status = attendance.status
+            is_registered = attendance.status in [
+                'registered', 'confirmed', 'attended'
+            ]
         except EventAttendance.DoesNotExist:
             attendance_status = None
+            is_registered = False
+
+        # Get target groups for this event
+        target_groups = event.target_groups.all()
+        target_groups_data = [{
+            "group_id": str(group.group_id),
+            "name": group.name,
+            "category": group.category,
+        } for group in target_groups]
 
         upcoming_events.append({
-            "event_id": str(event.event_id),
-            "title": event.title,
-            "start_datetime": event.start_datetime,
-            "location": event.location,
-            "my_attendance_status": attendance_status,
+            "event_id":
+            str(event.event_id),
+            "title":
+            event.title,
+            "description":
+            event.description,
+            "event_type":
+            event.event_type,
+            "status":
+            event.status,
+            "start_datetime":
+            event.start_datetime.isoformat(),
+            "end_datetime":
+            event.end_datetime.isoformat() if event.end_datetime else None,
+            "location":
+            event.location,
+            "max_attendees":
+            event.max_attendees,
+            "attendee_count":
+            event.attendee_count,
+            "requires_registration":
+            event.requires_registration,
+            "registration_deadline":
+            event.registration_deadline.isoformat()
+            if event.registration_deadline else None,
+            "image":
+            event.image.url if event.image else None,
+            "group_name":
+            target_groups[0].name if target_groups else "Evento Público",
+            "group_id":
+            str(target_groups[0].group_id) if target_groups else None,
+            "user_attendance_status":
+            attendance_status,
+            "is_registered":
+            is_registered,
+            "registration_open":
+            event.registration_open,
+            "is_full":
+            event.max_attendees
+            and event.attendee_count >= event.max_attendees,
+            "is_past":
+            event.start_datetime < timezone.now(),
+            "target_groups":
+            target_groups_data,
         })
 
     # Solicitudes pendientes
@@ -291,8 +342,10 @@ def student_dashboard(request):
         user=user, status="pending").select_related("group")
 
     pending_requests_data = [{
+        "group_id": str(req.group.group_id),
         "group_name": req.group.name,
-        "requested_at": req.joined_at
+        "requested_at": req.joined_at.isoformat(),
+        "status": req.status,
     } for req in pending_requests]
 
     # Grupos disponibles (no soy miembro ni tengo solicitud pendiente)
@@ -325,18 +378,184 @@ def student_dashboard(request):
     # Estadísticas
     total_events_attended = EventAttendance.objects.filter(
         user=user, status="attended").count()
+    total_events_registered = EventAttendance.objects.filter(
+        user=user, status__in=["registered", "confirmed", "attended"]).count()
+    upcoming_events_count = len(upcoming_events)
+
+    # Calculate activity score based on participation
+    activity_score = 0
+    if len(my_groups) > 0:
+        activity_score += min(40,
+                              len(my_groups) * 10)  # Max 40 points for groups
+    if total_events_attended > 0:
+        activity_score += min(40, total_events_attended *
+                              8)  # Max 40 points for events
+    if total_events_registered > 0:
+        activity_score += min(20, total_events_registered *
+                              4)  # Max 20 points for registrations
 
     stats = {
         "total_groups": len(my_groups),
         "total_events_attended": total_events_attended,
+        "total_events_registered": total_events_registered,
+        "upcoming_events_count": upcoming_events_count,
         "pending_requests_count": len(pending_requests_data),
+        "activity_score": activity_score,
     }
+
+    # Eventos recomendados (eventos públicos o de grupos similares)
+    recommended_events = []
+    if len(my_groups) > 0:
+        # Get events from groups with similar categories
+        my_categories = [group.category for group in my_groups]
+        recommended_events_query = Event.objects.filter(
+            target_groups__category__in=my_categories,
+            status="published",
+            start_datetime__gte=timezone.now(),
+        ).exclude(
+            Q(target_groups__group_id__in=my_group_ids)).distinct().order_by(
+                "start_datetime")[:5]
+
+        for event in recommended_events_query:
+            try:
+                attendance = EventAttendance.objects.get(user=user,
+                                                         event=event)
+                attendance_status = attendance.status
+                is_registered = attendance.status in [
+                    'registered', 'confirmed', 'attended'
+                ]
+            except EventAttendance.DoesNotExist:
+                attendance_status = None
+                is_registered = False
+
+            target_groups = event.target_groups.all()
+            target_groups_data = [{
+                "group_id": str(group.group_id),
+                "name": group.name,
+                "category": group.category,
+            } for group in target_groups]
+
+            recommended_events.append({
+                "event_id":
+                str(event.event_id),
+                "title":
+                event.title,
+                "description":
+                event.description,
+                "event_type":
+                event.event_type,
+                "status":
+                event.status,
+                "start_datetime":
+                event.start_datetime.isoformat(),
+                "end_datetime":
+                event.end_datetime.isoformat() if event.end_datetime else None,
+                "location":
+                event.location,
+                "max_attendees":
+                event.max_attendees,
+                "attendee_count":
+                event.attendee_count,
+                "requires_registration":
+                event.requires_registration,
+                "registration_deadline":
+                event.registration_deadline.isoformat()
+                if event.registration_deadline else None,
+                "image":
+                event.image.url if event.image else None,
+                "group_name":
+                target_groups[0].name if target_groups else "Evento Público",
+                "group_id":
+                str(target_groups[0].group_id) if target_groups else None,
+                "user_attendance_status":
+                attendance_status,
+                "is_registered":
+                is_registered,
+                "registration_open":
+                event.registration_open,
+                "is_full":
+                event.max_attendees
+                and event.attendee_count >= event.max_attendees,
+                "is_past":
+                event.start_datetime < timezone.now(),
+                "target_groups":
+                target_groups_data,
+                "recommendation_reason":
+                f"Similar a tus grupos de {target_groups[0].category if target_groups else 'interés'}",
+            })
+
+    # Actividad reciente
+    recent_activity = []
+
+    # Recent group memberships
+    recent_memberships = GroupMembership.objects.filter(
+        user=user,
+        status="active").select_related("group").order_by("-joined_at")[:5]
+
+    for membership in recent_memberships:
+        recent_activity.append({
+            "id": f"membership_{membership.id}",
+            "type": "group_joined",
+            "title": f"Te uniste a {membership.group.name}",
+            "description":
+            f"Ahora eres miembro del grupo {membership.group.name}",
+            "timestamp": membership.joined_at.isoformat(),
+            "group_name": membership.group.name,
+        })
+
+    # Recent event attendances
+    recent_attendances = EventAttendance.objects.filter(
+        user=user, status="attended").select_related("event").order_by(
+            "-registered_at")[:5]
+
+    for attendance in recent_attendances:
+        recent_activity.append({
+            "id":
+            f"attendance_{attendance.id}",
+            "type":
+            "event_attended",
+            "title":
+            f"Asististe a {attendance.event.title}",
+            "description":
+            f"Participaste en el evento {attendance.event.title}",
+            "timestamp":
+            attendance.registered_at.isoformat(),
+            "event_title":
+            attendance.event.title,
+        })
+
+    # Recent event registrations
+    recent_registrations = EventAttendance.objects.filter(
+        user=user, status="registered").select_related("event").order_by(
+            "-registered_at")[:5]
+
+    for registration in recent_registrations:
+        recent_activity.append({
+            "id":
+            f"registration_{registration.id}",
+            "type":
+            "event_registered",
+            "title":
+            f"Te registraste para {registration.event.title}",
+            "description":
+            f"Te inscribiste al evento {registration.event.title}",
+            "timestamp":
+            registration.registered_at.isoformat(),
+            "event_title":
+            registration.event.title,
+        })
+
+    # Sort by timestamp and take the most recent 10
+    recent_activity.sort(key=lambda x: x["timestamp"], reverse=True)
+    recent_activity = recent_activity[:10]
 
     return Response({
         "user_info": user_info,
         "my_groups": my_groups,
         "available_groups": available_groups,
         "upcoming_events": upcoming_events,
+        "recommended_events": recommended_events,
+        "recent_activity": recent_activity,
         "pending_requests": pending_requests_data,
         "participation_stats": stats,
     })

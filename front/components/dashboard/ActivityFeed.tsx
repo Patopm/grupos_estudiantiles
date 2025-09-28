@@ -154,10 +154,10 @@ export default function ActivityFeed({
               Tu actividad aparecerá aquí cuando te unas a grupos o eventos
             </p>
             <div className='flex gap-2 justify-center'>
-              <Button variant='outline' size='sm' asChild>
+              <Button asChild>
                 <Link href='/dashboard/student/groups'>Explorar Grupos</Link>
               </Button>
-              <Button variant='outline' size='sm' asChild>
+              <Button asChild>
                 <Link href='/dashboard/student/events'>Ver Eventos</Link>
               </Button>
             </div>
@@ -175,7 +175,7 @@ export default function ActivityFeed({
             <Activity className='w-5 h-5' />
             Actividad Reciente
           </CardTitle>
-          <Button variant='outline' size='sm' asChild>
+          <Button asChild>
             <Link href='/dashboard/student/activity'>Ver Todo</Link>
           </Button>
         </div>

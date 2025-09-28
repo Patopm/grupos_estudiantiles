@@ -51,7 +51,7 @@ export function useAuthError(
   const [isRetrying, setIsRetrying] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [lastOperation, setLastOperation] = useState<
-    (() => Promise<any>) | null
+    (() => Promise<unknown>) | null
   >(null);
 
   const maxRetries = retryConfig.maxRetries || 3;
@@ -191,7 +191,8 @@ export function useAuthError(
           );
 
           if (securityCheck.waitTime) {
-            (securityError as any).retryAfter = securityCheck.waitTime;
+            (securityError as AuthError & { retryAfter?: number }).retryAfter =
+              securityCheck.waitTime;
           }
 
           throw securityError;

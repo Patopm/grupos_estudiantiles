@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import GroupList from '@/components/groups/GroupList';
 import { groupsApi } from '@/lib/api/groups';
 import { useRouter } from 'next/navigation';
+import { Users, Search, Calendar } from 'lucide-react';
 
 export default function StudentDashboard() {
   return (
@@ -58,25 +59,6 @@ function StudentDashboardContent() {
       setDashboardData(data);
     } catch (error) {
       console.error('Error refreshing dashboard data:', error);
-    }
-  };
-
-  const handleJoinGroup = async (groupId: string) => {
-    try {
-      await groupsApi.join(groupId);
-      toast({
-        title: 'Solicitud Enviada',
-        description:
-          'Tu solicitud de ingreso ha sido enviada al presidente del grupo',
-      });
-      refreshDashboardData(); // Refresh data
-    } catch (error) {
-      console.error('Error joining group:', error);
-      toast({
-        title: 'Error',
-        description: 'No se pudo enviar la solicitud de ingreso',
-        variant: 'destructive',
-      });
     }
   };
 
@@ -134,12 +116,159 @@ function StudentDashboardContent() {
       />
 
       <div className='max-w-7xl mx-auto p-6 space-y-8'>
-        {/* Enhanced Statistics */}
-        {dashboardData && (
-          <EnhancedParticipationStats
-            stats={dashboardData.participation_stats}
-          />
-        )}
+        {/* New Student Welcome Card - Show when student has no groups */}
+        {dashboardData &&
+          dashboardData.participation_stats.total_groups === 0 && (
+            <div className='bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20 rounded-lg p-8 text-center'>
+              <div className='max-w-2xl mx-auto'>
+                <div className='mb-6'>
+                  <div className='w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4'>
+                    <Users className='w-8 h-8 text-primary' />
+                  </div>
+                  <h2 className='text-2xl font-bold mb-2'>
+                    ¡Bienvenido a la plataforma!
+                  </h2>
+                  <p className='text-muted-foreground'>
+                    Para comenzar tu experiencia estudiantil, únete a grupos que
+                    te interesen. Aquí podrás participar en eventos, conocer
+                    compañeros y desarrollar nuevas habilidades.
+                  </p>
+                </div>
+                <div className='space-y-4'>
+                  <button
+                    onClick={() =>
+                      router.push('/dashboard/student/groups?tab=available')
+                    }
+                    className='bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-3 rounded-lg font-semibold transition-colors inline-flex items-center gap-2'
+                  >
+                    <Search className='w-5 h-5' />
+                    Ver Grupos Disponibles
+                  </button>
+                  <div className='text-sm text-muted-foreground'>
+                    Descubre grupos estudiantiles que coincidan con tus
+                    intereses
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+        {/* Enhanced Statistics - Show when student has groups */}
+        {dashboardData &&
+          dashboardData.participation_stats.total_groups > 0 && (
+            <EnhancedParticipationStats
+              stats={dashboardData.participation_stats}
+            />
+          )}
+
+        {/* Main Content */}
+        <div className='space-y-6'>
+          {/* Stats Overview */}
+          {dashboardData &&
+            dashboardData.participation_stats.total_groups > 0 && (
+              <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+                <div className='bg-gradient-to-br from-blue-500/10 to-blue-600/5 rounded-xl p-4 border border-blue-500/20'>
+                  <div className='flex items-center gap-3'>
+                    <div className='p-2 rounded-lg bg-blue-500/20'>
+                      <Users className='w-5 h-5 text-blue-500' />
+                    </div>
+                    <div>
+                      <p className='text-sm text-muted-foreground'>Grupos</p>
+                      <p className='text-xl font-bold'>
+                        {dashboardData.participation_stats.total_groups}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className='bg-gradient-to-br from-green-500/10 to-green-600/5 rounded-xl p-4 border border-green-500/20'>
+                  <div className='flex items-center gap-3'>
+                    <div className='p-2 rounded-lg bg-green-500/20'>
+                      <Calendar className='w-5 h-5 text-green-500' />
+                    </div>
+                    <div>
+                      <p className='text-sm text-muted-foreground'>Eventos</p>
+                      <p className='text-xl font-bold'>
+                        {
+                          dashboardData.participation_stats
+                            .total_events_attended
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className='bg-gradient-to-br from-orange-500/10 to-orange-600/5 rounded-xl p-4 border border-orange-500/20'>
+                  <div className='flex items-center gap-3'>
+                    <div className='p-2 rounded-lg bg-orange-500/20'>
+                      <Calendar className='w-5 h-5 text-orange-500' />
+                    </div>
+                    <div>
+                      <p className='text-sm text-muted-foreground'>Próximos</p>
+                      <p className='text-xl font-bold'>
+                        {dashboardData.upcoming_events.length}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className='bg-gradient-to-br from-purple-500/10 to-purple-600/5 rounded-xl p-4 border border-purple-500/20'>
+                  <div className='flex items-center gap-3'>
+                    <div className='p-2 rounded-lg bg-purple-500/20'>
+                      <Search className='w-5 h-5 text-purple-500' />
+                    </div>
+                    <div>
+                      <p className='text-sm text-muted-foreground'>Actividad</p>
+                      <p className='text-xl font-bold'>
+                        {dashboardData.participation_stats.activity_score}%
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+          {/* Main Content Grid - 2x2 Layout */}
+          <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+            {/* Upcoming Events */}
+            <div className='space-y-4'>
+              {dashboardData && (
+                <UpcomingEventsSection
+                  events={dashboardData.upcoming_events}
+                  onRefresh={refreshDashboardData}
+                />
+              )}
+            </div>
+
+            {/* My Groups */}
+            <div className='space-y-4'>
+              <GroupList
+                groups={dashboardData?.my_groups.slice(0, 3) || []}
+                label='Mis Grupos'
+                showSearch={false}
+                showFilters={false}
+                variant='compact'
+                noGroupsMessage='No perteneces a ningún grupo'
+                onLeave={handleLeaveGroup}
+                onView={handleViewGroup}
+              />
+            </div>
+
+            {/* Recent Activity */}
+            {dashboardData?.recent_activity && (
+              <div className='space-y-4'>
+                <ActivityFeed activities={dashboardData.recent_activity} />
+              </div>
+            )}
+
+            {/* Event Recommendations */}
+            {dashboardData?.recommended_events && (
+              <div className='space-y-4'>
+                <EventRecommendations
+                  events={dashboardData.recommended_events}
+                  onRefresh={refreshDashboardData}
+                />
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Quick Actions */}
         <StudentQuickActions
@@ -149,108 +278,21 @@ function StudentDashboardContent() {
           upcomingEvents={dashboardData?.upcoming_events.length}
         />
 
-        {/* Main Content Grid */}
-        <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
-          {/* Left Column - Events */}
-          <div className='lg:col-span-2 space-y-6'>
-            {/* Upcoming Events */}
-            {dashboardData && (
-              <UpcomingEventsSection
-                events={dashboardData.upcoming_events}
-                onRefresh={refreshDashboardData}
-              />
-            )}
-
-            {/* Event Recommendations */}
-            {dashboardData && dashboardData.recommended_events && (
-              <EventRecommendations
-                events={dashboardData.recommended_events}
-                onRefresh={refreshDashboardData}
-              />
-            )}
-
-            {/* My Groups Section */}
-            {dashboardData && dashboardData.my_groups.length > 0 && (
-              <div className='space-y-4'>
-                <h2 className='text-2xl font-bold'>Mis Grupos</h2>
-                <GroupList
-                  groups={dashboardData.my_groups.slice(0, 4)} // Show only first 4
-                  showSearch={false}
-                  showFilters={false}
-                  variant='compact'
-                  emptyMessage='No perteneces a ningún grupo'
-                  onLeave={handleLeaveGroup}
-                  onView={handleViewGroup}
-                />
-                {dashboardData.my_groups.length > 4 && (
-                  <div className='text-center'>
-                    <button
-                      onClick={() => router.push('/dashboard/student/groups')}
-                      className='text-primary hover:underline'
-                    >
-                      Ver todos mis grupos ({dashboardData.my_groups.length})
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Available Groups Section */}
-            {dashboardData && dashboardData.available_groups.length > 0 && (
-              <div className='space-y-4'>
-                <h2 className='text-2xl font-bold'>Grupos Disponibles</h2>
-                <GroupList
-                  groups={dashboardData.available_groups.slice(0, 3)} // Show only first 3
-                  showSearch={false}
-                  showFilters={false}
-                  variant='compact'
-                  emptyMessage='No hay grupos disponibles'
-                  onJoin={handleJoinGroup}
-                  onView={handleViewGroup}
-                />
-                {dashboardData.available_groups.length > 3 && (
-                  <div className='text-center'>
-                    <button
-                      onClick={() =>
-                        router.push('/dashboard/student/groups?tab=available')
-                      }
-                      className='text-primary hover:underline'
-                    >
-                      Explorar todos los grupos (
-                      {dashboardData.available_groups.length})
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Right Column - Activity Feed */}
-          <div className='space-y-6'>
-            {/* Activity Feed */}
-            {dashboardData && dashboardData.recent_activity && (
-              <ActivityFeed activities={dashboardData.recent_activity} />
-            )}
-
-            {/* User Information */}
-            <div className='p-6 bg-primary/5 dark:bg-primary/10 rounded-lg'>
-              <h2 className='text-xl font-semibold mb-4'>
-                Información de Usuario
-              </h2>
-              <div className='grid grid-cols-1 gap-4 text-sm'>
-                <div>
-                  <strong>Email:</strong> {user?.email}
-                </div>
-                <div>
-                  <strong>Matrícula:</strong> {user?.student_id}
-                </div>
-                <div>
-                  <strong>Teléfono:</strong> {user?.phone}
-                </div>
-                <div>
-                  <strong>Rol:</strong> {user?.role_display}
-                </div>
-              </div>
+        {/* Footer - User Information */}
+        <div className='mt-8 p-6 bg-primary/5 dark:bg-primary/10 rounded-lg'>
+          <h2 className='text-xl font-semibold mb-4'>Información de Usuario</h2>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm'>
+            <div>
+              <strong>Email:</strong> {user?.email}
+            </div>
+            <div>
+              <strong>Matrícula:</strong> {user?.student_id}
+            </div>
+            <div>
+              <strong>Teléfono:</strong> {user?.phone}
+            </div>
+            <div>
+              <strong>Rol:</strong> {user?.role_display}
             </div>
           </div>
         </div>
