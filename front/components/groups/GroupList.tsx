@@ -57,8 +57,8 @@ const CATEGORIES = [
   { value: 'all', label: 'Todos' },
   { value: 'deportivo', label: 'Deportivo' },
   { value: 'cultural', label: 'Cultural' },
-  { value: 'académico', label: 'Académico' },
-  { value: 'tecnológico', label: 'Tecnológico' },
+  { value: 'academico', label: 'Académico' },
+  { value: 'tecnologico', label: 'Tecnológico' },
   { value: 'social', label: 'Social' },
   { value: 'otro', label: 'Otro' },
 ];

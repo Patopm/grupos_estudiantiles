@@ -226,7 +226,7 @@ export default function GroupCard({
           size='sm'
           onClick={() => handleAction(() => onView(group.group_id), 'view')}
           disabled={actionLoading !== null}
-          className='flex items-center gap-2 touch-manipulation min-h-[44px] min-w-[44px] transition-all duration-200 hover:scale-105 active:scale-95'
+          className='flex items-center gap-1.5 text-xs px-3 py-1.5 transition-all duration-200 hover:scale-105 active:scale-95'
           aria-label={`Ver detalles del grupo ${group.name}`}
           aria-describedby={`group-${group.group_id}-description`}
         >
@@ -258,7 +258,7 @@ export default function GroupCard({
           size='sm'
           onClick={() => handleAction(() => onManage(group.group_id), 'manage')}
           disabled={actionLoading !== null}
-          className='flex items-center gap-2 touch-manipulation min-h-[44px] min-w-[44px] transition-all duration-200 hover:scale-105 active:scale-95'
+          className='flex items-center gap-1.5 text-xs px-3 py-1.5 transition-all duration-200 hover:scale-105 active:scale-95'
           aria-label={`Gestionar grupo ${group.name}. Acceso a configuración, miembros y solicitudes`}
         >
           <Settings className='w-4 h-4' aria-hidden='true' />
@@ -293,7 +293,7 @@ export default function GroupCard({
                 handleAction(() => onLeave(group.group_id), 'leave')
               }
               disabled={actionLoading !== null}
-              className='flex items-center gap-2 touch-manipulation min-h-[44px] min-w-[44px] transition-all duration-200 hover:scale-105 active:scale-95'
+              className='flex items-center gap-1.5 text-xs px-3 py-1.5 transition-all duration-200 hover:scale-105 active:scale-95'
               aria-label={`Salir del grupo ${group.name}. Esta acción requerirá confirmación`}
               aria-describedby={`group-${group.group_id}-leave-warning`}
             >
@@ -325,7 +325,7 @@ export default function GroupCard({
             variant='secondary'
             size='sm'
             disabled
-            className='flex items-center gap-2 touch-manipulation min-h-[44px] min-w-[44px] cursor-not-allowed opacity-75'
+            className='flex items-center gap-1.5 text-xs px-3 py-1.5 cursor-not-allowed opacity-75'
             aria-label='Tu solicitud de membresía está pendiente de aprobación por el presidente del grupo'
             aria-describedby={`group-${group.group_id}-pending-info`}
           >
@@ -348,7 +348,7 @@ export default function GroupCard({
             size='sm'
             onClick={() => handleAction(() => onJoin(group.group_id), 'join')}
             disabled={actionLoading !== null}
-            className='flex items-center gap-2 touch-manipulation min-h-[44px] min-w-[44px] transition-all duration-200 hover:scale-105 active:scale-95 bg-primary hover:bg-primary/90'
+            className='flex items-center gap-1.5 text-xs px-3 py-1.5 transition-all duration-200 hover:scale-105 active:scale-95 bg-primary hover:bg-primary/90'
             aria-label={`Solicitar unirse al grupo ${group.name}. Tu solicitud será revisada por el presidente`}
             aria-describedby={`group-${group.group_id}-join-info`}
           >
@@ -376,7 +376,7 @@ export default function GroupCard({
             variant='secondary'
             size='sm'
             disabled
-            className='flex items-center gap-2 touch-manipulation min-h-[44px] min-w-[44px] cursor-not-allowed opacity-75'
+            className='flex items-center gap-1.5 text-xs px-3 py-1.5 cursor-not-allowed opacity-75'
             aria-label='Este grupo ha alcanzado su capacidad máxima y no acepta nuevos miembros'
             aria-describedby={`group-${group.group_id}-full-info`}
           >
@@ -398,36 +398,47 @@ export default function GroupCard({
   // Render enhanced member count with visual progress
   const renderMemberCount = () => {
     const capacityStatus = getCapacityStatus();
+    const isMediumCapacity = capacityStatus.level === 'medium';
+    const isHighCapacity = capacityStatus.level === 'high';
+    const isFullCapacity = capacityStatus.level === 'full';
 
     return (
-      <div
-        className={`flex items-center gap-2 p-2 rounded-lg ${capacityStatus.bgColor} ${capacityStatus.borderColor} border`}
-        role='group'
-        aria-label={`Información de membresía: ${group.member_count} de ${group.max_members} miembros, ${capacityStatus.label}`}
-      >
-        <Users
-          className={`w-4 h-4 ${capacityStatus.color}`}
-          aria-hidden='true'
-        />
-        <div className='flex-1'>
-          <div className='flex items-center justify-between text-sm'>
-            <span className={`font-medium ${capacityStatus.color}`}>
-              {group.member_count}/{group.max_members}
-            </span>
-            <span className={`text-xs ${capacityStatus.color}`}>
-              {capacityStatus.percentage}%
+      <div className='space-y-2'>
+        {/* Member count with status indicator */}
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center gap-2'>
+            <div
+              className={`w-2 h-2 rounded-full ${
+                isFullCapacity
+                  ? 'bg-red-500'
+                  : isHighCapacity
+                    ? 'bg-orange-500'
+                    : isMediumCapacity
+                      ? 'bg-yellow-500'
+                      : 'bg-emerald-500'
+              }`}
+            />
+            <span className='text-sm font-medium text-foreground'>
+              {group.member_count}/{group.max_members} miembros
             </span>
           </div>
-          <div className='w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mt-1'>
+          <span className='text-xs font-medium px-2 py-1 rounded-full bg-muted text-muted-foreground'>
+            {capacityStatus.percentage}%
+          </span>
+        </div>
+
+        {/* Modern progress bar */}
+        <div className='relative'>
+          <div className='w-full bg-muted rounded-full h-2 overflow-hidden'>
             <div
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                capacityStatus.level === 'full'
-                  ? 'bg-red-500'
-                  : capacityStatus.level === 'high'
-                    ? 'bg-orange-500'
-                    : capacityStatus.level === 'medium'
-                      ? 'bg-yellow-500'
-                      : 'bg-green-500'
+              className={`h-full rounded-full transition-all duration-500 ease-out ${
+                isFullCapacity
+                  ? 'bg-gradient-to-r from-red-500 to-red-600'
+                  : isHighCapacity
+                    ? 'bg-gradient-to-r from-orange-500 to-orange-600'
+                    : isMediumCapacity
+                      ? 'bg-gradient-to-r from-yellow-500 to-yellow-600'
+                      : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
               }`}
               style={{ width: `${capacityStatus.percentage}%` }}
               role='progressbar'
@@ -437,9 +448,29 @@ export default function GroupCard({
               aria-label={`Capacidad del grupo: ${capacityStatus.percentage}% lleno`}
             />
           </div>
-          <div className='text-xs text-muted-foreground mt-1'>
-            {capacityStatus.label}
-          </div>
+          {/* Subtle glow effect */}
+          <div
+            className={`absolute top-0 h-2 rounded-full opacity-20 blur-sm ${
+              isFullCapacity
+                ? 'bg-red-500'
+                : isHighCapacity
+                  ? 'bg-orange-500'
+                  : isMediumCapacity
+                    ? 'bg-yellow-500'
+                    : 'bg-emerald-500'
+            }`}
+            style={{ width: `${capacityStatus.percentage}%` }}
+          />
+        </div>
+
+        {/* Status label */}
+        <div className='flex items-center justify-between text-xs'>
+          <span className='text-muted-foreground'>{capacityStatus.label}</span>
+          {!isFullCapacity && (
+            <span className='text-muted-foreground'>
+              {group.max_members - group.member_count} cupos disponibles
+            </span>
+          )}
         </div>
       </div>
     );
@@ -581,50 +612,58 @@ export default function GroupCard({
                   )}
                 </div>
               </div>
-              <div className='mt-2'>
-                <div className='flex items-center gap-2 text-xs'>
-                  <div
-                    className={`flex items-center gap-1 ${capacityStatus.color}`}
-                    aria-label={`${group.member_count} de ${group.max_members} miembros, ${capacityStatus.percentage}% lleno`}
-                  >
-                    <Users className='w-3 h-3' aria-hidden='true' />
-                    <span>
+              <div className='mt-2 space-y-1.5'>
+                <div className='flex items-center justify-between text-xs'>
+                  <div className='flex items-center gap-1.5'>
+                    <div
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        capacityStatus.level === 'full'
+                          ? 'bg-red-500'
+                          : capacityStatus.level === 'high'
+                            ? 'bg-orange-500'
+                            : capacityStatus.level === 'medium'
+                              ? 'bg-yellow-500'
+                              : 'bg-emerald-500'
+                      }`}
+                    />
+                    <span className='text-foreground font-medium'>
                       {group.member_count}/{group.max_members}
                     </span>
-                    <span className='text-xs opacity-75'>
-                      ({capacityStatus.percentage}%)
-                    </span>
                   </div>
-                  {showStatistics && statistics && (
+                  <span className='text-xs px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground'>
+                    {capacityStatus.percentage}%
+                  </span>
+                </div>
+
+                {/* Compact progress bar */}
+                <div className='relative'>
+                  <div className='w-full bg-muted rounded-full h-1.5 overflow-hidden'>
                     <div
-                      className='flex items-center gap-1 text-muted-foreground'
-                      aria-label={`${statistics.upcomingEvents} eventos próximos`}
-                    >
-                      <Calendar className='w-3 h-3' aria-hidden='true' />
-                      <span>{statistics.upcomingEvents}</span>
-                    </div>
-                  )}
+                      className={`h-full rounded-full transition-all duration-500 ease-out ${
+                        capacityStatus.level === 'full'
+                          ? 'bg-gradient-to-r from-red-500 to-red-600'
+                          : capacityStatus.level === 'high'
+                            ? 'bg-gradient-to-r from-orange-500 to-orange-600'
+                            : capacityStatus.level === 'medium'
+                              ? 'bg-gradient-to-r from-yellow-500 to-yellow-600'
+                              : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
+                      }`}
+                      style={{ width: `${capacityStatus.percentage}%` }}
+                      role='progressbar'
+                      aria-valuenow={capacityStatus.percentage}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-label={`Capacidad del grupo: ${capacityStatus.percentage}% lleno`}
+                    />
+                  </div>
                 </div>
-                {/* Mini progress bar for compact view */}
-                <div className='w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1 mt-1'>
-                  <div
-                    className={`h-1 rounded-full transition-all duration-300 ${
-                      capacityStatus.level === 'full'
-                        ? 'bg-red-500'
-                        : capacityStatus.level === 'high'
-                          ? 'bg-orange-500'
-                          : capacityStatus.level === 'medium'
-                            ? 'bg-yellow-500'
-                            : 'bg-green-500'
-                    }`}
-                    style={{ width: `${capacityStatus.percentage}%` }}
-                    role='progressbar'
-                    aria-valuenow={capacityStatus.percentage}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-label={`Capacidad del grupo: ${capacityStatus.percentage}% lleno`}
-                  />
-                </div>
+
+                {showStatistics && statistics && (
+                  <div className='flex items-center gap-1 text-muted-foreground text-xs'>
+                    <Calendar className='w-3 h-3' aria-hidden='true' />
+                    <span>{statistics.upcomingEvents} eventos</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
