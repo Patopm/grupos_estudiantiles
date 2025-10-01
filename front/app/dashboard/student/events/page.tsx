@@ -31,11 +31,15 @@ function StudentEventsContent() {
         setIsLoading(true);
         const eventsData = await eventsApi.getAll(currentFilters);
         setEvents(eventsData);
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('Error loading events:', error);
+        const errorMessage =
+          error && typeof error === 'object' && 'message' in error
+            ? (error as { message: string }).message
+            : 'No se pudieron cargar los eventos';
         toast({
           title: 'Error',
-          description: 'No se pudieron cargar los eventos',
+          description: errorMessage,
           variant: 'destructive',
         });
       } finally {

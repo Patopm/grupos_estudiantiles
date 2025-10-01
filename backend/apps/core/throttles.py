@@ -6,6 +6,7 @@ import time
 
 from django.conf import settings
 from django.core.cache import cache
+
 from rest_framework.exceptions import Throttled
 from rest_framework.throttling import BaseThrottle
 
@@ -28,7 +29,10 @@ class RedisRateLimitThrottle(BaseThrottle):
 
         # Get rate limit configuration for this view
         view_name = getattr(view, "throttle_scope", "default")
-        rate_config = self.rate_limits.get(view_name, {"requests": 60, "window": 60})
+        rate_config = self.rate_limits.get(view_name, {
+            "requests": 60,
+            "window": 60
+        })
 
         # Check rate limit
         return self._check_rate_limit(ident, view_name, rate_config, request)
@@ -60,7 +64,7 @@ class RedisRateLimitThrottle(BaseThrottle):
         if current_count >= requests_limit:
             # Calculate wait time
             wait_time = window - (now - window_start)
-            self.wait = wait_time
+            self._wait = wait_time
             return False
 
         # Increment counter
@@ -131,9 +135,10 @@ class ProgressiveDelayThrottle(RedisRateLimitThrottle):
 
             # Calculate progressive delay
             base_delay = window - (now - window_start)
-            progressive_delay = min(base_delay * (2**violations), 3600)  # Max 1 hour
+            progressive_delay = min(base_delay * (2**violations),
+                                    3600)  # Max 1 hour
 
-            self.wait = progressive_delay
+            self._wait = progressive_delay
             return False
 
         # Increment counter

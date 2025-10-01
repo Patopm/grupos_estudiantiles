@@ -67,6 +67,7 @@ class EventViewSet(viewsets.ModelViewSet):
 
     queryset = Event.objects.all()
     permission_classes = [EventPermission]
+    throttle_scope = 'user'
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -285,11 +286,8 @@ class EventViewSet(viewsets.ModelViewSet):
                 if group.president:
                     notification_service.create_notification(
                         user=group.president,
-                        title="Nueva solicitud de asistencia a evento",
-                        message=
-                        f"{request.user.get_full_name()} solicita asistir al evento '{event.title}'",
-                        notification_type="event_request",
-                        data={
+                        template_type="event_request",
+                        context_data={
                             "event_id": str(event.event_id),
                             "event_title": event.title,
                             "requester_id": request.user.id,
@@ -402,11 +400,8 @@ class EventViewSet(viewsets.ModelViewSet):
             notification_service = NotificationService()
             notification_service.create_notification(
                 user=attendance.user,
-                title="Solicitud de evento aprobada",
-                message=
-                f"Tu solicitud para asistir al evento '{event.title}' ha sido aprobada",
-                notification_type="event_approval",
-                data={
+                template_type="event_approval",
+                context_data={
                     "event_id": str(event.event_id),
                     "event_title": event.title,
                     "attendance_id": str(attendance.attendance_id)
@@ -428,11 +423,8 @@ class EventViewSet(viewsets.ModelViewSet):
             notification_service = NotificationService()
             notification_service.create_notification(
                 user=attendance.user,
-                title="Solicitud de evento rechazada",
-                message=
-                f"Tu solicitud para asistir al evento '{event.title}' ha sido rechazada",
-                notification_type="event_rejection",
-                data={
+                template_type="event_rejection",
+                context_data={
                     "event_id": str(event.event_id),
                     "event_title": event.title,
                     "attendance_id": str(attendance.attendance_id)
@@ -555,6 +547,7 @@ class EventAttendanceViewSet(viewsets.ModelViewSet):
 
     serializer_class = EventAttendanceSerializer
     permission_classes = [EventAttendancePermission]
+    throttle_scope = 'user'
 
     def get_queryset(self):
         """Filtrar asistencias según el usuario y rol"""

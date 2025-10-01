@@ -56,7 +56,7 @@ export default function EventCard({
   // Check user permissions
   const isOrganizer =
     user?.role === 'president' &&
-    event.target_groups.some(group => group.group_id === String(user.id));
+    event.target_groups?.some(group => group.group_id === String(user.id));
   const isAdmin = user?.role === 'admin';
   const canManage = isOrganizer || isAdmin;
 
@@ -630,7 +630,7 @@ export default function EventCard({
               </div>
               <div className='mt-2'>
                 <div className='flex items-center gap-2 text-xs'>
-                  {event.target_groups.length > 0 && (
+                  {event.target_groups && event.target_groups.length > 0 && (
                     <div
                       className='text-muted-foreground truncate'
                       aria-label={`Organizado por: ${event.target_groups.map(g => g.name).join(', ')}`}
@@ -741,7 +741,7 @@ export default function EventCard({
                 )}
               </div>
             </div>
-            {event.target_groups.length > 0 && (
+            {event.target_groups && event.target_groups.length > 0 && (
               <p
                 className='text-sm text-muted-foreground'
                 aria-label={`Organizado por: ${event.target_groups.map(g => g.name).join(', ')}`}

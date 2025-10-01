@@ -148,6 +148,10 @@ show-rate-limits:
 create-email-templates:
 	docker-compose exec backend python manage.py create_email_templates
 
+# Email and notifications commands
+setup-groups-events:
+	docker-compose exec backend python manage.py setup_groups_events --reset --verbose
+
 # User management commands
 cleanup-password-tokens:
 	docker-compose exec backend python manage.py cleanup_password_reset_tokens

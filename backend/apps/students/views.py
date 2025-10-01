@@ -91,12 +91,16 @@ class StudentGroupViewSet(viewsets.ModelViewSet):
                 # Mostrar solo grupos donde el usuario es miembro activo
                 queryset = queryset.filter(
                     memberships__user=self.request.user,
-                    memberships__status='active').distinct()
-            elif available:
-                # Mostrar solo grupos donde el usuario NO es miembro
-                queryset = queryset.exclude(
-                    memberships__user=self.request.user,
                     memberships__status__in=['active', 'pending']).distinct()
+            elif available:
+                groups_with_active_pending = StudentGroup.objects.filter(
+                    memberships__user=self.request.user,
+                    memberships__status__in=['active', 'pending'
+                                             ]).values_list('group_id',
+                                                            flat=True)
+
+                queryset = queryset.exclude(
+                    group_id__in=groups_with_active_pending)
 
         return queryset
 
@@ -167,9 +171,11 @@ class StudentGroupViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        # Verificar que no tenga ya una membresía
+        # Verificar que no tenga ya una membresía activa o pendiente
         if GroupMembership.objects.filter(user=request.user,
-                                          group=group).exists():
+                                          group=group,
+                                          status__in=['active',
+                                                      'pending']).exists():
             return Response(
                 {"error": "Ya tienes una solicitud o membresía en este grupo"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -180,10 +186,20 @@ class StudentGroupViewSet(viewsets.ModelViewSet):
             return Response({"error": "El grupo está lleno"},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        # Crear la membresía pendiente
-        membership = GroupMembership.objects.create(user=request.user,
-                                                    group=group,
-                                                    status="pending")
+        # Verificar si existe una membresía inactiva y reactivarla
+        existing_membership = GroupMembership.objects.filter(
+            user=request.user, group=group, status='inactive').first()
+
+        if existing_membership:
+            # Reactivar la membresía existente
+            existing_membership.status = "pending"
+            existing_membership.save()
+            membership = existing_membership
+        else:
+            # Crear nueva membresía pendiente
+            membership = GroupMembership.objects.create(user=request.user,
+                                                        group=group,
+                                                        status="pending")
 
         serializer = GroupMembershipSerializer(membership)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

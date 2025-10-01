@@ -271,7 +271,7 @@ class EventListSerializer(serializers.ModelSerializer):
     Serializer simplificado para listar eventos
     """
 
-    target_group_names = serializers.SerializerMethodField()
+    target_groups = serializers.SerializerMethodField()
     attendee_count = serializers.SerializerMethodField()
     is_past = serializers.SerializerMethodField()
     is_upcoming = serializers.SerializerMethodField()
@@ -285,7 +285,7 @@ class EventListSerializer(serializers.ModelSerializer):
             "title",
             "event_type",
             "status",
-            "target_group_names",
+            "target_groups",
             "start_datetime",
             "end_datetime",
             "location",
@@ -299,8 +299,19 @@ class EventListSerializer(serializers.ModelSerializer):
         ]
 
     @extend_schema_field(serializers.ListField)
-    def get_target_group_names(self, obj):
-        return [group.name for group in obj.target_groups.all()]
+    def get_target_groups(self, obj):
+        return [{
+            "group_id": str(group.group_id),
+            "name": group.name,
+            "category": group.category,
+            "president_name": group.president_name,
+            "president_details": {
+                "id": group.president.id,
+                "full_name": group.president.get_full_name(),
+                "email": group.president.email,
+                "student_id": group.president.student_id,
+            } if group.president else None,
+        } for group in obj.target_groups.all()]
 
     @extend_schema_field(serializers.IntegerField)
     def get_attendee_count(self, obj):

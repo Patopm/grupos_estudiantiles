@@ -294,7 +294,7 @@ export default function EventList({
           event.title.toLowerCase().includes(searchLower) ||
           event.description.toLowerCase().includes(searchLower) ||
           event.location.toLowerCase().includes(searchLower) ||
-          event.target_groups.some(group =>
+          event.target_groups?.some(group =>
             group.name.toLowerCase().includes(searchLower)
           )
       );
