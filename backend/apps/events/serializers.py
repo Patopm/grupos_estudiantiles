@@ -110,14 +110,18 @@ class EventSerializer(serializers.ModelSerializer):
     @extend_schema_field(serializers.ListField)
     def get_target_group_details(self, obj):
         """Retorna detalles de los grupos objetivo"""
-        return [
-            {
-                "group_id": str(group.group_id),
-                "name": group.name,
-                "category": group.category,
-            }
-            for group in obj.target_groups.all()
-        ]
+        return [{
+            "group_id": str(group.group_id),
+            "name": group.name,
+            "category": group.category,
+            "president_name": group.president_name,
+            "president_details": {
+                "id": group.president.id,
+                "full_name": group.president.get_full_name(),
+                "email": group.president.email,
+                "student_id": group.president.student_id,
+            } if group.president else None,
+        } for group in obj.target_groups.all()]
 
     @extend_schema_field(serializers.IntegerField)
     def get_attendee_count(self, obj):
@@ -198,8 +202,7 @@ class EventCreateSerializer(serializers.ModelSerializer):
         if start_datetime and end_datetime:
             if start_datetime >= end_datetime:
                 raise serializers.ValidationError(
-                    "La fecha de inicio debe ser anterior a la fecha de fin."
-                )
+                    "La fecha de inicio debe ser anterior a la fecha de fin.")
 
         # Validar fecha límite de inscripción
         if registration_deadline and start_datetime:
@@ -212,8 +215,7 @@ class EventCreateSerializer(serializers.ModelSerializer):
         now = timezone.now()
         if start_datetime and start_datetime < now:
             raise serializers.ValidationError(
-                "La fecha de inicio no puede ser en el pasado."
-            )
+                "La fecha de inicio no puede ser en el pasado.")
 
         return data
 
@@ -245,16 +247,14 @@ class EventUpdateSerializer(serializers.ModelSerializer):
         instance = self.instance
         start_datetime = data.get("start_datetime", instance.start_datetime)
         end_datetime = data.get("end_datetime", instance.end_datetime)
-        registration_deadline = data.get(
-            "registration_deadline", instance.registration_deadline
-        )
+        registration_deadline = data.get("registration_deadline",
+                                         instance.registration_deadline)
 
         # Validar fechas de inicio y fin
         if start_datetime and end_datetime:
             if start_datetime >= end_datetime:
                 raise serializers.ValidationError(
-                    "La fecha de inicio debe ser anterior a la fecha de fin."
-                )
+                    "La fecha de inicio debe ser anterior a la fecha de fin.")
 
         # Validar fecha límite de inscripción
         if registration_deadline and start_datetime:
@@ -346,13 +346,13 @@ class EventAttendanceCreateSerializer(serializers.ModelSerializer):
 
         # Verificar si ya está inscrito
         if EventAttendance.objects.filter(user=user, event=event).exists():
-            raise serializers.ValidationError("Ya estás inscrito en este evento")
+            raise serializers.ValidationError(
+                "Ya estás inscrito en este evento")
 
         # Verificar si las inscripciones están abiertas
         if not event.registration_open:
             raise serializers.ValidationError(
-                "Las inscripciones para este evento están cerradas"
-            )
+                "Las inscripciones para este evento están cerradas")
 
         return attrs
 
@@ -374,11 +374,13 @@ class EventAttendanceUpdateSerializer(serializers.ModelSerializer):
 
     def validate_status(self, value):
         """Valida que el estado sea válido"""
-        valid_statuses = ["registered", "confirmed", "attended", "no_show", "cancelled"]
+        valid_statuses = [
+            "registered", "confirmed", "attended", "no_show", "cancelled",
+            "pending"
+        ]
         if value not in valid_statuses:
             raise serializers.ValidationError(
-                f"Estado inválido. Debe ser uno de: {valid_statuses}"
-            )
+                f"Estado inválido. Debe ser uno de: {valid_statuses}")
         return value
 
 

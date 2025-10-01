@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useAuth, ProtectedRoute } from '@/contexts/AuthContext';
+import { ProtectedRoute } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import {
   eventsApi,
@@ -43,6 +43,7 @@ import {
 import EventManagementForm from '@/components/events/EventManagementForm';
 import AttendeeManagement from '@/components/events/AttendeeManagement';
 import EventAnalytics from '@/components/events/EventAnalytics';
+import EventAttendanceRequests from '@/components/events/EventAttendanceRequests';
 
 export default function EventManagementPage() {
   return (
@@ -162,11 +163,24 @@ function EventManagementContent() {
     }
   };
 
-  const handleAttendeeUpdate = async (attendeeId: string, status: string) => {
+  const loadAttendees = async () => {
+    try {
+      const attendeesData = await eventsApi.getAttendees(eventId);
+      setAttendees(attendeesData);
+    } catch (error) {
+      console.error('Error loading attendees:', error);
+      toast({
+        title: 'Error',
+        description: 'No se pudieron cargar los asistentes',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleAttendeeUpdate = async () => {
     try {
       // Refresh attendees list after update
-      const updatedAttendees = await eventsApi.getAttendees(eventId);
-      setAttendees(updatedAttendees);
+      await loadAttendees();
       toast({
         title: 'Estado actualizado',
         description: 'El estado del asistente ha sido actualizado',
@@ -513,11 +527,18 @@ function EventManagementContent() {
           </TabsContent>
 
           <TabsContent value='attendees'>
-            <AttendeeManagement
-              eventId={eventId}
-              attendees={attendees}
-              onAttendeeUpdate={handleAttendeeUpdate}
-            />
+            <div className='space-y-6'>
+              <EventAttendanceRequests
+                eventId={eventId}
+                attendees={attendees}
+                onRequestHandled={loadAttendees}
+              />
+              <AttendeeManagement
+                eventId={eventId}
+                attendees={attendees}
+                onAttendeeUpdate={handleAttendeeUpdate}
+              />
+            </div>
           </TabsContent>
 
           <TabsContent value='analytics'>

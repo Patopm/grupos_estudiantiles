@@ -64,12 +64,12 @@ function AdminUsersContent() {
   const loadUsers = async () => {
     try {
       setIsLoading(true);
-      const data = await usersApi.getAllUsers();
+      const { results } = await usersApi.getAllUsers();
       // Ensure data is an array
-      if (Array.isArray(data)) {
-        setUsers(data);
+      if (Array.isArray(results)) {
+        setUsers(results);
       } else {
-        console.error('API returned non-array data:', data);
+        console.error('API returned non-array data:', results);
         setUsers([]);
         toast({
           title: 'Error',
@@ -90,7 +90,7 @@ function AdminUsersContent() {
     }
   };
 
-  const handleDeleteUser = async (userId: number) => {
+  const handleDeleteUser = async (userId: string) => {
     try {
       await usersApi.deleteUser(userId);
       toast({
@@ -110,7 +110,7 @@ function AdminUsersContent() {
     }
   };
 
-  const handleToggleUserStatus = async (userId: number, isActive: boolean) => {
+  const handleToggleUserStatus = async (userId: string, isActive: boolean) => {
     try {
       await usersApi.updateUserStatus(userId, !isActive);
       toast({

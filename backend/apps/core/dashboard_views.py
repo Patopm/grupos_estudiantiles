@@ -407,7 +407,7 @@ def student_dashboard(request):
     recommended_events = []
     if len(my_groups) > 0:
         # Get events from groups with similar categories
-        my_categories = [group.category for group in my_groups]
+        my_categories = [group['category'] for group in my_groups]
         recommended_events_query = Event.objects.filter(
             target_groups__category__in=my_categories,
             status="published",
@@ -494,7 +494,7 @@ def student_dashboard(request):
 
     for membership in recent_memberships:
         recent_activity.append({
-            "id": f"membership_{membership.id}",
+            "id": f"membership_{membership.membership_id}",
             "type": "group_joined",
             "title": f"Te uniste a {membership.group.name}",
             "description":
@@ -1003,10 +1003,6 @@ def admin_dashboard(request):
         "total_memberships": total_memberships,
     }
 
-    # Enhanced Events Analytics
-    from apps.events.models import EventAttendance
-    from apps.students.models import GroupMembership
-
     # Events analytics
     all_events = Event.objects.all()
     published_events = all_events.filter(status="published")
@@ -1056,7 +1052,11 @@ def admin_dashboard(request):
 
     # Top performing events
     top_performing_events = []
-    for event in published_events.order_by('-attendee_count')[:5]:
+    # Sort events by attendee_count in Python since it's a property
+    sorted_events = sorted(published_events,
+                           key=lambda e: e.attendee_count,
+                           reverse=True)[:5]
+    for event in sorted_events:
         event_attendance_rate = (event.attendee_count /
                                  (event.max_attendees or 1)) * 100
         # Get the first target group name, or use "Múltiples grupos" if multiple
@@ -1138,8 +1138,12 @@ def admin_dashboard(request):
 
     # Top performing groups
     top_performing_groups = []
-    for group in StudentGroup.objects.filter(
-            is_active=True).order_by('-member_count')[:5]:
+    # Sort groups by member_count in Python since it's a property
+    active_groups_queryset = StudentGroup.objects.filter(is_active=True)
+    sorted_groups = sorted(active_groups_queryset,
+                           key=lambda g: g.member_count,
+                           reverse=True)[:5]
+    for group in sorted_groups:
         group_events = Event.objects.filter(target_groups=group)
         event_count = len(group_events)
         avg_attendance = sum(
@@ -1260,7 +1264,7 @@ def admin_dashboard(request):
     for user in User.objects.filter(
             last_login__isnull=False).order_by('-last_login')[:10]:
         # Mock login count and activity data
-        login_count = 50 + (user.id % 100)  # Mock data
+        login_count = 50 + (hash(str(user.id)) % 100)  # Mock data
         groups_joined = GroupMembership.objects.filter(
             user=user, status='active').count()
         events_attended = EventAttendance.objects.filter(
@@ -1350,10 +1354,11 @@ def admin_dashboard(request):
             "averageGroupsManaged":
             StudentGroup.objects.filter(
                 president__in=presidents_data).count() /
-            len(presidents_data) if presidents_data else 0,
+            presidents_data.count() if presidents_data.exists() else 0,
             "averageEventsCreated":
-            Event.objects.filter(target_groups__president__in=presidents_data).
-            distinct().count() / len(presidents_data) if presidents_data else 0
+            Event.objects.filter(target_groups__president__in=presidents_data
+                                 ).distinct().count() /
+            presidents_data.count() if presidents_data.exists() else 0
         },
         "admins": {
             "total":

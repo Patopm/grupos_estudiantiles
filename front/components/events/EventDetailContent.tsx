@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import {
   Dialog,
   DialogContent,
@@ -55,7 +56,10 @@ interface EventDetailContentProps {
   isLoadingRelated: boolean;
   onRegister: (notes?: string) => void;
   onUnregister: () => void;
+  onRequestAttendance: (notes?: string) => void;
   onViewEvent: (eventId: string) => void;
+  showRequestDialog: boolean;
+  onCloseRequestDialog: () => void;
 }
 
 export default function EventDetailContent({
@@ -66,15 +70,20 @@ export default function EventDetailContent({
   isLoadingRelated,
   onRegister,
   onUnregister,
+  onRequestAttendance,
   onViewEvent,
+  showRequestDialog,
+  onCloseRequestDialog,
 }: EventDetailContentProps) {
   const { user } = useAuth();
   const { toast } = useToast();
 
   const [showAttendees, setShowAttendees] = useState(false);
   const [registrationNotes, setRegistrationNotes] = useState('');
+  const [requestNotes, setRequestNotes] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
   const [isUnregistering, setIsUnregistering] = useState(false);
+  const [isRequesting, setIsRequesting] = useState(false);
   const [showRegistrationDialog, setShowRegistrationDialog] = useState(false);
 
   // Check user permissions
@@ -252,6 +261,18 @@ export default function EventDetailContent({
     }
   };
 
+  // Handle attendance request
+  const handleRequestAttendance = async () => {
+    setIsRequesting(true);
+    try {
+      await onRequestAttendance(requestNotes.trim() || undefined);
+      setRequestNotes('');
+      onCloseRequestDialog();
+    } finally {
+      setIsRequesting(false);
+    }
+  };
+
   // Handle unregistration
   const handleUnregister = async () => {
     setIsUnregistering(true);
@@ -389,10 +410,27 @@ export default function EventDetailContent({
               </div>
 
               {event.target_groups.length > 0 && (
-                <p className='text-muted-foreground mb-4'>
-                  Organizado por:{' '}
-                  {event.target_groups.map(group => group.name).join(', ')}
-                </p>
+                <div className='text-muted-foreground mb-4'>
+                  <p className='mb-2'>
+                    Organizado por:{' '}
+                    {event.target_groups.map(group => group.name).join(', ')}
+                  </p>
+                  <div className='space-y-1'>
+                    {event.target_groups.map(group => (
+                      <div key={group.group_id} className='text-sm'>
+                        <span className='font-medium'>{group.name}:</span>{' '}
+                        {group.president_details ? (
+                          <span>
+                            {group.president_details.full_name} (
+                            {group.president_details.student_id})
+                          </span>
+                        ) : (
+                          <span>Sin presidente asignado</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
           </div>
@@ -722,7 +760,11 @@ export default function EventDetailContent({
                             </p>
                           </div>
                           <Badge variant='outline' className='text-xs'>
-                            {ATTENDANCE_STATUS_LABELS[attendee.status]}
+                            {
+                              ATTENDANCE_STATUS_LABELS[
+                                attendee.status as keyof typeof ATTENDANCE_STATUS_LABELS
+                              ]
+                            }
                           </Badge>
                         </div>
                       ))}
@@ -800,6 +842,71 @@ export default function EventDetailContent({
           )}
         </div>
       </div>
+
+      {/* Request Attendance Dialog */}
+      <Dialog open={showRequestDialog} onOpenChange={onCloseRequestDialog}>
+        <DialogContent className='sm:max-w-md'>
+          <DialogHeader>
+            <DialogTitle>Solicitar Asistencia al Evento</DialogTitle>
+            <DialogDescription>
+              No eres miembro de los grupos objetivo de este evento. Puedes
+              enviar una solicitud al presidente del grupo para asistir.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className='space-y-4'>
+            <div>
+              <Label htmlFor='request-notes'>
+                Notas adicionales (opcional)
+              </Label>
+              <Textarea
+                id='request-notes'
+                placeholder='Explica por qué te gustaría asistir a este evento...'
+                value={requestNotes}
+                onChange={e => setRequestNotes(e.target.value)}
+                rows={3}
+              />
+            </div>
+
+            <div className='text-sm text-muted-foreground'>
+              <p className='font-medium mb-2'>Grupos objetivo:</p>
+              <ul className='space-y-2'>
+                {event.target_groups.map(group => (
+                  <li key={group.group_id} className='border rounded-lg p-3'>
+                    <div className='font-medium'>{group.name}</div>
+                    <div className='text-xs mt-1'>
+                      {group.president_details ? (
+                        <div>
+                          <div>
+                            Presidente: {group.president_details.full_name}
+                          </div>
+                          <div>ID: {group.president_details.student_id}</div>
+                          <div>Email: {group.president_details.email}</div>
+                        </div>
+                      ) : (
+                        <div>Sin presidente asignado</div>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant='outline'
+              onClick={onCloseRequestDialog}
+              disabled={isRequesting}
+            >
+              Cancelar
+            </Button>
+            <Button onClick={handleRequestAttendance} disabled={isRequesting}>
+              {isRequesting ? 'Enviando...' : 'Enviar Solicitud'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

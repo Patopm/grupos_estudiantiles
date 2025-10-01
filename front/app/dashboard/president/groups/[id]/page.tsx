@@ -45,7 +45,7 @@ function GroupManagementContent() {
   const [pendingRequests, setPendingRequests] = useState<GroupRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
-  const [processingRequest, setProcessingRequest] = useState<number | null>(
+  const [processingRequest, setProcessingRequest] = useState<string | null>(
     null
   );
 
@@ -93,7 +93,7 @@ function GroupManagementContent() {
   }, [groupId, user, router, toast]);
 
   // Handle membership request approval
-  const handleApproveRequest = async (userId: number) => {
+  const handleApproveRequest = async (userId: string) => {
     if (!groupId) return;
 
     try {
@@ -124,7 +124,7 @@ function GroupManagementContent() {
   };
 
   // Handle membership request rejection
-  const handleRejectRequest = async (userId: number) => {
+  const handleRejectRequest = async (userId: string) => {
     if (!groupId) return;
 
     try {
@@ -477,7 +477,7 @@ function GroupManagementContent() {
                   <div className='space-y-4'>
                     {pendingRequests.map(request => (
                       <div
-                        key={request.id}
+                        key={request.user_id}
                         className='flex items-center justify-between p-4 border rounded-lg'
                       >
                         <div className='flex items-center gap-4'>
@@ -485,21 +485,23 @@ function GroupManagementContent() {
                             <UserPlus className='w-6 h-6 text-primary' />
                           </div>
                           <div>
-                            <h4 className='font-medium'>{request.full_name}</h4>
+                            <h4 className='font-medium'>
+                              {request.user_details.full_name}
+                            </h4>
                             <div className='flex items-center gap-4 text-sm text-muted-foreground'>
                               <div className='flex items-center gap-1'>
                                 <Mail className='w-4 h-4' />
-                                {request.email}
+                                {request.user_details.email}
                               </div>
                               <div className='flex items-center gap-1'>
                                 <Clock className='w-4 h-4' />
-                                {new Date(
-                                  request.requested_at
-                                ).toLocaleDateString('es-ES')}
+                                {new Date(request.joined_at).toLocaleDateString(
+                                  'es-ES'
+                                )}
                               </div>
                             </div>
                             <p className='text-sm text-muted-foreground mt-1'>
-                              Matrícula: {request.student_id}
+                              Matrícula: {request.user_details.student_id}
                             </p>
                           </div>
                         </div>

@@ -1,7 +1,7 @@
-import { apiClient } from './client';
+import { apiClient, ApiPaginatedResponse } from './client';
 
 export interface User {
-  id: number;
+  id: string;
   first_name: string;
   last_name: string;
   email: string;
@@ -38,12 +38,12 @@ export interface UpdateUserData {
 
 export const usersApi = {
   // Get all users (admin only)
-  getAllUsers: async (): Promise<User[]> => {
-    return await apiClient.get<User[]>('/api/users/');
+  getAllUsers: async (): Promise<ApiPaginatedResponse<User>> => {
+    return await apiClient.get<ApiPaginatedResponse<User>>('/api/users/');
   },
 
   // Get user by ID
-  getUser: async (id: number): Promise<User> => {
+  getUser: async (id: string): Promise<User> => {
     return await apiClient.get<User>(`/api/users/${id}/`);
   },
 
@@ -53,17 +53,17 @@ export const usersApi = {
   },
 
   // Update user (admin only)
-  updateUser: async (id: number, userData: UpdateUserData): Promise<User> => {
+  updateUser: async (id: string, userData: UpdateUserData): Promise<User> => {
     return await apiClient.patch<User>(`/api/users/${id}/`, userData);
   },
 
   // Delete user (admin only)
-  deleteUser: async (id: number): Promise<void> => {
+  deleteUser: async (id: string): Promise<void> => {
     return await apiClient.delete(`/api/users/${id}/`);
   },
 
   // Update user status (admin only)
-  updateUserStatus: async (id: number, isActive: boolean): Promise<User> => {
+  updateUserStatus: async (id: string, isActive: boolean): Promise<User> => {
     return await apiClient.patch<User>(`/api/users/${id}/`, {
       is_active: isActive,
     });
@@ -91,7 +91,7 @@ export const usersApi = {
   },
 
   // Reset password (admin only)
-  resetPassword: async (id: number, newPassword: string): Promise<void> => {
+  resetPassword: async (id: string, newPassword: string): Promise<void> => {
     return await apiClient.post(`/api/users/${id}/reset-password/`, {
       new_password: newPassword,
     });
@@ -99,13 +99,21 @@ export const usersApi = {
 
   // Get user statistics
   getUserStats: async (
-    id: number
+    id: string
   ): Promise<{
     groups_joined: number;
     events_attended: number;
     events_created: number;
-    last_activity: string;
+    last_activity: string | null;
   }> => {
     return await apiClient.get(`/api/users/${id}/stats/`);
+  },
+
+  // Update user role
+  updateUserRole: async (
+    id: string,
+    role: 'student' | 'president' | 'admin'
+  ): Promise<User> => {
+    return await apiClient.put(`/api/users/${id}/role/`, { role });
   },
 };

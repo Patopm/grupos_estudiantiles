@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ProtectedRoute } from '@/contexts/AuthContext';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,7 +18,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { Users, Save, ArrowLeft, X } from 'lucide-react';
-import { groupsApi } from '@/lib/api/groups';
+import { groupsApi, AvailablePresident } from '@/lib/api/groups';
 import Image from 'next/image';
 
 export default function AdminGroupsNewPage() {
@@ -44,6 +44,10 @@ function AdminGroupsNewContent() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [availablePresidents, setAvailablePresidents] = useState<
+    AvailablePresident[]
+  >([]);
+  const [loadingPresidents, setLoadingPresidents] = useState(false);
 
   const categories = [
     'Académico',
@@ -55,6 +59,28 @@ function AdminGroupsNewContent() {
     'Profesional',
     'Otro',
   ];
+
+  // Load available presidents on component mount
+  useEffect(() => {
+    const loadAvailablePresidents = async () => {
+      try {
+        setLoadingPresidents(true);
+        const presidents = await groupsApi.getAvailablePresidents();
+        setAvailablePresidents(presidents);
+      } catch (error) {
+        console.error('Error loading available presidents:', error);
+        toast({
+          title: 'Error',
+          description: 'No se pudieron cargar los presidentes disponibles',
+          variant: 'destructive',
+        });
+      } finally {
+        setLoadingPresidents(false);
+      }
+    };
+
+    loadAvailablePresidents();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleInputChange = (
     field: string,
@@ -101,9 +127,10 @@ function AdminGroupsNewContent() {
       const submitData = {
         ...formData,
         max_members: Number(formData.max_members),
-        president_id: formData.president_id
-          ? Number(formData.president_id)
-          : null,
+        president_id:
+          formData.president_id && formData.president_id !== 'none'
+            ? Number(formData.president_id)
+            : undefined,
       };
 
       await groupsApi.create(submitData, imageFile || undefined);
@@ -218,18 +245,36 @@ function AdminGroupsNewContent() {
                 </div>
 
                 <div className='space-y-2'>
-                  <Label htmlFor='president_id'>
-                    ID del Presidente (Opcional)
-                  </Label>
-                  <Input
-                    id='president_id'
-                    type='number'
+                  <Label htmlFor='president_id'>Presidente (Opcional)</Label>
+                  <Select
                     value={formData.president_id}
-                    onChange={e =>
-                      handleInputChange('president_id', e.target.value)
+                    onValueChange={value =>
+                      handleInputChange('president_id', value)
                     }
-                    placeholder='ID del usuario presidente'
-                  />
+                  >
+                    <SelectTrigger>
+                      <SelectValue
+                        placeholder={
+                          loadingPresidents
+                            ? 'Cargando presidentes...'
+                            : 'Selecciona un presidente'
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='none'>
+                        Sin presidente asignado
+                      </SelectItem>
+                      {availablePresidents.map(president => (
+                        <SelectItem
+                          key={president.id}
+                          value={president.id.toString()}
+                        >
+                          {president.full_name} ({president.email})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 

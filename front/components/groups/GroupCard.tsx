@@ -226,7 +226,7 @@ export default function GroupCard({
           size='sm'
           onClick={() => handleAction(() => onView(group.group_id), 'view')}
           disabled={actionLoading !== null}
-          className='flex items-center gap-1.5 text-xs px-3 py-1.5 transition-all duration-200 hover:scale-105 active:scale-95'
+          className='flex items-center gap-2 text-xs px-3 py-2 transition-all duration-200 hover:scale-105 active:scale-95 bg-muted/50 hover:bg-muted border-border/50'
           aria-label={`Ver detalles del grupo ${group.name}`}
           aria-describedby={`group-${group.group_id}-description`}
         >
@@ -240,10 +240,7 @@ export default function GroupCard({
               <span className='sr-only'>Cargando...</span>
             </>
           ) : (
-            <>
-              <span className='hidden sm:inline'>Ver Detalles</span>
-              <span className='sm:hidden'>Ver</span>
-            </>
+            'Ver Detalles'
           )}
         </Button>
       );
@@ -293,7 +290,7 @@ export default function GroupCard({
                 handleAction(() => onLeave(group.group_id), 'leave')
               }
               disabled={actionLoading !== null}
-              className='flex items-center gap-1.5 text-xs px-3 py-1.5 transition-all duration-200 hover:scale-105 active:scale-95'
+              className='flex items-center gap-2 text-xs px-3 py-2 transition-all duration-200 hover:scale-105 active:scale-95 bg-red-600 hover:bg-red-700 text-white'
               aria-label={`Salir del grupo ${group.name}. Esta acción requerirá confirmación`}
               aria-describedby={`group-${group.group_id}-leave-warning`}
             >
@@ -552,7 +549,7 @@ export default function GroupCard({
 
     return (
       <Card
-        className='hover:shadow-md transition-all duration-200 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 group'
+        className='hover:shadow-md transition-all duration-200 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 group bg-card/50 border-border/50'
         role='article'
         aria-labelledby={`group-${group.group_id}-title`}
         aria-describedby={`group-${group.group_id}-description`}
@@ -566,119 +563,102 @@ export default function GroupCard({
           }
         }}
       >
-        <CardContent className='p-4'>
-          <div className='flex items-start gap-3'>
-            {group.image && (
-              <div className='relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0'>
-                <Image
-                  src={group.image}
-                  alt={`Imagen del grupo ${group.name}`}
-                  fill
-                  className='object-cover'
+        <CardContent className='p-4 space-y-4'>
+          {/* Group Name */}
+          <div className='flex justify-start'>
+            <h3
+              id={`group-${group.group_id}-title`}
+              className='font-semibold text-base text-foreground'
+            >
+              {group.name}
+            </h3>
+          </div>
+
+          {/* Category Tag */}
+          <div className='flex justify-start'>
+            <Badge
+              className={`text-xs px-2 py-1 ${getCategoryColor(group.category)}`}
+              aria-label={`Categoría: ${group.category}`}
+            >
+              {group.category.toLowerCase()}
+            </Badge>
+          </div>
+
+          {/* Status Indicator */}
+          {(isMember || isPending || isGroupFull) && (
+            <div className='flex justify-start'>
+              <Badge
+                className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 ${membershipStatus.color}`}
+                aria-label={membershipStatus.ariaLabel}
+              >
+                <StatusIcon className='w-3 h-3' aria-hidden='true' />
+                {membershipStatus.label}
+              </Badge>
+            </div>
+          )}
+
+          {/* Progress/Count Section */}
+          <div className='space-y-2'>
+            <div className='flex items-center justify-between'>
+              <div className='flex items-center gap-2'>
+                <div
+                  className={`w-2 h-2 rounded-full ${
+                    capacityStatus.level === 'full'
+                      ? 'bg-red-500'
+                      : capacityStatus.level === 'high'
+                        ? 'bg-orange-500'
+                        : capacityStatus.level === 'medium'
+                          ? 'bg-yellow-500'
+                          : 'bg-green-500'
+                  }`}
                 />
+                <span className='text-sm font-medium text-foreground'>
+                  {group.member_count}/{group.max_members}
+                </span>
               </div>
-            )}
-            <div className='flex-1 min-w-0'>
-              <div className='flex items-start justify-between gap-2'>
-                <div className='flex-1 min-w-0'>
-                  <h3
-                    id={`group-${group.group_id}-title`}
-                    className='font-semibold text-sm truncate'
-                  >
-                    {group.name}
-                  </h3>
-                  <p
-                    className='text-xs text-muted-foreground truncate'
-                    aria-label={`Presidente: ${group.president_name}`}
-                  >
-                    {group.president_name}
-                  </p>
-                </div>
-                <div className='flex flex-col gap-1 items-end'>
-                  <Badge
-                    className={`text-xs ${getCategoryColor(group.category)}`}
-                    aria-label={`Categoría: ${group.category}`}
-                  >
-                    {group.category}
-                  </Badge>
-                  {(isMember || isPending || isGroupFull) && (
-                    <Badge
-                      className={`text-xs ${membershipStatus.color}`}
-                      aria-label={membershipStatus.ariaLabel}
-                    >
-                      <StatusIcon className='w-3 h-3 mr-1' aria-hidden='true' />
-                      {membershipStatus.label}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-              <div className='mt-2 space-y-1.5'>
-                <div className='flex items-center justify-between text-xs'>
-                  <div className='flex items-center gap-1.5'>
-                    <div
-                      className={`w-1.5 h-1.5 rounded-full ${
-                        capacityStatus.level === 'full'
-                          ? 'bg-red-500'
-                          : capacityStatus.level === 'high'
-                            ? 'bg-orange-500'
-                            : capacityStatus.level === 'medium'
-                              ? 'bg-yellow-500'
-                              : 'bg-emerald-500'
-                      }`}
-                    />
-                    <span className='text-foreground font-medium'>
-                      {group.member_count}/{group.max_members}
-                    </span>
-                  </div>
-                  <span className='text-xs px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground'>
-                    {capacityStatus.percentage}%
-                  </span>
-                </div>
+              <span className='text-xs text-muted-foreground'>
+                {capacityStatus.percentage}%
+              </span>
+            </div>
 
-                {/* Compact progress bar */}
-                <div className='relative'>
-                  <div className='w-full bg-muted rounded-full h-1.5 overflow-hidden'>
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ease-out ${
-                        capacityStatus.level === 'full'
-                          ? 'bg-gradient-to-r from-red-500 to-red-600'
-                          : capacityStatus.level === 'high'
-                            ? 'bg-gradient-to-r from-orange-500 to-orange-600'
-                            : capacityStatus.level === 'medium'
-                              ? 'bg-gradient-to-r from-yellow-500 to-yellow-600'
-                              : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
-                      }`}
-                      style={{ width: `${capacityStatus.percentage}%` }}
-                      role='progressbar'
-                      aria-valuenow={capacityStatus.percentage}
-                      aria-valuemin={0}
-                      aria-valuemax={100}
-                      aria-label={`Capacidad del grupo: ${capacityStatus.percentage}% lleno`}
-                    />
-                  </div>
-                </div>
-
-                {showStatistics && statistics && (
-                  <div className='flex items-center gap-1 text-muted-foreground text-xs'>
-                    <Calendar className='w-3 h-3' aria-hidden='true' />
-                    <span>{statistics.upcomingEvents} eventos</span>
-                  </div>
-                )}
+            {/* Progress bar */}
+            <div className='relative'>
+              <div className='w-full bg-muted rounded-full h-2 overflow-hidden'>
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ease-out ${
+                    capacityStatus.level === 'full'
+                      ? 'bg-gradient-to-r from-red-500 to-red-600'
+                      : capacityStatus.level === 'high'
+                        ? 'bg-gradient-to-r from-orange-500 to-orange-600'
+                        : capacityStatus.level === 'medium'
+                          ? 'bg-gradient-to-r from-yellow-500 to-yellow-600'
+                          : 'bg-gradient-to-r from-green-500 to-green-600'
+                  }`}
+                  style={{ width: `${capacityStatus.percentage}%` }}
+                  role='progressbar'
+                  aria-valuenow={capacityStatus.percentage}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label={`Capacidad del grupo: ${capacityStatus.percentage}% lleno`}
+                />
               </div>
             </div>
           </div>
-          <div id={`group-${group.group_id}-description`} className='sr-only'>
-            {group.description}
-          </div>
+
+          {/* Action Buttons */}
           {showActions && (
             <div
-              className='flex flex-wrap gap-2 mt-3'
+              className='flex flex-col gap-2'
               role='group'
               aria-label='Acciones del grupo'
             >
               {renderActions()}
             </div>
           )}
+
+          <div id={`group-${group.group_id}-description`} className='sr-only'>
+            {group.description}
+          </div>
           {renderStatistics()}
         </CardContent>
 

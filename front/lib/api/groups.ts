@@ -17,6 +17,20 @@ export interface Group {
   membership_status?: 'pending' | 'active' | 'inactive';
 }
 
+export interface GroupShort {
+  group_id: string;
+  category: string;
+  name: string;
+}
+
+export interface UserShort {
+  id: number;
+  full_name: string;
+  email: string;
+  student_id: string;
+  phone: string;
+}
+
 // Enhanced interfaces for detailed group data
 
 export interface GroupStatistics {
@@ -94,13 +108,15 @@ export interface GroupMember {
 }
 
 export interface GroupRequest {
-  id: number;
-  user_id: number;
-  full_name: string;
-  email: string;
-  student_id: string;
-  requested_at: string;
+  group: string;
+  group_details: GroupShort;
+  joined_at: string;
+  membership_id: string;
   status: 'pending';
+  role: 'member' | 'president';
+  user: string;
+  user_details: UserShort;
+  user_id: string;
 }
 
 export interface CreateGroupData {
@@ -108,7 +124,15 @@ export interface CreateGroupData {
   description: string;
   category: string;
   max_members: number;
+  president_id?: number;
   image?: File;
+}
+
+export interface AvailablePresident {
+  id: number;
+  full_name: string;
+  email: string;
+  student_id: string;
 }
 
 export type UpdateGroupData = Partial<CreateGroupData>;
@@ -154,11 +178,22 @@ export const groupsApi = {
     formData.append('description', data.description);
     formData.append('category', data.category);
     formData.append('max_members', data.max_members.toString());
+    if (data.president_id) {
+      formData.append('president_id', data.president_id.toString());
+    }
     if (image) {
       formData.append('image', image);
     }
 
     const response = await apiClient.post<Group>('/api/groups/', formData);
+    return response;
+  },
+
+  // Get available presidents (admin only)
+  getAvailablePresidents: async (): Promise<AvailablePresident[]> => {
+    const response = await apiClient.get<AvailablePresident[]>(
+      '/api/groups/available_presidents/'
+    );
     return response;
   },
 
@@ -200,24 +235,34 @@ export const groupsApi = {
 
   // Get group members
   getMembers: async (id: string): Promise<GroupMember[]> => {
-    const response = await apiClient.get<ApiPaginatedResponse>(
-      `/api/groups/${id}/members/`
-    );
-    return response.results as GroupMember[];
+    try {
+      const response = await apiClient.get<ApiPaginatedResponse>(
+        `/api/groups/${id}/members/`
+      );
+      return (response.results || []) as GroupMember[];
+    } catch (error) {
+      console.error('Error fetching group members:', error);
+      return [];
+    }
   },
 
   // Get pending requests (president only)
   getRequests: async (id: string): Promise<GroupRequest[]> => {
-    const response = await apiClient.get<ApiPaginatedResponse>(
-      `/api/groups/${id}/requests/`
-    );
-    return response.results as GroupRequest[];
+    try {
+      const response = await apiClient.get<GroupRequest[]>(
+        `/api/groups/${id}/requests/`
+      );
+      return Array.isArray(response) ? response : [];
+    } catch (error) {
+      console.error('Error fetching group requests:', error);
+      return [];
+    }
   },
 
   // Approve request (president only)
   approveRequest: async (
     groupId: string,
-    userId: number
+    userId: string
   ): Promise<{ message: string }> => {
     const response = await apiClient.post(
       `/api/groups/${groupId}/requests/${userId}/approve/`
@@ -228,7 +273,7 @@ export const groupsApi = {
   // Reject request (president only)
   rejectRequest: async (
     groupId: string,
-    userId: number
+    userId: string
   ): Promise<{ message: string }> => {
     const response = await apiClient.post<{ message: string }>(
       `/api/groups/${groupId}/requests/${userId}/reject/`

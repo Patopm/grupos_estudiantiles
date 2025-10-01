@@ -414,6 +414,57 @@ class StudentGroupViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
 
+    @extend_schema(
+        summary="Obtener presidentes disponibles",
+        description=
+        "Obtiene la lista de usuarios con rol de presidente que no tienen un grupo asignado.",
+        responses={
+            200: {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "full_name": {
+                            "type": "string"
+                        },
+                        "email": {
+                            "type": "string"
+                        },
+                        "student_id": {
+                            "type": "string"
+                        },
+                    },
+                },
+            }
+        },
+        tags=["Groups"],
+    )
+    @action(detail=False, methods=["get"])
+    def available_presidents(self, request):
+        """
+        Endpoint para obtener presidentes disponibles
+        GET /api/groups/available_presidents/
+        """
+        # Obtener usuarios con rol de presidente que no tienen grupo asignado
+        available_presidents = User.objects.filter(
+            role='president',
+            is_active=True).exclude(led_groups__isnull=False).order_by(
+                'first_name', 'last_name')
+
+        presidents_data = []
+        for president in available_presidents:
+            presidents_data.append({
+                'id': president.id,
+                'full_name': president.get_full_name(),
+                'email': president.email,
+                'student_id': president.student_id or '',
+            })
+
+        return Response(presidents_data)
+
 
 @extend_schema_view(
     list=extend_schema(

@@ -40,6 +40,13 @@ export interface Event {
     group_id: string;
     name: string;
     category: string;
+    president_name: string;
+    president_details?: {
+      id: number;
+      full_name: string;
+      email: string;
+      student_id: string;
+    } | null;
   }>;
   target_group_names?: string[];
   attendee_count: number;
@@ -72,7 +79,13 @@ export interface EventAttendee {
     phone?: string;
     is_active_student?: boolean;
   };
-  status: 'registered' | 'confirmed' | 'attended' | 'no_show' | 'cancelled';
+  status:
+    | 'registered'
+    | 'confirmed'
+    | 'attended'
+    | 'no_show'
+    | 'cancelled'
+    | 'pending';
   registration_date: string;
   notes?: string;
   updated_at: string;
@@ -187,7 +200,8 @@ export type AttendanceStatus =
   | 'confirmed'
   | 'attended'
   | 'no_show'
-  | 'cancelled';
+  | 'cancelled'
+  | 'pending';
 
 // Enums for event types and statuses (using proper TypeScript enums)
 export enum EventTypeEnum {
@@ -214,6 +228,7 @@ export enum AttendanceStatusEnum {
   ATTENDED = 'attended',
   NO_SHOW = 'no_show',
   CANCELLED = 'cancelled',
+  PENDING = 'pending',
 }
 
 // Const objects for backward compatibility and easier usage
@@ -270,6 +285,7 @@ export const ATTENDANCE_STATUS_LABELS: Record<AttendanceStatus, string> = {
   attended: 'Asistió',
   no_show: 'No asistió',
   cancelled: 'Cancelado',
+  pending: 'Pendiente',
 };
 
 /**
@@ -438,6 +454,36 @@ export const eventsApi = {
    */
   unregister: async (id: string): Promise<{ message: string }> => {
     return await apiClient.post(`/api/events/${id}/unattend/`);
+  },
+
+  /**
+   * Request attendance to event (for non-group members)
+   * Sends a request to the group president for event attendance
+   */
+  requestAttendance: async (
+    id: string,
+    notes?: string
+  ): Promise<{ message: string; attendance_id: string; status: string }> => {
+    const data = notes ? { notes } : {};
+    return await apiClient.post(`/api/events/${id}/request_attendance/`, data);
+  },
+
+  /**
+   * Handle attendance request (president only)
+   * Approve or reject an attendance request
+   */
+  handleAttendanceRequest: async (
+    id: string,
+    attendanceId: string,
+    action: 'approve' | 'reject'
+  ): Promise<{ message: string }> => {
+    return await apiClient.post(
+      `/api/events/${id}/handle_attendance_request/`,
+      {
+        attendance_id: attendanceId,
+        action,
+      }
+    );
   },
 
   /**

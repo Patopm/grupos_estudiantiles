@@ -44,6 +44,12 @@ interface GroupListProps {
     href?: string;
     onClick?: () => void;
   };
+  viewAllAction?: {
+    label: string;
+    href?: string;
+    onClick?: () => void;
+    showWhen?: boolean;
+  };
   onJoin?: (groupId: string) => void;
   onLeave?: (groupId: string) => void;
   onView?: (groupId: string) => void;
@@ -83,6 +89,7 @@ export default function GroupList({
   variant = 'default',
   noGroupsMessage = 'No tienes grupos registrados',
   noGroupsAction,
+  viewAllAction,
   onJoin,
   onLeave,
   onView,
@@ -261,7 +268,7 @@ export default function GroupList({
           </div>
         </CardHeader>
         <CardContent className='flex-1'>
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+          <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className='animate-pulse'>
                 <div className='bg-muted rounded-lg h-64'></div>
@@ -502,7 +509,7 @@ export default function GroupList({
             <div
               className={
                 viewMode === 'grid'
-                  ? `grid grid-cols-1 ${variant === 'compact' ? 'md:grid-cols-2 lg:grid-cols-4' : 'md:grid-cols-2 lg:grid-cols-3'} gap-4`
+                  ? `grid grid-cols-1 ${variant === 'compact' ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-3'} gap-4`
                   : 'space-y-4'
               }
             >
@@ -590,6 +597,20 @@ export default function GroupList({
               <div className='text-center text-sm text-muted-foreground'>
                 Mostrando {filteredAndSortedGroups.length} de{' '}
                 {groups?.length || 0} grupos
+              </div>
+            )}
+
+            {/* View All Action */}
+            {viewAllAction && viewAllAction.showWhen && (
+              <div className='flex justify-center pt-2'>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={viewAllAction.onClick}
+                  className='text-xs px-4 py-2 hover:bg-muted/50'
+                >
+                  {viewAllAction.label}
+                </Button>
               </div>
             )}
           </>

@@ -248,6 +248,11 @@ function StudentDashboardContent() {
                 noGroupsMessage='No perteneces a ningún grupo'
                 onLeave={handleLeaveGroup}
                 onView={handleViewGroup}
+                viewAllAction={{
+                  label: `Ver todos mis grupos (${dashboardData?.my_groups.length || 0})`,
+                  onClick: () => router.push('/dashboard/student/groups'),
+                  showWhen: (dashboardData?.my_groups.length || 0) > 3,
+                }}
               />
             </div>
 

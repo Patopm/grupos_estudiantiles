@@ -27,6 +27,7 @@ function EventDetailPageContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingAttendees, setIsLoadingAttendees] = useState(false);
   const [isLoadingRelated, setIsLoadingRelated] = useState(false);
+  const [showRequestDialog, setShowRequestDialog] = useState(false);
 
   const eventId = params.id as string;
 
@@ -110,18 +111,60 @@ function EventDetailPageContent() {
     if (!event) return;
 
     try {
-      await eventsApi.register(event.event_id, notes);
+      const response = await eventsApi.register(event.event_id, notes);
       toast({
         title: 'Registro Exitoso',
-        description: 'Te has registrado correctamente al evento',
+        description:
+          response.message || 'Te has registrado correctamente al evento',
       });
       // Refresh event data to update registration status
       loadEventDetails();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error registering for event:', error);
+
+      // Check if this is a permission error that requires a request
+      if (error && typeof error === 'object' && 'response' in error) {
+        const apiError = error as {
+          response?: {
+            status?: number;
+            data?: { requires_request?: boolean; error?: string };
+          };
+        };
+        if (
+          apiError.response?.status === 403 &&
+          apiError.response?.data?.requires_request
+        ) {
+          // Show request dialog instead of error
+          setShowRequestDialog(true);
+          return;
+        }
+      }
+
       toast({
         title: 'Error',
         description: 'No se pudo registrar al evento',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleRequestAttendance = async (notes?: string) => {
+    if (!event) return;
+
+    try {
+      const response = await eventsApi.requestAttendance(event.event_id, notes);
+      toast({
+        title: 'Solicitud Enviada',
+        description: response.message,
+      });
+      setShowRequestDialog(false);
+      // Refresh event data to update status
+      loadEventDetails();
+    } catch (error: unknown) {
+      console.error('Error requesting attendance:', error);
+      toast({
+        title: 'Error',
+        description: 'No se pudo enviar la solicitud',
         variant: 'destructive',
       });
     }
@@ -215,7 +258,10 @@ function EventDetailPageContent() {
           isLoadingRelated={isLoadingRelated}
           onRegister={handleRegister}
           onUnregister={handleUnregister}
+          onRequestAttendance={handleRequestAttendance}
           onViewEvent={handleViewEvent}
+          showRequestDialog={showRequestDialog}
+          onCloseRequestDialog={() => setShowRequestDialog(false)}
         />
       </div>
     </div>

@@ -39,11 +39,12 @@ class Event(models.Model):
 
     title = models.CharField(max_length=200, help_text="Título del evento")
 
-    description = models.TextField(help_text="Descripción detallada del evento")
+    description = models.TextField(
+        help_text="Descripción detallada del evento")
 
-    event_type = models.CharField(
-        max_length=20, choices=EVENT_TYPE_CHOICES, help_text="Tipo de evento"
-    )
+    event_type = models.CharField(max_length=20,
+                                  choices=EVENT_TYPE_CHOICES,
+                                  help_text="Tipo de evento")
 
     status = models.CharField(
         max_length=20,
@@ -59,11 +60,14 @@ class Event(models.Model):
         help_text="Grupos estudiantiles objetivo del evento",
     )
 
-    start_datetime = models.DateTimeField(help_text="Fecha y hora de inicio del evento")
+    start_datetime = models.DateTimeField(
+        help_text="Fecha y hora de inicio del evento")
 
-    end_datetime = models.DateTimeField(help_text="Fecha y hora de fin del evento")
+    end_datetime = models.DateTimeField(
+        help_text="Fecha y hora de fin del evento")
 
-    location = models.CharField(max_length=200, help_text="Ubicación del evento")
+    location = models.CharField(max_length=200,
+                                help_text="Ubicación del evento")
 
     max_attendees = models.PositiveIntegerField(
         null=True,
@@ -73,12 +77,11 @@ class Event(models.Model):
     )
 
     registration_deadline = models.DateTimeField(
-        null=True, blank=True, help_text="Fecha límite de inscripción"
-    )
+        null=True, blank=True, help_text="Fecha límite de inscripción")
 
     requires_registration = models.BooleanField(
-        default=False, help_text="Indica si el evento requiere inscripción previa"
-    )
+        default=False,
+        help_text="Indica si el evento requiere inscripción previa")
 
     image = models.ImageField(
         upload_to="events/images/",
@@ -87,13 +90,11 @@ class Event(models.Model):
         help_text="Imagen promocional del evento",
     )
 
-    created_at = models.DateTimeField(
-        auto_now_add=True, help_text="Fecha de creación del evento"
-    )
+    created_at = models.DateTimeField(auto_now_add=True,
+                                      help_text="Fecha de creación del evento")
 
     updated_at = models.DateTimeField(
-        auto_now=True, help_text="Fecha de última actualización"
-    )
+        auto_now=True, help_text="Fecha de última actualización")
 
     class Meta:
         db_table = "events"
@@ -130,8 +131,7 @@ class Event(models.Model):
     def attendee_count(self):
         """Número de asistentes registrados"""
         return self.attendances.filter(
-            status__in=["registered", "confirmed", "attended"]
-        ).count()
+            status__in=["registered", "confirmed", "attended"]).count()
 
     @property
     def is_full(self):
@@ -145,7 +145,8 @@ class Event(models.Model):
         """Verifica si la inscripción está abierta"""
         if not self.requires_registration:
             return False
-        if self.registration_deadline and timezone.now() > self.registration_deadline:
+        if self.registration_deadline and timezone.now(
+        ) > self.registration_deadline:
             return False
         return not self.is_full and self.status == "published"
 
@@ -154,8 +155,7 @@ class Event(models.Model):
         if self.start_datetime and self.end_datetime:
             if self.start_datetime >= self.end_datetime:
                 raise ValidationError(
-                    "La fecha de inicio debe ser anterior a la fecha de fin."
-                )
+                    "La fecha de inicio debe ser anterior a la fecha de fin.")
 
         if self.registration_deadline and self.start_datetime:
             if self.registration_deadline > self.start_datetime:
@@ -175,6 +175,7 @@ class EventAttendance(models.Model):
         ("attended", "Asistió"),
         ("no_show", "No asistió"),
         ("cancelled", "Cancelado"),
+        ("pending", "Pendiente de aprobación"),
     ]
 
     attendance_id = models.UUIDField(
@@ -206,20 +207,17 @@ class EventAttendance(models.Model):
     )
 
     registration_date = models.DateTimeField(
-        auto_now_add=True, help_text="Fecha de registro inicial"
-    )
+        auto_now_add=True, help_text="Fecha de registro inicial")
 
-    notes = models.TextField(
-        blank=True, null=True, help_text="Notas adicionales sobre la asistencia"
-    )
+    notes = models.TextField(blank=True,
+                             null=True,
+                             help_text="Notas adicionales sobre la asistencia")
 
     updated_at = models.DateTimeField(
-        auto_now=True, help_text="Fecha de última actualización del estado"
-    )
+        auto_now=True, help_text="Fecha de última actualización del estado")
 
     registered_at = models.DateTimeField(
-        auto_now_add=True, help_text="Fecha de inscripción al evento"
-    )
+        auto_now_add=True, help_text="Fecha de inscripción al evento")
 
     class Meta:
         db_table = "event_attendances"

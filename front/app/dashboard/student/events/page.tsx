@@ -69,15 +69,39 @@ function StudentEventsContent() {
 
   const handleRegister = async (eventId: string) => {
     try {
-      await eventsApi.register(eventId);
+      const response = await eventsApi.register(eventId);
       toast({
         title: 'Registro Exitoso',
-        description: 'Te has registrado correctamente al evento',
+        description:
+          response.message || 'Te has registrado correctamente al evento',
       });
       // Refresh events to update registration status
       loadEvents(filters);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error registering for event:', error);
+
+      // Check if this is a permission error that requires a request
+      if (error && typeof error === 'object' && 'response' in error) {
+        const apiError = error as {
+          response?: {
+            status?: number;
+            data?: { requires_request?: boolean; error?: string };
+          };
+        };
+        if (
+          apiError.response?.status === 403 &&
+          apiError.response?.data?.requires_request
+        ) {
+          toast({
+            title: 'Solicitud Requerida',
+            description:
+              'No eres miembro del grupo. Debes solicitar permiso al presidente.',
+            variant: 'destructive',
+          });
+          return;
+        }
+      }
+
       toast({
         title: 'Error',
         description: 'No se pudo registrar al evento',
