@@ -114,7 +114,7 @@ export default function EventManagementForm({
     };
 
     loadGroups();
-  }, [toast]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};

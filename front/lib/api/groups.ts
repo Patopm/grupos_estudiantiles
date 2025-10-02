@@ -89,6 +89,8 @@ export interface GroupFilters {
   has_space?: boolean;
   my_groups?: boolean;
   available?: boolean;
+  pending_only?: boolean;
+  active_only?: boolean;
 }
 
 export interface GroupSortOptions {
@@ -97,14 +99,13 @@ export interface GroupSortOptions {
 }
 
 export interface GroupMember {
-  id: number;
-  user_id: number;
-  full_name: string;
-  email: string;
-  student_id: string;
+  membership_id: string;
   role: 'member' | 'president';
   status: 'pending' | 'active' | 'inactive';
   joined_at: string;
+  user_details: UserShort & {
+    is_active_student: boolean;
+  };
 }
 
 export interface GroupRequest {
@@ -236,10 +237,11 @@ export const groupsApi = {
   // Get group members
   getMembers: async (id: string): Promise<GroupMember[]> => {
     try {
-      const response = await apiClient.get<ApiPaginatedResponse>(
+      const response = await apiClient.get<GroupMember[]>(
         `/api/groups/${id}/members/`
       );
-      return (response.results || []) as GroupMember[];
+      console.log('response', response);
+      return response;
     } catch (error) {
       console.error('Error fetching group members:', error);
       return [];
@@ -624,6 +626,8 @@ export const groupsApi = {
       if (filters?.has_space) params.append('has_space', 'true');
       if (filters?.my_groups) params.append('my_groups', 'true');
       if (filters?.available) params.append('available', 'true');
+      if (filters?.pending_only) params.append('pending_only', 'true');
+      if (filters?.active_only) params.append('active_only', 'true');
 
       if (sort?.field)
         params.append(

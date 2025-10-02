@@ -46,7 +46,7 @@ function StudentEventsContent() {
         setIsLoading(false);
       }
     },
-    [toast]
+    [] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   useEffect(() => {

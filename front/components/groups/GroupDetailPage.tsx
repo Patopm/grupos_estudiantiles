@@ -349,21 +349,23 @@ export default function GroupDetailPage({
                 <div className='space-y-3 max-h-96 overflow-y-auto'>
                   {groupData.members.map(member => (
                     <div
-                      key={member.id}
+                      key={member.membership_id}
                       className='flex items-center justify-between p-3 bg-muted/30 rounded-lg'
                     >
                       <div className='flex items-center gap-3'>
                         <div className='w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center'>
                           <span className='text-sm font-medium text-primary'>
-                            {member.full_name.charAt(0).toUpperCase()}
+                            {member.user_details.full_name
+                              .charAt(0)
+                              .toUpperCase()}
                           </span>
                         </div>
                         <div>
                           <div className='font-medium text-sm'>
-                            {member.full_name}
+                            {member.user_details.full_name}
                           </div>
                           <div className='text-xs text-muted-foreground'>
-                            {member.student_id}
+                            ID: {member.membership_id.slice(0, 8)}...
                           </div>
                         </div>
                       </div>

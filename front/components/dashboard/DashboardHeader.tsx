@@ -100,9 +100,12 @@ export default function DashboardHeader({
                   </Button>
                 </Link>
               ) : (
-                <span className='text-lg font-semibold text-foreground'>
+                <Link
+                  href={getDashboardUrl()}
+                  className='text-lg font-semibold text-foreground'
+                >
                   {getDashboardTitle()}
-                </span>
+                </Link>
               )}
             </div>
 

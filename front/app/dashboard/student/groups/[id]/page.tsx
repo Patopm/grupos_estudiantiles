@@ -37,6 +37,7 @@ function StudentGroupDetailContent() {
       setIsLoading(true);
       setError(null);
       const data = await groupsApi.getDetailedById(groupId);
+      console.log('data', data);
       setGroupData(data);
     } catch (error) {
       console.error('Error loading group details:', error);

@@ -86,12 +86,28 @@ class StudentGroupViewSet(viewsets.ModelViewSet):
                                                       '').lower() == 'true'
             available = self.request.query_params.get('available',
                                                       '').lower() == 'true'
+            pending_only = self.request.query_params.get('pending_only',
+                                                         '').lower() == 'true'
+            active_only = self.request.query_params.get('active_only',
+                                                        '').lower() == 'true'
 
             if my_groups:
-                # Mostrar solo grupos donde el usuario es miembro activo
-                queryset = queryset.filter(
-                    memberships__user=self.request.user,
-                    memberships__status__in=['active', 'pending']).distinct()
+                if pending_only:
+                    # Mostrar solo grupos donde el usuario tiene solicitudes pendientes
+                    queryset = queryset.filter(
+                        memberships__user=self.request.user,
+                        memberships__status='pending').distinct()
+                elif active_only:
+                    # Mostrar solo grupos donde el usuario es miembro activo
+                    queryset = queryset.filter(
+                        memberships__user=self.request.user,
+                        memberships__status='active').distinct()
+                else:
+                    # Mostrar todos los grupos donde el usuario tiene membresía (activa o pendiente)
+                    queryset = queryset.filter(
+                        memberships__user=self.request.user,
+                        memberships__status__in=['active',
+                                                 'pending']).distinct()
             elif available:
                 groups_with_active_pending = StudentGroup.objects.filter(
                     memberships__user=self.request.user,

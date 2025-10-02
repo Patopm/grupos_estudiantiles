@@ -22,6 +22,8 @@ function StudentGroupsContent() {
   const { toast } = useToast();
 
   const [myGroups, setMyGroups] = useState<Group[]>([]);
+  const [pendingGroups, setPendingGroups] = useState<Group[]>([]);
+  const [activeGroups, setActiveGroups] = useState<Group[]>([]);
   const [availableGroups, setAvailableGroups] = useState<Group[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('my-groups');
@@ -29,12 +31,21 @@ function StudentGroupsContent() {
   const loadGroups = useCallback(async () => {
     try {
       setIsLoading(true);
-      const [myGroupsData, availableGroupsData] = await Promise.all([
+      const [
+        myGroupsData,
+        pendingGroupsData,
+        activeGroupsData,
+        availableGroupsData,
+      ] = await Promise.all([
         groupsApi.getMyGroups(),
+        groupsApi.getFilteredGroups({ my_groups: true, pending_only: true }),
+        groupsApi.getFilteredGroups({ my_groups: true, active_only: true }),
         groupsApi.getAvailable(),
       ]);
 
       setMyGroups(myGroupsData);
+      setPendingGroups(pendingGroupsData);
+      setActiveGroups(activeGroupsData);
       setAvailableGroups(availableGroupsData);
     } catch (error) {
       console.error('Error loading groups:', error);
@@ -115,9 +126,15 @@ function StudentGroupsContent() {
           onValueChange={setActiveTab}
           className='space-y-6'
         >
-          <TabsList className='grid w-full grid-cols-2'>
+          <TabsList className='grid w-full grid-cols-4'>
             <TabsTrigger value='my-groups'>
-              Mis Grupos ({myGroups.length || 0})
+              Todos ({myGroups.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value='active'>
+              Activos ({activeGroups.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value='pending'>
+              Pendientes ({pendingGroups.length || 0})
             </TabsTrigger>
             <TabsTrigger value='available'>
               Explorar ({availableGroups.length || 0})
@@ -134,6 +151,35 @@ function StudentGroupsContent() {
               enablePagination={false} // Don't paginate user's own groups
               noGroupsMessage='Aún no perteneces a ningún grupo. ¡Explora los grupos disponibles!'
               onLeave={handleLeaveGroup}
+              onView={handleViewGroup}
+              isLoading={isLoading}
+            />
+          </TabsContent>
+
+          <TabsContent value='active' className='space-y-6'>
+            <GroupList
+              groups={activeGroups}
+              title='Mis Grupos Activos'
+              showSearch={true}
+              showFilters={true}
+              showViewToggle={true}
+              enablePagination={false}
+              noGroupsMessage='No tienes grupos activos en este momento'
+              onLeave={handleLeaveGroup}
+              onView={handleViewGroup}
+              isLoading={isLoading}
+            />
+          </TabsContent>
+
+          <TabsContent value='pending' className='space-y-6'>
+            <GroupList
+              groups={pendingGroups}
+              title='Solicitudes Pendientes'
+              showSearch={true}
+              showFilters={true}
+              showViewToggle={true}
+              enablePagination={false}
+              noGroupsMessage='No tienes solicitudes pendientes'
               onView={handleViewGroup}
               isLoading={isLoading}
             />

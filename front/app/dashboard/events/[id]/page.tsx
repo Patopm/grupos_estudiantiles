@@ -68,7 +68,7 @@ function EventDetailPageContent() {
     } finally {
       setIsLoadingAttendees(false);
     }
-  }, [eventId, toast]);
+  }, [eventId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadRelatedEvents = useCallback(async () => {
     if (!event) return;

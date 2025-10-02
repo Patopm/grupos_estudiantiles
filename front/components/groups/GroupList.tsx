@@ -113,6 +113,8 @@ export default function GroupList({
   // Additional filters
   const [hasSpaceOnly, setHasSpaceOnly] = useState(false);
   const [activeOnly, setActiveOnly] = useState(true);
+  const [showPendingOnly, setShowPendingOnly] = useState(false);
+  const [showActiveOnly, setShowActiveOnly] = useState(false);
 
   // Debounce search term to avoid excessive filtering
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
@@ -156,6 +158,15 @@ export default function GroupList({
       filtered = filtered.filter(group => group.is_active);
     }
 
+    // Filter by membership status
+    if (showPendingOnly) {
+      filtered = filtered.filter(
+        group => group.membership_status === 'pending'
+      );
+    } else if (showActiveOnly) {
+      filtered = filtered.filter(group => group.membership_status === 'active');
+    }
+
     // Sort groups
     filtered.sort((a, b) => {
       switch (sortBy) {
@@ -191,6 +202,8 @@ export default function GroupList({
     sortBy,
     hasSpaceOnly,
     activeOnly,
+    showPendingOnly,
+    showActiveOnly,
   ]);
 
   // Paginated groups
@@ -216,6 +229,8 @@ export default function GroupList({
     sortBy,
     hasSpaceOnly,
     activeOnly,
+    showPendingOnly,
+    showActiveOnly,
   ]);
 
   // Category selection handlers
@@ -241,6 +256,8 @@ export default function GroupList({
     setSortBy('name');
     setHasSpaceOnly(false);
     setActiveOnly(true);
+    setShowPendingOnly(false);
+    setShowActiveOnly(false);
     setCurrentPage(1);
   }, []);
 
@@ -250,8 +267,17 @@ export default function GroupList({
     if (!selectedCategories.includes('all')) count++;
     if (hasSpaceOnly) count++;
     if (!activeOnly) count++;
+    if (showPendingOnly) count++;
+    if (showActiveOnly) count++;
     return count;
-  }, [debouncedSearchTerm, selectedCategories, hasSpaceOnly, activeOnly]);
+  }, [
+    debouncedSearchTerm,
+    selectedCategories,
+    hasSpaceOnly,
+    activeOnly,
+    showPendingOnly,
+    showActiveOnly,
+  ]);
 
   if (isLoading) {
     return (
@@ -395,6 +421,26 @@ export default function GroupList({
                         }
                       />
                       Solo activos
+                    </label>
+                    <label className='flex items-center gap-2 text-sm cursor-pointer'>
+                      <Checkbox
+                        checked={showPendingOnly}
+                        onCheckedChange={checked => {
+                          setShowPendingOnly(checked === true);
+                          if (checked) setShowActiveOnly(false);
+                        }}
+                      />
+                      Solo pendientes
+                    </label>
+                    <label className='flex items-center gap-2 text-sm cursor-pointer'>
+                      <Checkbox
+                        checked={showActiveOnly}
+                        onCheckedChange={checked => {
+                          setShowActiveOnly(checked === true);
+                          if (checked) setShowPendingOnly(false);
+                        }}
+                      />
+                      Solo activos (miembros)
                     </label>
                   </div>
 

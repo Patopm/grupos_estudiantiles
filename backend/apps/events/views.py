@@ -93,6 +93,18 @@ class EventViewSet(viewsets.ModelViewSet):
         if status_filter:
             queryset = queryset.filter(status=status_filter)
 
+        group_id = self.request.query_params.get("group_id", None)
+        if group_id:
+            queryset = queryset.filter(target_groups__group_id=group_id)
+
+        my_events = self.request.query_params.get("my_events", None)
+        if my_events:
+            queryset = queryset.filter(attendances__user=self.request.user,
+                                       attendances__status__in=[
+                                           'registered', 'confirmed',
+                                           'attended'
+                                       ]).distinct()
+
         # Para administradores, mostrar todos los eventos
         if self.request.user.is_authenticated and self.request.user.is_admin:
             queryset = Event.objects.all()
