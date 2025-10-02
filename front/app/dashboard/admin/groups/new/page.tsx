@@ -50,14 +50,12 @@ function AdminGroupsNewContent() {
   const [loadingPresidents, setLoadingPresidents] = useState(false);
 
   const categories = [
-    'Académico',
-    'Deportivo',
-    'Cultural',
-    'Tecnológico',
-    'Social',
-    'Voluntariado',
-    'Profesional',
-    'Otro',
+    'deportivo',
+    'cultural',
+    'academico',
+    'social',
+    'tecnologico',
+    'otro',
   ];
 
   // Load available presidents on component mount
@@ -205,11 +203,21 @@ function AdminGroupsNewContent() {
                       <SelectValue placeholder='Selecciona una categoría' />
                     </SelectTrigger>
                     <SelectContent>
-                      {categories.map(category => (
-                        <SelectItem key={category} value={category}>
-                          {category}
-                        </SelectItem>
-                      ))}
+                      {categories.map(category => {
+                        const categoryLabels: { [key: string]: string } = {
+                          deportivo: 'Deportivo',
+                          cultural: 'Cultural',
+                          academico: 'Académico',
+                          social: 'Social',
+                          tecnologico: 'Tecnológico',
+                          otro: 'Otro',
+                        };
+                        return (
+                          <SelectItem key={category} value={category}>
+                            {categoryLabels[category]}
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                 </div>
