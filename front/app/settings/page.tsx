@@ -1,20 +1,20 @@
 'use client';
 
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { toast } from 'react-hot-toast';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSave, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { toast } from 'react-hot-toast';
 import {
-  DashboardLayout,
   DashboardHeaders,
+  DashboardLayout,
 } from '@/components/dashboard/DashboardHeader';
-import { useForm } from '@/hooks/useForm';
-import { settingsSchema, type SettingsFormData } from '@/lib/validations/forms';
 import AppearanceSettings from '@/components/settings/AppearanceSettings';
 import LanguageRegionSettings from '@/components/settings/LanguageRegionSettings';
 import NotificationSettings from '@/components/settings/NotificationSettings';
 import QuickLinks from '@/components/settings/QuickLinks';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { useForm } from '@/hooks/useForm';
+import { type SettingsFormData, settingsSchema } from '@/lib/validations/forms';
 
 export default function SettingsPage() {
   const { user } = useAuth();

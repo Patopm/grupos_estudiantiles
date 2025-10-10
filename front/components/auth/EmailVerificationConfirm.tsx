@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { CheckCircle, Loader2, Mail, XCircle } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
-import { CheckCircle, XCircle, Loader2, Mail } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
 
 interface EmailVerificationConfirmProps {
   token?: string;

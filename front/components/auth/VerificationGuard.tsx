@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { AlertTriangle, Loader2, Shield } from 'lucide-react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { verificationApi } from '@/lib/api/verification';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { AlertTriangle, Shield, Loader2 } from 'lucide-react';
 import VerificationFlow from './VerificationFlow';
 
 interface VerificationGuardProps {

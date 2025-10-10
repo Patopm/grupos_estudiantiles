@@ -1,17 +1,17 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
+import { faGithub, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import {
   faCalendarAlt,
-  faUsers,
   faChartBar,
+  faCheck,
+  faEnvelope,
   faEye,
   faEyeSlash,
-  faSpinner,
-  faEnvelope,
   faLock,
+  faSpinner,
   faUser,
-  faCheck,
+  faUsers,
 } from '@fortawesome/free-solid-svg-icons';
-import { faGoogle, faGithub } from '@fortawesome/free-brands-svg-icons';
 
 // Add icons to the library
 library.add(

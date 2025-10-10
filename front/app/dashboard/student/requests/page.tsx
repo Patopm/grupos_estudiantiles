@@ -1,26 +1,26 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAuth, ProtectedRoute } from '@/contexts/AuthContext';
-import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/hooks/use-toast';
-import { groupsApi, GroupMember } from '@/lib/api/groups';
 import {
+  AlertCircle,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Eye,
+  RefreshCw,
+  User,
   UserPlus,
   Users,
-  Clock,
-  CheckCircle,
   XCircle,
-  User,
-  AlertCircle,
-  RefreshCw,
-  Eye,
-  Calendar,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import DashboardHeader from '@/components/dashboard/DashboardHeader';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ProtectedRoute, useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import { type GroupMember, groupsApi } from '@/lib/api/groups';
 
 interface StudentMembership extends GroupMember {
   group_name: string;
@@ -61,7 +61,7 @@ function StudentRequestsContent() {
           const members = await groupsApi.getMembers(group.group_id);
           if (members && Array.isArray(members)) {
             const userMembership = members.find(
-              member => member.user_id === user?.id
+              member => member.user_details.id === user?.id
             );
 
             if (userMembership) {
@@ -340,7 +340,7 @@ function StudentRequestsContent() {
 
                         return (
                           <div
-                            key={`${membership.group_id}-${membership.user_id}`}
+                            key={`${membership.group_id}-${membership.user_details.id}`}
                             className='flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors'
                           >
                             <div className='flex items-center gap-4'>
@@ -413,7 +413,7 @@ function StudentRequestsContent() {
 
                         return (
                           <div
-                            key={`${membership.group_id}-${membership.user_id}`}
+                            key={`${membership.group_id}-${membership.user_details.id}`}
                             className='flex items-center justify-between p-4 border rounded-lg bg-yellow-50 dark:bg-yellow-900/20'
                           >
                             <div className='flex items-center gap-4'>
@@ -493,7 +493,7 @@ function StudentRequestsContent() {
 
                         return (
                           <div
-                            key={`${membership.group_id}-${membership.user_id}`}
+                            key={`${membership.group_id}-${membership.user_details.id}`}
                             className='flex items-center justify-between p-4 border rounded-lg bg-green-50 dark:bg-green-900/20'
                           >
                             <div className='flex items-center gap-4'>
@@ -577,7 +577,7 @@ function StudentRequestsContent() {
 
                         return (
                           <div
-                            key={`${membership.group_id}-${membership.user_id}`}
+                            key={`${membership.group_id}-${membership.user_details.id}`}
                             className='flex items-center justify-between p-4 border rounded-lg bg-gray-50 dark:bg-gray-900/20'
                           >
                             <div className='flex items-center gap-4'>

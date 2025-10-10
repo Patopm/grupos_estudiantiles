@@ -1,20 +1,20 @@
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import {
-  Users,
-  TrendingUp,
-  TrendingDown,
+  Activity,
+  Award,
   BarChart3,
   Target,
-  Award,
-  Activity,
+  TrendingDown,
+  TrendingUp,
+  Users,
   Zap,
 } from 'lucide-react';
+import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 
 interface GroupEventPerformanceProps {
   performanceData: {

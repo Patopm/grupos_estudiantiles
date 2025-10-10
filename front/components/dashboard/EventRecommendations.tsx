@@ -1,23 +1,23 @@
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   Calendar,
   Clock,
-  MapPin,
-  Users,
   Eye,
-  UserPlus,
+  MapPin,
   Sparkles,
+  UserPlus,
+  Users,
 } from 'lucide-react';
-import { eventsApi, EVENT_TYPE_LABELS } from '@/lib/api/events';
-import { DashboardEvent } from '@/lib/api/dashboard';
-import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
+import type { DashboardEvent } from '@/lib/api/dashboard';
+import { EVENT_TYPE_LABELS, eventsApi } from '@/lib/api/events';
 
 interface EventRecommendationsProps {
   events: Array<DashboardEvent & { recommendation_reason: string }>;

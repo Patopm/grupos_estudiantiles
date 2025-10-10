@@ -1,19 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { ProtectedRoute } from '@/contexts/AuthContext';
+import {
+  Edit,
+  Eye,
+  Mail,
+  Phone,
+  Search,
+  Shield,
+  UserCheck,
+  Users,
+  UserX,
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -22,20 +25,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
+import { Input } from '@/components/ui/input';
 import {
-  Users,
-  Search,
-  Edit,
-  Eye,
-  UserCheck,
-  UserX,
-  Shield,
-  Mail,
-  Phone,
-} from 'lucide-react';
-import { usersApi, User } from '@/lib/api/users';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { ProtectedRoute } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import { type User, usersApi } from '@/lib/api/users';
 
 export default function AdminUsersPage() {
   return (

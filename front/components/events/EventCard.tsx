@@ -1,31 +1,31 @@
 'use client';
 
-import { useState } from 'react';
+import {
+  AlertCircle,
+  Calendar,
+  CalendarX,
+  CheckCircle,
+  Clock,
+  Eye,
+  MapPin,
+  Settings,
+  UserMinus,
+  UserPlus,
+  Users,
+  XCircle,
+} from 'lucide-react';
 import Image from 'next/image';
+import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  Calendar,
-  Clock,
-  MapPin,
-  Users,
-  Eye,
-  UserPlus,
-  UserMinus,
-  Settings,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  CalendarX,
-} from 'lucide-react';
-import { Event, EVENT_TYPE_LABELS } from '@/lib/api/events';
 import { useAuth } from '@/contexts/AuthContext';
+import { EVENT_TYPE_LABELS, type Event } from '@/lib/api/events';
 
 interface EventCardProps {
   event: Event;

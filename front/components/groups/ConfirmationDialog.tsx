@@ -1,9 +1,9 @@
 'use client';
 
+import { AlertTriangle, X } from 'lucide-react';
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle, X } from 'lucide-react';
 
 interface ConfirmationDialogProps {
   isOpen: boolean;

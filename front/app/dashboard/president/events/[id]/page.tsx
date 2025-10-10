@@ -1,20 +1,32 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { ProtectedRoute } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
 import {
-  eventsApi,
-  Event,
-  EventAttendee,
-  UpdateEventFormData,
-} from '@/lib/api/events';
+  AlertTriangle,
+  ArrowLeft,
+  BarChart3,
+  Calendar,
+  Clock,
+  Download,
+  Edit,
+  Eye,
+  Loader2,
+  MapPin,
+  Settings,
+  Share2,
+  Trash2,
+  Users,
+  XCircle,
+} from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import AttendeeManagement from '@/components/events/AttendeeManagement';
+import EventAnalytics from '@/components/events/EventAnalytics';
+import EventAttendanceRequests from '@/components/events/EventAttendanceRequests';
+import EventManagementForm from '@/components/events/EventManagementForm';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -23,27 +35,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ProtectedRoute } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 import {
-  ArrowLeft,
-  Calendar,
-  Clock,
-  MapPin,
-  Users,
-  Edit,
-  Trash2,
-  BarChart3,
-  AlertTriangle,
-  XCircle,
-  Loader2,
-  Settings,
-  Download,
-  Share2,
-  Eye,
-} from 'lucide-react';
-import EventManagementForm from '@/components/events/EventManagementForm';
-import AttendeeManagement from '@/components/events/AttendeeManagement';
-import EventAnalytics from '@/components/events/EventAnalytics';
-import EventAttendanceRequests from '@/components/events/EventAttendanceRequests';
+  type Event,
+  type EventAttendee,
+  eventsApi,
+  type UpdateEventFormData,
+} from '@/lib/api/events';
 
 export default function EventManagementPage() {
   return (

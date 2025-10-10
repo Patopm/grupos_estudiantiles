@@ -1,16 +1,15 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { ArrowLeft, Mail, Phone, Shield } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
-import { Mail, Phone, Shield, ArrowLeft } from 'lucide-react';
-
-import EmailVerificationRequest from './EmailVerificationRequest';
 import EmailVerificationConfirm from './EmailVerificationConfirm';
-import PhoneVerificationRequest from './PhoneVerificationRequest';
+import EmailVerificationRequest from './EmailVerificationRequest';
 import PhoneVerificationConfirm from './PhoneVerificationConfirm';
+import PhoneVerificationRequest from './PhoneVerificationRequest';
 import VerificationStatusIndicator from './VerificationStatusIndicator';
 
 interface VerificationFlowProps {

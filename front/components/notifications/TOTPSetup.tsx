@@ -1,28 +1,28 @@
 'use client';
 
+import {
+  faCheck,
+  faExclamationTriangle,
+  faKey,
+  faQrcode,
+  faShield,
+  faSpinner,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Image from 'next/image';
 import { useState } from 'react';
-import { Card } from '@/components/ui/card';
+import { toast } from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { totpApi, type TOTPDevice } from '@/lib/api/notifications';
-import { type ApiError } from '@/lib/api/client';
-import { toast } from 'react-hot-toast';
 import { useForm } from '@/hooks/useForm';
+import type { ApiError } from '@/lib/api/client';
+import { type TOTPDevice, totpApi } from '@/lib/api/notifications';
 import {
-  totpSetupSchema,
   type TotpSetupFormData,
+  totpSetupSchema,
 } from '@/lib/validations/forms';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faShield,
-  faQrcode,
-  faCheck,
-  faSpinner,
-  faKey,
-  faExclamationTriangle,
-} from '@fortawesome/free-solid-svg-icons';
-import Image from 'next/image';
 
 interface TOTPSetupProps {
   onSetupComplete?: (device: TOTPDevice) => void;

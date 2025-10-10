@@ -1,9 +1,9 @@
 'use client';
 
+import { faShield } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShield } from '@fortawesome/free-solid-svg-icons';
 
 export default function QuickLinks() {
   const quickLinks = [

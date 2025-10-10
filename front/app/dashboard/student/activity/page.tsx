@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { ProtectedRoute } from '@/contexts/AuthContext';
-import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import ActivityTable from '@/components/dashboard/ActivityTable';
-import { dashboardApi, StudentDashboardData } from '@/lib/api/dashboard';
-import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import ActivityTable from '@/components/dashboard/ActivityTable';
+import DashboardHeader from '@/components/dashboard/DashboardHeader';
+import { ProtectedRoute } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import { dashboardApi, type StudentDashboardData } from '@/lib/api/dashboard';
 
 export default function StudentActivityPage() {
   return (

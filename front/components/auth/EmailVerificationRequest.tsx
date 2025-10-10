@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import { CheckCircle, Loader2, Mail } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
-import { Mail, Loader2, CheckCircle } from 'lucide-react';
 
 interface EmailVerificationRequestProps {
   onSuccess?: () => void;

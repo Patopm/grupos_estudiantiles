@@ -1,16 +1,16 @@
 'use client';
 
-import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faEdit,
   faSave,
   faSpinner,
   faTimes,
-  IconDefinition,
+  type IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type React from 'react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 interface FormSectionProps {
   title: string;

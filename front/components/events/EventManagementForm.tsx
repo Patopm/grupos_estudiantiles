@@ -1,11 +1,22 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  CheckCircle,
+  Edit,
+  Image as ImageIcon,
+  Loader2,
+  Save,
+  X,
+} from 'lucide-react';
+import Image from 'next/image';
+import type React from 'react';
+import { useEffect, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -13,20 +24,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
-import {
-  X,
-  Image as ImageIcon,
-  CheckCircle,
-  Loader2,
-  Save,
-  Edit,
-} from 'lucide-react';
-import { Event, UpdateEventFormData } from '@/lib/api/events';
-import { groupsApi, Group } from '@/lib/api/groups';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import Image from 'next/image';
+import type { Event, UpdateEventFormData } from '@/lib/api/events';
+import { type Group, groupsApi } from '@/lib/api/groups';
 
 interface EventManagementFormProps {
   event: Event;

@@ -1,18 +1,18 @@
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import {
-  Users,
-  Calendar,
-  Search,
-  Plus,
-  Settings,
   BarChart3,
-  UserPlus,
+  Calendar,
   ClipboardList,
+  Plus,
+  Search,
+  Settings,
+  UserPlus,
+  Users,
 } from 'lucide-react';
 import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface QuickActionProps {
   title: string;

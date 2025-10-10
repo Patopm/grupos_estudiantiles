@@ -1,4 +1,4 @@
-import { apiClient, ApiPaginatedResponse } from './client';
+import { type ApiPaginatedResponse, apiClient } from './client';
 
 /**
  * Events API Client and Data Models

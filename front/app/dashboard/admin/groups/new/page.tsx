@@ -1,13 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { ProtectedRoute } from '@/contexts/AuthContext';
+import { ArrowLeft, Save, Users, X } from 'lucide-react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -15,11 +16,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { ProtectedRoute } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
-import { Users, Save, ArrowLeft, X } from 'lucide-react';
-import { groupsApi, AvailablePresident } from '@/lib/api/groups';
-import Image from 'next/image';
+import { type AvailablePresident, groupsApi } from '@/lib/api/groups';
 
 export default function AdminGroupsNewPage() {
   return (

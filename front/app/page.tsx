@@ -1,10 +1,10 @@
-import Navigation from '@/components/landing/Navigation';
-import HeroSection from '@/components/landing/HeroSection';
-import GroupsCarousel from '@/components/landing/GroupsCarousel';
-import StatsSection from '@/components/landing/StatsSection';
 import FeaturesSection from '@/components/landing/FeaturesSection';
-import TestimonialsSection from '@/components/landing/TestimonialsSection';
 import Footer from '@/components/landing/Footer';
+import GroupsCarousel from '@/components/landing/GroupsCarousel';
+import HeroSection from '@/components/landing/HeroSection';
+import Navigation from '@/components/landing/Navigation';
+import StatsSection from '@/components/landing/StatsSection';
+import TestimonialsSection from '@/components/landing/TestimonialsSection';
 
 export default function LandingPage() {
   return (

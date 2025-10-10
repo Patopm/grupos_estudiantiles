@@ -1,29 +1,29 @@
 'use client';
 
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faExclamationTriangle,
-  faRefresh,
   faBug,
   faEnvelope,
+  faExclamationTriangle,
+  faRefresh,
   faShieldAlt,
 } from '@fortawesome/free-solid-svg-icons';
-import {
-  AuthError,
-  ErrorContext,
-  ErrorRecoveryAction,
-} from '@/lib/errors/types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { Component, type ErrorInfo, type ReactNode } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   AuthErrorFactory,
   ErrorLogger,
   ErrorRecoveryFactory,
   generateCorrelationId,
+  RetryManager,
 } from '@/lib/errors/handlers';
-import { RetryManager } from '@/lib/errors/handlers';
+import type {
+  AuthError,
+  ErrorContext,
+  ErrorRecoveryAction,
+} from '@/lib/errors/types';
 
 interface Props {
   children: ReactNode;
@@ -194,7 +194,7 @@ class AuthErrorBoundary extends Component<Props, State> {
         },
         {
           maxRetries: 1,
-          baseDelay: 1000 * Math.pow(2, this.state.retryCount),
+          baseDelay: 1000 * 2 ** this.state.retryCount,
         }
       );
     } catch (retryError) {

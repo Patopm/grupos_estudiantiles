@@ -1,8 +1,21 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
-import { Input } from '@/components/ui/input';
+import {
+  Calendar,
+  CheckCircle,
+  ChevronDown,
+  Clock,
+  Filter,
+  Grid,
+  List,
+  RefreshCw,
+  Search,
+  X,
+} from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -10,24 +23,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Search,
-  Grid,
-  List,
-  Calendar,
-  Clock,
-  CheckCircle,
-  RefreshCw,
-  Filter,
-  X,
-  ChevronDown,
-} from 'lucide-react';
-import { Event, EventFilters } from '@/lib/api/events';
+import { useDebounce } from '@/hooks/useDebounce';
+import type { Event, EventFilters } from '@/lib/api/events';
 import EventCard from './EventCard';
 import MyEventsCalendar from './MyEventsCalendar';
-import { useDebounce } from '@/hooks/useDebounce';
 
 interface MyEventsContentProps {
   events: Event[];
@@ -106,33 +106,37 @@ export default function MyEventsContent({
       switch (filter) {
         case 'today':
           return eventDay.getTime() === today.getTime();
-        case 'tomorrow':
+        case 'tomorrow': {
           const tomorrow = new Date(today);
           tomorrow.setDate(tomorrow.getDate() + 1);
           return eventDay.getTime() === tomorrow.getTime();
-        case 'this_week':
+        }
+        case 'this_week': {
           const startOfWeek = new Date(today);
           startOfWeek.setDate(today.getDate() - today.getDay());
           const endOfWeek = new Date(startOfWeek);
           endOfWeek.setDate(startOfWeek.getDate() + 6);
           return eventDay >= startOfWeek && eventDay <= endOfWeek;
-        case 'next_week':
+        }
+        case 'next_week': {
           const nextWeekStart = new Date(today);
           nextWeekStart.setDate(today.getDate() + (7 - today.getDay()));
           const nextWeekEnd = new Date(nextWeekStart);
           nextWeekEnd.setDate(nextWeekStart.getDate() + 6);
           return eventDay >= nextWeekStart && eventDay <= nextWeekEnd;
+        }
         case 'this_month':
           return (
             eventDateTime.getMonth() === now.getMonth() &&
             eventDateTime.getFullYear() === now.getFullYear()
           );
-        case 'next_month':
+        case 'next_month': {
           const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
           return (
             eventDateTime.getMonth() === nextMonth.getMonth() &&
             eventDateTime.getFullYear() === nextMonth.getFullYear()
           );
+        }
         default:
           return true;
       }
@@ -209,7 +213,7 @@ export default function MyEventsContent({
           return a.title.localeCompare(b.title);
         case 'title_desc':
           return b.title.localeCompare(a.title);
-        case 'status':
+        case 'status': {
           // Sort by attendance status
           const statusOrder = {
             registered: 0,
@@ -221,6 +225,7 @@ export default function MyEventsContent({
           const aStatus = a.user_attendance_status || 'registered';
           const bStatus = b.user_attendance_status || 'registered';
           return statusOrder[aStatus] - statusOrder[bStatus];
+        }
         default:
           return 0;
       }

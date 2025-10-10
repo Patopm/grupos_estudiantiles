@@ -1,20 +1,23 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
+  AlertCircle,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Image as ImageIcon,
+  Loader2,
+  MapPin,
+  Users,
+  X,
+} from 'lucide-react';
+import Image from 'next/image';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -24,29 +27,27 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
-  Calendar,
-  Clock,
-  MapPin,
-  Users,
-  X,
-  Image as ImageIcon,
-  AlertCircle,
-  CheckCircle,
-  Loader2,
-} from 'lucide-react';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { groupsApi, Group } from '@/lib/api/groups';
-import { eventsApi, CreateEventFormData } from '@/lib/api/events';
+import { type CreateEventFormData, eventsApi } from '@/lib/api/events';
+import { type Group, groupsApi } from '@/lib/api/groups';
 import {
-  EventCreationFormData,
   EVENT_TYPE_OPTIONS,
+  type EventCreationFormData,
   validateEventCreation,
-  validateEventImage,
   validateEventDateTime,
+  validateEventImage,
 } from '@/lib/validations/events';
-import Image from 'next/image';
 
 interface EventCreationFormProps {
   onSuccess?: (eventId: string) => void;

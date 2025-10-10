@@ -1,7 +1,17 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Activity,
+  Calendar,
+  CheckCircle,
+  Clock,
+  UserMinus,
+  UserPlus,
+  Users,
+  XCircle,
+} from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -10,16 +20,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  Activity,
-  Users,
-  Calendar,
-  CheckCircle,
-  XCircle,
-  UserPlus,
-  UserMinus,
-  Clock,
-} from 'lucide-react';
 
 interface ActivityItem {
   id: string;

@@ -1,25 +1,25 @@
 'use client';
 
-import { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { mfaApi, type BackupCode } from '@/lib/api/mfa';
-import { type ApiError } from '@/lib/api/client';
-import { toast } from 'react-hot-toast';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faKey,
-  faDownload,
   faCopy,
-  faRefresh,
-  faSpinner,
+  faDownload,
   faExclamationTriangle,
   faEye,
   faEyeSlash,
+  faKey,
+  faRefresh,
   faShield,
+  faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useState } from 'react';
+import { toast } from 'react-hot-toast';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import type { ApiError } from '@/lib/api/client';
+import { type BackupCode, mfaApi } from '@/lib/api/mfa';
 
 interface BackupCodesManagerProps {
   onCodesGenerated?: (codes: BackupCode[]) => void;

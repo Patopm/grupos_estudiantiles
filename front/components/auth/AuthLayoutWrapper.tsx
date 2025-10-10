@@ -1,7 +1,7 @@
 'use client';
 
-import React, { ReactNode } from 'react';
 import Link from 'next/link';
+import React, { type ReactNode } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthErrorBoundary from './AuthErrorBoundary';
 import AuthLoadingState from './AuthLoadingState';

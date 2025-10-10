@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import type React from 'react';
 import AuthLayoutWrapper from '@/components/auth/AuthLayoutWrapper';
 
 interface AuthLayoutProps {

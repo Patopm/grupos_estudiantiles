@@ -1,37 +1,37 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import NotificationPreferences from '@/components/notifications/NotificationPreferences';
-import MFASetupFlow from '@/components/auth/MFASetupFlow';
-import BackupCodesManager from '@/components/auth/BackupCodesManager';
-import MFAEnforcementDisplay from '@/components/auth/MFAEnforcementDisplay';
-import VerificationStatusIndicator from '@/components/auth/VerificationStatusIndicator';
-import VerificationFlow from '@/components/auth/VerificationFlow';
-import { mfaApi, type MFAStatus } from '@/lib/api/mfa';
-import { type ApiError } from '@/lib/api/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'react-hot-toast';
 import {
-  DashboardLayout,
-  DashboardHeaders,
-} from '@/components/dashboard/DashboardHeader';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faShield,
+  faBell,
+  faCheck,
+  faCog,
+  faExclamationTriangle,
   faKey,
   faPlus,
+  faShield,
   faSpinner,
-  faBell,
-  faExclamationTriangle,
-  faCheck,
   faTimes,
-  faCog,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
+import BackupCodesManager from '@/components/auth/BackupCodesManager';
+import MFAEnforcementDisplay from '@/components/auth/MFAEnforcementDisplay';
+import MFASetupFlow from '@/components/auth/MFASetupFlow';
+import VerificationFlow from '@/components/auth/VerificationFlow';
+import VerificationStatusIndicator from '@/components/auth/VerificationStatusIndicator';
+import {
+  DashboardHeaders,
+  DashboardLayout,
+} from '@/components/dashboard/DashboardHeader';
+import NotificationPreferences from '@/components/notifications/NotificationPreferences';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useAuth } from '@/contexts/AuthContext';
+import type { ApiError } from '@/lib/api/client';
+import { type MFAStatus, mfaApi } from '@/lib/api/mfa';
 
 export default function SecurityPage() {
   const { user } = useAuth();

@@ -1,19 +1,25 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { ProtectedRoute } from '@/contexts/AuthContext';
+import {
+  AlertCircle,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Edit,
+  Eye,
+  MapPin,
+  Plus,
+  Search,
+  Trash2,
+  Users,
+  XCircle,
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -22,23 +28,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
+import { Input } from '@/components/ui/input';
 import {
-  Calendar,
-  Search,
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
-  Users,
-  Clock,
-  MapPin,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-} from 'lucide-react';
-import { eventsApi, Event } from '@/lib/api/events';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { ProtectedRoute } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import { type Event, eventsApi } from '@/lib/api/events';
 
 export default function AdminEventsPage() {
   return (

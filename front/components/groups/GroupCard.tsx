@@ -1,30 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import {
+  AlertCircle,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Eye,
+  Settings,
+  TrendingUp,
+  UserMinus,
+  UserPlus,
+  Users,
+  XCircle,
+} from 'lucide-react';
 import Image from 'next/image';
+import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import {
-  Users,
-  Calendar,
-  Settings,
-  UserPlus,
-  UserMinus,
-  Eye,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  XCircle,
-  TrendingUp,
-} from 'lucide-react';
-import { Group, GroupStatistics } from '@/lib/api/groups';
 import { useAuth } from '@/contexts/AuthContext';
+import type { Group, GroupStatistics } from '@/lib/api/groups';
 
 interface GroupCardProps {
   group: Group;

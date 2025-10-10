@@ -1,8 +1,24 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Input } from '@/components/ui/input';
+import {
+  Calendar,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+  Grid,
+  List,
+  Search,
+  TrendingUp,
+  Users,
+  X,
+} from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -10,25 +26,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Search,
-  Grid,
-  List,
-  Filter,
-  X,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Users,
-  Calendar,
-  TrendingUp,
-} from 'lucide-react';
-import { Group } from '@/lib/api/groups';
-import GroupCard from './GroupCard';
 import { useDebounce } from '@/hooks/useDebounce';
+import type { Group } from '@/lib/api/groups';
+import GroupCard from './GroupCard';
 
 interface GroupListProps {
   groups: Group[];

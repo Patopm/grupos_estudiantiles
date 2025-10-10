@@ -3,19 +3,19 @@
  * Requirement 8.1, 8.2, 8.3, 8.4, 8.5, 8.6
  */
 
-import { ApiError } from '../api/client';
+import type { ApiError } from '../api/client';
 import {
-  AuthError,
+  type AuthError,
   AuthErrorType,
-  NetworkError,
-  RateLimitError,
-  MFAError,
-  VerificationError,
-  ValidationError,
-  SecurityError,
-  ErrorContext,
-  RetryConfig,
-  ErrorRecoveryAction,
+  type ErrorContext,
+  type ErrorRecoveryAction,
+  type MFAError,
+  type NetworkError,
+  type RateLimitError,
+  type RetryConfig,
+  type SecurityError,
+  type ValidationError,
+  type VerificationError,
 } from './types';
 
 // Generate correlation ID for error tracking
@@ -168,7 +168,7 @@ export class AuthErrorFactory {
     // Rate limiting
     if (apiError.status === 429) {
       const retryAfter = (apiError.details?.retry_after as number) || 300;
-      return this.createRateLimitError(retryAfter);
+      return AuthErrorFactory.createRateLimitError(retryAfter);
     }
 
     // Authentication errors
@@ -200,7 +200,7 @@ export class AuthErrorFactory {
 
     // Validation errors
     if (apiError.status === 400) {
-      return this.createValidationError(
+      return AuthErrorFactory.createValidationError(
         apiError.message,
         apiError.details as Record<string, string[]>
       );
@@ -245,7 +245,7 @@ export class RetryManager {
     operation: () => Promise<T>,
     config: Partial<RetryConfig> = {}
   ): Promise<T> {
-    const finalConfig = { ...this.defaultConfig, ...config };
+    const finalConfig = { ...RetryManager.defaultConfig, ...config };
     let lastError: Error;
 
     for (let attempt = 0; attempt <= finalConfig.maxRetries; attempt++) {
@@ -269,8 +269,8 @@ export class RetryManager {
         }
 
         // Calculate delay with exponential backoff
-        const delay = this.calculateDelay(attempt, finalConfig);
-        await this.sleep(delay);
+        const delay = RetryManager.calculateDelay(attempt, finalConfig);
+        await RetryManager.sleep(delay);
       }
     }
 
@@ -278,7 +278,7 @@ export class RetryManager {
   }
 
   private static calculateDelay(attempt: number, config: RetryConfig): number {
-    let delay = config.baseDelay * Math.pow(config.backoffMultiplier, attempt);
+    let delay = config.baseDelay * config.backoffMultiplier ** attempt;
 
     // Apply maximum delay limit
     delay = Math.min(delay, config.maxDelay);

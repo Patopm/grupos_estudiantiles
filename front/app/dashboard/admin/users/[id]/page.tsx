@@ -1,19 +1,25 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import {
+  Activity,
+  AlertTriangle,
+  ArrowLeft,
+  Calendar,
+  Edit,
+  Key,
+  Mail,
+  Phone,
+  Shield,
+  UserCheck,
+  Users,
+  UserX,
+} from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { ProtectedRoute } from '@/contexts/AuthContext';
+import { useEffect, useState } from 'react';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -24,22 +30,16 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
 import {
-  ArrowLeft,
-  Edit,
-  UserCheck,
-  UserX,
-  Shield,
-  Mail,
-  Phone,
-  Calendar,
-  Users,
-  Activity,
-  Key,
-  AlertTriangle,
-} from 'lucide-react';
-import { usersApi, User } from '@/lib/api/users';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { ProtectedRoute } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import { type User, usersApi } from '@/lib/api/users';
 
 interface UserStats {
   groups_joined: number;

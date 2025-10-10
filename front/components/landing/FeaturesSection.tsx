@@ -1,13 +1,13 @@
-import FeatureCard from './FeatureCard';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faUsers,
   faCalendarAlt,
-  faHandshake,
   faGraduationCap,
-  faTrophy,
+  faHandshake,
   faNetworkWired,
+  faTrophy,
+  faUsers,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import FeatureCard from './FeatureCard';
 
 export default function FeaturesSection() {
   return (

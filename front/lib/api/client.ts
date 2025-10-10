@@ -1,6 +1,5 @@
 import { TokenManager } from '../auth';
-import { RetryManager } from '../errors/handlers';
-import { generateCorrelationId } from '../errors/handlers';
+import { generateCorrelationId, RetryManager } from '../errors/handlers';
 
 // Enhanced API Error types
 export interface ApiError {

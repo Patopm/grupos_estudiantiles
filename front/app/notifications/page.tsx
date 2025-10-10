@@ -1,36 +1,36 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
+  faBell,
+  faCalendarAlt,
+  faCheckCircle,
+  faClock,
+  faEnvelope,
+  faExclamationCircle,
+  faFilter,
+  faRedo,
+  faSearch,
+  faSpinner,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
+import {
+  DashboardHeaders,
+  DashboardLayout,
+} from '@/components/dashboard/DashboardHeader';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { useAuth } from '@/contexts/AuthContext';
+import type { ApiError } from '@/lib/api/client';
+import {
+  type EmailNotification,
+  type EventReminder,
   emailNotificationsApi,
   eventRemindersApi,
   notificationUtils,
-  type EmailNotification,
-  type EventReminder,
 } from '@/lib/api/notifications';
-import { type ApiError } from '@/lib/api/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'react-hot-toast';
-import {
-  DashboardLayout,
-  DashboardHeaders,
-} from '@/components/dashboard/DashboardHeader';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faEnvelope,
-  faSearch,
-  faFilter,
-  faSpinner,
-  faExclamationCircle,
-  faCheckCircle,
-  faClock,
-  faRedo,
-  faBell,
-  faCalendarAlt,
-} from '@fortawesome/free-solid-svg-icons';
 
 export default function NotificationsPage() {
   const { user } = useAuth();

@@ -1,20 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import AuthFormWrapper from '@/components/auth/AuthFormWrapper';
-import FormInput from '@/components/forms/FormInput';
+import { useEffect, useState } from 'react';
 import AuthButton from '@/components/auth/AuthButton';
-import CheckboxField from '@/components/forms/CheckboxField';
-import MFAInput from '@/components/auth/MFAInput';
 import {
-  AuthSuccessMessage,
   AuthErrorMessage,
+  AuthSuccessMessage,
 } from '@/components/auth/AuthFormError';
-import { validateLogin, type LoginFormData } from '@/lib/validations/auth';
+import AuthFormWrapper from '@/components/auth/AuthFormWrapper';
+import MFAInput from '@/components/auth/MFAInput';
+import CheckboxField from '@/components/forms/CheckboxField';
+import FormInput from '@/components/forms/FormInput';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAuthError } from '@/hooks/useAuthError';
 import { ProgressiveSecurityManager } from '@/lib/errors/security';
+import { type LoginFormData, validateLogin } from '@/lib/validations/auth';
 
 export default function LoginPage() {
   const { login, mfaRequired, clearMFAState } = useAuth();

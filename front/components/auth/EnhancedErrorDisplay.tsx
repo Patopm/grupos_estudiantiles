@@ -1,31 +1,31 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faExclamationTriangle,
-  faShieldAlt,
-  faLock,
   faClock,
-  faRefresh,
   faEnvelope,
-  faPhone,
-  faInfoCircle,
   faExclamationCircle,
+  faExclamationTriangle,
+  faInfoCircle,
+  faLock,
+  faPhone,
+  faRefresh,
+  faShieldAlt,
 } from '@fortawesome/free-solid-svg-icons';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import {
-  AuthError,
-  RateLimitError,
-  MFAError,
-  VerificationError,
-  SecurityError,
-  ErrorRecoveryAction,
-} from '@/lib/errors/types';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRateLimitCountdown } from '@/lib/errors/countdown';
 import { ProgressiveSecurityManager } from '@/lib/errors/security';
+import type {
+  AuthError,
+  ErrorRecoveryAction,
+  MFAError,
+  RateLimitError,
+  SecurityError,
+  VerificationError,
+} from '@/lib/errors/types';
 
 interface EnhancedErrorDisplayProps {
   error: AuthError;

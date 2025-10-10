@@ -1,19 +1,19 @@
 'use client';
 
-import { useState } from 'react';
-import AuthCard from '@/components/auth/AuthCard';
-import FormInput from '@/components/forms/FormInput';
-import AuthButton from '@/components/auth/AuthButton';
-import CheckboxField from '@/components/forms/CheckboxField';
-import { AuthErrorMessage } from '@/components/auth/AuthFormError';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserGraduate } from '@fortawesome/free-solid-svg-icons';
-import {
-  validateRegister,
-  type RegisterFormData,
-} from '@/lib/validations/auth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useState } from 'react';
+import AuthButton from '@/components/auth/AuthButton';
+import AuthCard from '@/components/auth/AuthCard';
+import { AuthErrorMessage } from '@/components/auth/AuthFormError';
 import PasswordStrength from '@/components/auth/PasswordStrength';
+import CheckboxField from '@/components/forms/CheckboxField';
+import FormInput from '@/components/forms/FormInput';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  type RegisterFormData,
+  validateRegister,
+} from '@/lib/validations/auth';
 
 export default function RegisterPage() {
   const { register } = useAuth();

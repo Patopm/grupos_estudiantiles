@@ -1,32 +1,32 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAuth, ProtectedRoute } from '@/contexts/AuthContext';
+import {
+  Activity,
+  BarChart3,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Settings,
+  UserPlus,
+  Users,
+  XCircle,
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import { PresidentStats } from '@/components/dashboard/DashboardStats';
-import { PresidentQuickActions } from '@/components/dashboard/QuickActions';
 import EventManagementOverview from '@/components/dashboard/EventManagementOverview';
 import MemberEngagementMetrics from '@/components/dashboard/MemberEngagementMetrics';
 import PendingRequestsSummary from '@/components/dashboard/PendingRequestsSummary';
 import PerformanceMetrics from '@/components/dashboard/PerformanceMetrics';
-import { dashboardApi, PresidentDashboardData } from '@/lib/api/dashboard';
-import { useToast } from '@/hooks/use-toast';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PresidentQuickActions } from '@/components/dashboard/QuickActions';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useRouter } from 'next/navigation';
-import {
-  Users,
-  Calendar,
-  UserPlus,
-  Clock,
-  CheckCircle,
-  XCircle,
-  BarChart3,
-  Activity,
-  Settings,
-} from 'lucide-react';
+import { ProtectedRoute, useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import { dashboardApi, type PresidentDashboardData } from '@/lib/api/dashboard';
 
 export default function PresidentDashboard() {
   return (

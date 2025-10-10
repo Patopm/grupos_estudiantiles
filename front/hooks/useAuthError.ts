@@ -3,21 +3,21 @@
  * Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6
  */
 
-import { useState, useCallback, useEffect } from 'react';
-import { ApiError } from '@/lib/api/client';
+import { useCallback, useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import type { ApiError } from '@/lib/api/client';
 import {
+  AuthErrorFactory,
+  ErrorLogger,
+  ErrorRecoveryFactory,
+  RetryManager,
+} from '@/lib/errors/handlers';
+import { ProgressiveSecurityManager } from '@/lib/errors/security';
+import type {
   AuthError,
   ErrorRecoveryAction,
   RetryConfig,
 } from '@/lib/errors/types';
-import {
-  AuthErrorFactory,
-  RetryManager,
-  ErrorRecoveryFactory,
-  ErrorLogger,
-} from '@/lib/errors/handlers';
-import { ProgressiveSecurityManager } from '@/lib/errors/security';
-import { useAuth } from '@/contexts/AuthContext';
 
 interface UseAuthErrorOptions {
   enableRetry?: boolean;
@@ -156,7 +156,7 @@ export function useAuthError(
     try {
       await RetryManager.executeWithRetry(lastOperation, {
         maxRetries: 1, // Single retry attempt
-        baseDelay: 1000 * Math.pow(2, retryCount),
+        baseDelay: 1000 * 2 ** retryCount,
         ...retryConfig,
       });
 

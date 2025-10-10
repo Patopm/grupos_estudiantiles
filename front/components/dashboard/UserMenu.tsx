@@ -1,10 +1,19 @@
 'use client';
 
-import React from 'react';
+import {
+  faBell,
+  faChevronDown,
+  faCog,
+  faShield,
+  faSignOutAlt,
+  faUser,
+  faUserCircle,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
+import React from 'react';
 import VerificationStatusIndicator from '@/components/auth/VerificationStatusIndicator';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,16 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faUser,
-  faChevronDown,
-  faBell,
-  faCog,
-  faShield,
-  faSignOutAlt,
-  faUserCircle,
-} from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function UserMenu() {
   const { user, logout, verificationStatus } = useAuth();

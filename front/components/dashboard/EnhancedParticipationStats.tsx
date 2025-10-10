@@ -1,15 +1,15 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import {
-  Users,
+  Award,
   Calendar,
   CheckCircle,
-  TrendingUp,
   Target,
-  Award,
+  TrendingUp,
+  Users,
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface ParticipationStats {
   total_groups: number;

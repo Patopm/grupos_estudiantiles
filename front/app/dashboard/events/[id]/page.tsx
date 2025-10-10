@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ProtectedRoute } from '@/contexts/AuthContext';
+import { useCallback, useEffect, useState } from 'react';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { useToast } from '@/hooks/use-toast';
-import { eventsApi, Event, EventAttendee } from '@/lib/api/events';
 import { EventDetailContent } from '@/components/events';
+import { ProtectedRoute } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import { type Event, type EventAttendee, eventsApi } from '@/lib/api/events';
 
 export default function EventDetailPage() {
   return (

@@ -1,10 +1,10 @@
 'use client';
 
+import { faPalette } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useTheme } from 'next-themes';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPalette } from '@fortawesome/free-solid-svg-icons';
 
 interface AppearanceSettingsProps {
   theme: string;

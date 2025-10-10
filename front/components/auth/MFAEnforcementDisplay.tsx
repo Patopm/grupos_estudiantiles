@@ -1,22 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { mfaApi, type MFAEnforcementPolicy, mfaUtils } from '@/lib/api/mfa';
-import { type ApiError } from '@/lib/api/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faShield,
-  faUsers,
+  faCheck,
   faClock,
   faExclamationTriangle,
-  faCheck,
-  faTimes,
-  faSpinner,
   faInfoCircle,
+  faShield,
+  faSpinner,
+  faTimes,
+  faUsers,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useEffect, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { useAuth } from '@/contexts/AuthContext';
+import type { ApiError } from '@/lib/api/client';
+import { type MFAEnforcementPolicy, mfaApi, mfaUtils } from '@/lib/api/mfa';
 
 interface MFAEnforcementDisplayProps {
   className?: string;

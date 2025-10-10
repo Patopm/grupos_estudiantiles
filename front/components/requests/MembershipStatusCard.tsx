@@ -1,20 +1,20 @@
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  Users,
-  Clock,
-  CheckCircle,
-  XCircle,
-  User,
-  Calendar,
-  Eye,
-  AlertCircle,
-} from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
+import {
+  AlertCircle,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Eye,
+  User,
+  Users,
+  XCircle,
+} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface MembershipStatusCardProps {
   membership: {
@@ -180,5 +180,3 @@ export default function MembershipStatusCard({
     </Card>
   );
 }
-
-

@@ -1,29 +1,33 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { useAuth, ProtectedRoute } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
-import { groupsApi, GroupDetailData, GroupRequest } from '@/lib/api/groups';
-import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Users,
-  Settings,
-  BarChart3,
-  UserPlus,
-  UserCheck,
-  Calendar,
-  TrendingUp,
-  Clock,
-  CheckCircle,
-  XCircle,
-  Mail,
   AlertTriangle,
+  BarChart3,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Mail,
+  Settings,
+  TrendingUp,
+  UserCheck,
+  UserPlus,
+  Users,
+  XCircle,
 } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import DashboardHeader from '@/components/dashboard/DashboardHeader';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ProtectedRoute, useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import {
+  type GroupDetailData,
+  type GroupRequest,
+  groupsApi,
+} from '@/lib/api/groups';
 
 export default function GroupManagementPage() {
   return (
@@ -556,7 +560,7 @@ function GroupManagementContent() {
                 <div className='space-y-4'>
                   {groupData.members.map(member => (
                     <div
-                      key={member.id}
+                      key={member.membership_id}
                       className='flex items-center justify-between p-4 border rounded-lg'
                     >
                       <div className='flex items-center gap-4'>
@@ -565,7 +569,9 @@ function GroupManagementContent() {
                         </div>
                         <div>
                           <div className='flex items-center gap-2'>
-                            <h4 className='font-medium'>{member.full_name}</h4>
+                            <h4 className='font-medium'>
+                              {member.user_details.full_name}
+                            </h4>
                             {member.role === 'president' && (
                               <Badge variant='default' className='text-xs'>
                                 Presidente
@@ -575,7 +581,7 @@ function GroupManagementContent() {
                           <div className='flex items-center gap-4 text-sm text-muted-foreground'>
                             <div className='flex items-center gap-1'>
                               <Mail className='w-4 h-4' />
-                              {member.email}
+                              {member.user_details.email}
                             </div>
                             <div className='flex items-center gap-1'>
                               <Clock className='w-4 h-4' />
@@ -586,7 +592,7 @@ function GroupManagementContent() {
                             </div>
                           </div>
                           <p className='text-sm text-muted-foreground mt-1'>
-                            Matrícula: {member.student_id}
+                            Matrícula: {member.user_details.student_id}
                           </p>
                         </div>
                       </div>

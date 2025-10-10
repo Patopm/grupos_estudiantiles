@@ -1,18 +1,18 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
 import {
+  AlertCircle,
+  Calendar,
+  CheckCircle,
   ChevronLeft,
   ChevronRight,
-  Calendar,
   Clock,
   MapPin,
-  CheckCircle,
   XCircle,
-  AlertCircle,
 } from 'lucide-react';
-import { Event } from '@/lib/api/events';
+import { useCallback, useMemo, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import type { Event } from '@/lib/api/events';
 
 interface MyEventsCalendarProps {
   events: Event[];

@@ -1,36 +1,36 @@
 'use client';
 
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, {
   createContext,
+  type ReactNode,
+  Suspense,
   useContext,
   useEffect,
   useState,
-  ReactNode,
-  Suspense,
 } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import {
+  type EmailVerificationConfirm,
+  type EmailVerificationRequest,
+  type PhoneVerificationConfirm,
+  type PhoneVerificationRequest,
+  type ResendVerificationRequest,
+  type VerificationStatus,
+  verificationApi,
+} from '@/lib/api/verification';
+import {
+  type AuthResponse,
   authService,
+  type MFARequiredResponse,
   TokenManager,
-  User,
-  AuthResponse,
-  MFARequiredResponse,
+  type User,
 } from '@/lib/auth';
-import {
+import type {
+  ForgotPasswordFormData,
   LoginFormData,
   RegisterFormData,
-  ForgotPasswordFormData,
   ResetPasswordFormData,
 } from '@/lib/validations/auth';
-import {
-  verificationApi,
-  VerificationStatus,
-  EmailVerificationRequest,
-  EmailVerificationConfirm,
-  PhoneVerificationRequest,
-  PhoneVerificationConfirm,
-  ResendVerificationRequest,
-} from '@/lib/api/verification';
 
 interface AuthContextType {
   user: User | null;
@@ -181,7 +181,7 @@ function AuthProviderContent({ children }: AuthProviderProps) {
 
   const register = async (userData: RegisterFormData): Promise<void> => {
     try {
-      const response = await authService.register(userData);
+      await authService.register(userData);
 
       // After successful registration, redirect to login
       router.push('/login?message=registration-success');

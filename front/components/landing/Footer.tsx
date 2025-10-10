@@ -1,16 +1,16 @@
-import Link from 'next/link';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faEnvelope,
-  faPhone,
-  faMapMarkerAlt,
-} from '@fortawesome/free-solid-svg-icons';
 import {
   faFacebook as faFacebookBrand,
-  faTwitter as faTwitterBrand,
   faInstagram as faInstagramBrand,
   faLinkedin as faLinkedinBrand,
+  faTwitter as faTwitterBrand,
 } from '@fortawesome/free-brands-svg-icons';
+import {
+  faEnvelope,
+  faMapMarkerAlt,
+  faPhone,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Link from 'next/link';
 
 export default function Footer() {
   return (

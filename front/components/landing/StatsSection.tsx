@@ -1,10 +1,10 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faUsers,
   faCalendarAlt,
-  faUserGraduate,
   faTrophy,
+  faUserGraduate,
+  faUsers,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 interface StatItemProps {
   icon: React.ReactNode;

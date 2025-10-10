@@ -1,13 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { ProtectedRoute } from '@/contexts/AuthContext';
+import {
+  Calendar,
+  Mail,
+  RefreshCw,
+  Save,
+  Settings,
+  Shield,
+  Users,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -15,16 +22,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { ProtectedRoute } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import {
-  Settings,
-  Save,
-  RefreshCw,
-  Shield,
-  Mail,
-  Users,
-  Calendar,
-} from 'lucide-react';
 
 export default function AdminSettingsPage() {
   return (

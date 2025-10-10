@@ -1,22 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import {
-  Calendar,
-  Users,
-  TrendingUp,
-  Clock,
-  CheckCircle,
-  Plus,
   BarChart3,
+  Calendar,
+  CheckCircle,
+  Clock,
   Eye,
+  Plus,
+  TrendingUp,
+  Users,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { eventsApi, Event } from '@/lib/api/events';
+import { useEffect, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { type Event, eventsApi } from '@/lib/api/events';
 
 interface EventManagementOverviewProps {
   groupId?: string;

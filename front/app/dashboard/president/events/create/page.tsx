@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { ArrowLeft, Calendar, CheckCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
 import EventCreationForm from '@/components/events/EventCreationForm';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -13,8 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, CheckCircle } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 export default function CreateEventPage() {
   const { user } = useAuth();
@@ -136,4 +136,3 @@ export default function CreateEventPage() {
     </div>
   );
 }
-

@@ -1,6 +1,6 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQuoteLeft, faStar } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface Testimonial {
   id: string;

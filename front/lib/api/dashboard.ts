@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { Group } from './groups';
+import type { Group } from './groups';
 
 // Simplified event interface for dashboard data
 export interface DashboardEvent {

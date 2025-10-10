@@ -1,20 +1,20 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import AuthCard from '@/components/auth/AuthCard';
-import FormInput from '@/components/forms/FormInput';
+import { Suspense, useEffect, useState } from 'react';
 import AuthButton from '@/components/auth/AuthButton';
-import PasswordStrength from '@/components/auth/PasswordStrength';
+import AuthCard from '@/components/auth/AuthCard';
 import {
-  AuthSuccessMessage,
   AuthErrorMessage,
+  AuthSuccessMessage,
 } from '@/components/auth/AuthFormError';
-import {
-  validateResetPassword,
-  type ResetPasswordFormData,
-} from '@/lib/validations/auth';
+import PasswordStrength from '@/components/auth/PasswordStrength';
+import FormInput from '@/components/forms/FormInput';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  type ResetPasswordFormData,
+  validateResetPassword,
+} from '@/lib/validations/auth';
 
 function ResetPasswordForm() {
   const { resetPassword } = useAuth();

@@ -1,19 +1,19 @@
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
+import {
+  AlertCircle,
+  Calendar,
+  CheckCircle,
+  Clock,
+  TrendingDown,
+  TrendingUp,
+  UserPlus,
+  Users,
+  XCircle,
+} from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Users,
-  Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  UserPlus,
-  Calendar,
-  TrendingUp,
-  TrendingDown,
-} from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface RequestsSummaryProps {
   totalPending: number;
@@ -191,5 +191,3 @@ export default function RequestsSummary({
     </div>
   );
 }
-
-

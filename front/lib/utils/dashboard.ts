@@ -1,4 +1,4 @@
-import { User } from '@/lib/auth';
+import type { User } from '@/lib/auth';
 
 /**
  * Get the dashboard URL based on user role

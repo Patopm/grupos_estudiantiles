@@ -1,11 +1,11 @@
 'use client';
 
-import React, { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
+import { useAuthError } from '@/hooks/useAuthError';
+import type { AuthError } from '@/lib/errors/types';
 import AuthCard from './AuthCard';
 import AuthErrorBoundary from './AuthErrorBoundary';
 import EnhancedErrorDisplay from './EnhancedErrorDisplay';
-import { useAuthError } from '@/hooks/useAuthError';
-import { AuthError } from '@/lib/errors/types';
 
 interface AuthFormWrapperProps {
   title: string;

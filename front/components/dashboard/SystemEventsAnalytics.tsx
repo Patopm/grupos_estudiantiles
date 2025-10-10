@@ -1,20 +1,20 @@
 'use client';
 
+import {
+  AlertCircle,
+  BarChart3,
+  Calendar,
+  CheckCircle,
+  Clock,
+  TrendingUp,
+  Users,
+  XCircle,
+} from 'lucide-react';
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import {
-  Calendar,
-  Users,
-  TrendingUp,
-  BarChart3,
-  Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-} from 'lucide-react';
 
 interface SystemEventsAnalyticsProps {
   analyticsData: {

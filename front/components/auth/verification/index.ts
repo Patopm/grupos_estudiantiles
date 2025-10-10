@@ -1,20 +1,20 @@
 // Verification components exports
-export { default as EmailVerificationRequest } from '../EmailVerificationRequest';
-export { default as EmailVerificationConfirm } from '../EmailVerificationConfirm';
-export { default as PhoneVerificationRequest } from '../PhoneVerificationRequest';
-export { default as PhoneVerificationConfirm } from '../PhoneVerificationConfirm';
-export { default as VerificationStatusIndicator } from '../VerificationStatusIndicator';
-export { default as VerificationFlow } from '../VerificationFlow';
-export { default as VerificationGuard } from '../VerificationGuard';
 
 // Re-export verification API types
 export type {
-  VerificationStatus,
-  VerificationCheckResponse,
-  EmailVerificationRequest as EmailVerificationRequestData,
   EmailVerificationConfirm as EmailVerificationConfirmData,
-  PhoneVerificationRequest as PhoneVerificationRequestData,
+  EmailVerificationRequest as EmailVerificationRequestData,
   PhoneVerificationConfirm as PhoneVerificationConfirmData,
+  PhoneVerificationRequest as PhoneVerificationRequestData,
   ResendVerificationRequest,
   VerificationCheckRequest,
+  VerificationCheckResponse,
+  VerificationStatus,
 } from '../../../lib/api/verification';
+export { default as EmailVerificationConfirm } from '../EmailVerificationConfirm';
+export { default as EmailVerificationRequest } from '../EmailVerificationRequest';
+export { default as PhoneVerificationConfirm } from '../PhoneVerificationConfirm';
+export { default as PhoneVerificationRequest } from '../PhoneVerificationRequest';
+export { default as VerificationFlow } from '../VerificationFlow';
+export { default as VerificationGuard } from '../VerificationGuard';
+export { default as VerificationStatusIndicator } from '../VerificationStatusIndicator';

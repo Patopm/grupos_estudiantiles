@@ -1,20 +1,20 @@
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  Mail,
-  Clock,
-  CheckCircle,
-  XCircle,
-  Users,
-  Calendar,
-  AlertCircle,
-} from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
+import {
+  AlertCircle,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Mail,
+  Users,
+  XCircle,
+} from 'lucide-react';
+import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface RequestCardProps {
   request: {

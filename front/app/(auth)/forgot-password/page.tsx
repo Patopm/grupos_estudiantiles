@@ -1,19 +1,19 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import AuthCard from '@/components/auth/AuthCard';
-import FormInput from '@/components/forms/FormInput';
+import { useState } from 'react';
 import AuthButton from '@/components/auth/AuthButton';
+import AuthCard from '@/components/auth/AuthCard';
 import {
-  AuthSuccessMessage,
   AuthErrorMessage,
+  AuthSuccessMessage,
 } from '@/components/auth/AuthFormError';
-import {
-  validateForgotPassword,
-  type ForgotPasswordFormData,
-} from '@/lib/validations/auth';
+import FormInput from '@/components/forms/FormInput';
 import { useAuth } from '@/contexts/AuthContext';
+import {
+  type ForgotPasswordFormData,
+  validateForgotPassword,
+} from '@/lib/validations/auth';
 
 export default function ForgotPasswordPage() {
   const { requestPasswordReset } = useAuth();

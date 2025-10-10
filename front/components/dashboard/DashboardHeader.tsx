@@ -1,9 +1,13 @@
 'use client';
 
-import React from 'react';
+import {
+  faArrowLeft,
+  faTachometerAlt,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
+import React from 'react';
+import UserMenu from '@/components/dashboard/UserMenu';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,12 +16,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import UserMenu from '@/components/dashboard/UserMenu';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faTachometerAlt,
-  faArrowLeft,
-} from '@fortawesome/free-solid-svg-icons';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface BreadcrumbItem {
   label: string;

@@ -1,36 +1,36 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAuth, ProtectedRoute } from '@/contexts/AuthContext';
+import {
+  Activity,
+  BarChart3,
+  Calendar,
+  Edit,
+  Eye,
+  Settings,
+  Shield,
+  UserCheck,
+  Users,
+  Wrench,
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import {
+  AdministrativeTools,
+  GroupEventPerformance,
+  PlatformHealthIndicators,
+  SystemEventsAnalytics,
+  UserEngagementReports,
+} from '@/components/dashboard';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import { AdminStats } from '@/components/dashboard/DashboardStats';
 import { AdminQuickActions } from '@/components/dashboard/QuickActions';
-import {
-  SystemEventsAnalytics,
-  GroupEventPerformance,
-  UserEngagementReports,
-  PlatformHealthIndicators,
-  AdministrativeTools,
-} from '@/components/dashboard';
-import { dashboardApi, AdminDashboardData } from '@/lib/api/dashboard';
-import { useToast } from '@/hooks/use-toast';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useRouter } from 'next/navigation';
-import {
-  Users,
-  UserCheck,
-  Calendar,
-  Settings,
-  Eye,
-  Edit,
-  BarChart3,
-  Activity,
-  Shield,
-  Wrench,
-} from 'lucide-react';
+import { ProtectedRoute, useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import { type AdminDashboardData, dashboardApi } from '@/lib/api/dashboard';
 
 export default function AdminDashboard() {
   return (

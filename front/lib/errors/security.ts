@@ -3,12 +3,12 @@
  * Requirement 8.6 - Implement progressive security measures display
  */
 
-import {
-  ProgressiveSecurityState,
-  SecurityMeasure,
-  SecurityError,
-} from './types';
 import { ErrorLogger } from './handlers';
+import {
+  type ProgressiveSecurityState,
+  SecurityError,
+  type SecurityMeasure,
+} from './types';
 
 export class ProgressiveSecurityManager {
   private static readonly STORAGE_KEY = 'auth_security_state';
@@ -48,13 +48,15 @@ export class ProgressiveSecurityManager {
 
   static getSecurityState(): ProgressiveSecurityState {
     if (typeof window === 'undefined') {
-      return this.getDefaultState();
+      return ProgressiveSecurityManager.getDefaultState();
     }
 
     try {
-      const stored = localStorage.getItem(this.STORAGE_KEY);
+      const stored = localStorage.getItem(
+        ProgressiveSecurityManager.STORAGE_KEY
+      );
       if (!stored) {
-        return this.getDefaultState();
+        return ProgressiveSecurityManager.getDefaultState();
       }
 
       const state = JSON.parse(stored) as ProgressiveSecurityState;
@@ -77,10 +79,10 @@ export class ProgressiveSecurityManager {
       }
 
       // Clean up expired measures
-      return this.cleanupExpiredMeasures(state);
+      return ProgressiveSecurityManager.cleanupExpiredMeasures(state);
     } catch (error) {
       console.error('Failed to load security state:', error);
-      return this.getDefaultState();
+      return ProgressiveSecurityManager.getDefaultState();
     }
   }
 
@@ -88,24 +90,27 @@ export class ProgressiveSecurityManager {
     if (typeof window === 'undefined') return;
 
     try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(state));
+      localStorage.setItem(
+        ProgressiveSecurityManager.STORAGE_KEY,
+        JSON.stringify(state)
+      );
     } catch (error) {
       console.error('Failed to save security state:', error);
     }
   }
 
   static recordFailedAttempt(userId?: string): ProgressiveSecurityState {
-    const state = this.getSecurityState();
+    const state = ProgressiveSecurityManager.getSecurityState();
     const now = new Date();
 
     // Check if we should escalate security level
-    const currentFailures = this.getCurrentFailureCount();
+    const currentFailures = ProgressiveSecurityManager.getCurrentFailureCount();
     const newFailureCount = currentFailures + 1;
 
     // Log security event
     ErrorLogger.logSecurityEvent(
       'authentication_failure',
-      this.getSeverityForFailureCount(newFailureCount),
+      ProgressiveSecurityManager.getSeverityForFailureCount(newFailureCount),
       {
         failureCount: newFailureCount,
         userId,
@@ -114,17 +119,22 @@ export class ProgressiveSecurityManager {
     );
 
     // Check for escalation
-    const newLevel = this.calculateSecurityLevel(newFailureCount);
+    const newLevel =
+      ProgressiveSecurityManager.calculateSecurityLevel(newFailureCount);
 
     if (newLevel > state.currentLevel) {
       state.currentLevel = newLevel;
 
       // Activate new security measures
-      const measure = this.SECURITY_MEASURES.find(m => m.level === newLevel);
+      const measure = ProgressiveSecurityManager.SECURITY_MEASURES.find(
+        m => m.level === newLevel
+      );
       if (measure) {
         const duration =
-          this.MEASURE_DURATIONS[newLevel - 1] ||
-          this.MEASURE_DURATIONS[this.MEASURE_DURATIONS.length - 1];
+          ProgressiveSecurityManager.MEASURE_DURATIONS[newLevel - 1] ||
+          ProgressiveSecurityManager.MEASURE_DURATIONS[
+            ProgressiveSecurityManager.MEASURE_DURATIONS.length - 1
+          ];
         const expiresAt = new Date(now.getTime() + duration);
 
         state.measures.push({
@@ -135,10 +145,12 @@ export class ProgressiveSecurityManager {
         });
 
         // Set next escalation time if not at max level
-        if (newLevel < this.SECURITY_MEASURES.length) {
+        if (newLevel < ProgressiveSecurityManager.SECURITY_MEASURES.length) {
           const nextThreshold =
-            this.ESCALATION_THRESHOLDS[newLevel] ||
-            this.ESCALATION_THRESHOLDS[this.ESCALATION_THRESHOLDS.length - 1];
+            ProgressiveSecurityManager.ESCALATION_THRESHOLDS[newLevel] ||
+            ProgressiveSecurityManager.ESCALATION_THRESHOLDS[
+              ProgressiveSecurityManager.ESCALATION_THRESHOLDS.length - 1
+            ];
           const remainingAttempts = nextThreshold - newFailureCount;
           if (remainingAttempts > 0) {
             state.nextEscalation = new Date(
@@ -156,22 +168,23 @@ export class ProgressiveSecurityManager {
 
     state.canReset = now >= (state.resetAvailableAt || now);
 
-    this.updateSecurityState(state);
-    this.recordFailureAttempt();
+    ProgressiveSecurityManager.updateSecurityState(state);
+    ProgressiveSecurityManager.recordFailureAttempt();
 
     return state;
   }
 
   static recordSuccessfulAuth(): ProgressiveSecurityState {
     // Clear failure count on successful authentication
-    this.clearFailureCount();
+    ProgressiveSecurityManager.clearFailureCount();
 
     // Reset security state to default
-    const defaultState = this.getDefaultState();
-    this.updateSecurityState(defaultState);
+    const defaultState = ProgressiveSecurityManager.getDefaultState();
+    ProgressiveSecurityManager.updateSecurityState(defaultState);
 
     ErrorLogger.logSecurityEvent('authentication_success', 'low', {
-      previousSecurityLevel: this.getSecurityState().currentLevel,
+      previousSecurityLevel:
+        ProgressiveSecurityManager.getSecurityState().currentLevel,
     });
 
     return defaultState;
@@ -182,7 +195,7 @@ export class ProgressiveSecurityManager {
     reason?: string;
     waitTime?: number;
   } {
-    const state = this.getSecurityState();
+    const state = ProgressiveSecurityManager.getSecurityState();
     const now = new Date();
 
     // Check for active blocking measures
@@ -216,8 +229,8 @@ export class ProgressiveSecurityManager {
     );
 
     if (delayMeasure) {
-      const lastAttempt = this.getLastAttemptTime();
-      const requiredDelay = this.getRequiredDelay();
+      const lastAttempt = ProgressiveSecurityManager.getLastAttemptTime();
+      const requiredDelay = ProgressiveSecurityManager.getRequiredDelay();
 
       if (
         lastAttempt &&
@@ -239,7 +252,7 @@ export class ProgressiveSecurityManager {
   }
 
   static getActiveSecurityMeasures(): SecurityMeasure[] {
-    const state = this.getSecurityState();
+    const state = ProgressiveSecurityManager.getSecurityState();
     const now = new Date();
 
     return state.measures.filter(
@@ -249,7 +262,7 @@ export class ProgressiveSecurityManager {
   }
 
   static resetSecurityState(): ProgressiveSecurityState {
-    const state = this.getSecurityState();
+    const state = ProgressiveSecurityManager.getSecurityState();
     const now = new Date();
 
     if (
@@ -261,9 +274,9 @@ export class ProgressiveSecurityManager {
       );
     }
 
-    this.clearFailureCount();
-    const defaultState = this.getDefaultState();
-    this.updateSecurityState(defaultState);
+    ProgressiveSecurityManager.clearFailureCount();
+    const defaultState = ProgressiveSecurityManager.getDefaultState();
+    ProgressiveSecurityManager.updateSecurityState(defaultState);
 
     ErrorLogger.logSecurityEvent('security_state_reset', 'medium', {
       previousLevel: state.currentLevel,
@@ -301,8 +314,12 @@ export class ProgressiveSecurityManager {
   }
 
   private static calculateSecurityLevel(failureCount: number): number {
-    for (let i = 0; i < this.ESCALATION_THRESHOLDS.length; i++) {
-      if (failureCount >= this.ESCALATION_THRESHOLDS[i]) {
+    for (
+      let i = 0;
+      i < ProgressiveSecurityManager.ESCALATION_THRESHOLDS.length;
+      i++
+    ) {
+      if (failureCount >= ProgressiveSecurityManager.ESCALATION_THRESHOLDS[i]) {
         return i + 1;
       }
     }
@@ -333,7 +350,7 @@ export class ProgressiveSecurityManager {
     if (typeof window === 'undefined') return;
 
     try {
-      const currentCount = this.getCurrentFailureCount();
+      const currentCount = ProgressiveSecurityManager.getCurrentFailureCount();
       localStorage.setItem('auth_failure_count', (currentCount + 1).toString());
       localStorage.setItem('auth_last_attempt', new Date().toISOString());
     } catch (error) {
@@ -364,8 +381,8 @@ export class ProgressiveSecurityManager {
   }
 
   private static getRequiredDelay(): number {
-    const failureCount = this.getCurrentFailureCount();
+    const failureCount = ProgressiveSecurityManager.getCurrentFailureCount();
     // Progressive delay: 30s, 60s, 120s, 300s, etc.
-    return Math.min(30000 * Math.pow(2, Math.max(0, failureCount - 3)), 300000);
+    return Math.min(30000 * 2 ** Math.max(0, failureCount - 3), 300000);
   }
 }

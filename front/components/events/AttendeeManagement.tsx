@@ -1,10 +1,32 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import {
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Download,
+  Loader2,
+  Mail,
+  MoreHorizontal,
+  Search,
+  UserCheck,
+  Users,
+  UserX,
+  XCircle,
+} from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -20,30 +42,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Users,
-  Search,
-  Download,
-  Mail,
-  UserCheck,
-  UserX,
-  Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  Loader2,
-  MoreHorizontal,
-} from 'lucide-react';
-import { EventAttendee, ATTENDANCE_STATUS_LABELS } from '@/lib/api/events';
 import { useToast } from '@/hooks/use-toast';
+import { ATTENDANCE_STATUS_LABELS, type EventAttendee } from '@/lib/api/events';
 
 interface AttendeeManagementProps {
   eventId: string;

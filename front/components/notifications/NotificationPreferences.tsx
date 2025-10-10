@@ -1,31 +1,31 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import NotificationCheckbox from './NotificationCheckbox';
-import {
-  preferencesApi,
-  type NotificationPreferences as PreferencesType,
-} from '@/lib/api/notifications';
-import { type ApiError } from '@/lib/api/client';
-import { toast } from 'react-hot-toast';
-import { useForm } from '@/hooks/useForm';
-import {
-  notificationPreferencesSchema,
-  type NotificationPreferencesFormData,
-} from '@/lib/validations/forms';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBell,
   faCalendarAlt,
-  faUsers,
-  faShield,
   faNewspaper,
-  faSpinner,
   faSave,
+  faShield,
+  faSpinner,
+  faUsers,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { useForm } from '@/hooks/useForm';
+import type { ApiError } from '@/lib/api/client';
+import {
+  type NotificationPreferences as PreferencesType,
+  preferencesApi,
+} from '@/lib/api/notifications';
+import {
+  type NotificationPreferencesFormData,
+  notificationPreferencesSchema,
+} from '@/lib/validations/forms';
+import NotificationCheckbox from './NotificationCheckbox';
 
 interface NotificationPreferencesProps {
   onSave?: (preferences: PreferencesType) => void;

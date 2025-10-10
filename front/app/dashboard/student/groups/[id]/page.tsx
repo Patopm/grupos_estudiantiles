@@ -1,11 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import GroupDetailPage from '@/components/groups/GroupDetailPage';
 import { ProtectedRoute } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { groupsApi, GroupDetailData, GroupError } from '@/lib/api/groups';
-import GroupDetailPage from '@/components/groups/GroupDetailPage';
+import {
+  type GroupDetailData,
+  type GroupError,
+  groupsApi,
+} from '@/lib/api/groups';
 
 export default function StudentGroupDetailPage() {
   return (

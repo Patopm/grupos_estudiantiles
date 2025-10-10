@@ -1,8 +1,28 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Input } from '@/components/ui/input';
+import {
+  Calendar,
+  CalendarDays,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Download,
+  Filter,
+  Grid,
+  List,
+  RefreshCw,
+  Search,
+  Share2,
+  TrendingUp,
+  Users,
+  X,
+} from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -10,29 +30,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
-import {
-  Search,
-  Grid,
-  List,
-  Filter,
-  X,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  Calendar,
-  Clock,
-  Users,
-  TrendingUp,
-  CalendarDays,
-  RefreshCw,
-  Download,
-  Share2,
-} from 'lucide-react';
-import { Event, EVENT_TYPE_LABELS, EventFilters } from '@/lib/api/events';
-import EventCard from './EventCard';
 import { useDebounce } from '@/hooks/useDebounce';
+import {
+  EVENT_TYPE_LABELS,
+  type Event,
+  type EventFilters,
+} from '@/lib/api/events';
+import EventCard from './EventCard';
 
 interface EventListProps {
   events: Event[];
@@ -241,24 +245,27 @@ export default function EventList({
         case 'today':
           return eventDay.getTime() === today.getTime();
 
-        case 'tomorrow':
+        case 'tomorrow': {
           const tomorrow = new Date(today);
           tomorrow.setDate(tomorrow.getDate() + 1);
           return eventDay.getTime() === tomorrow.getTime();
+        }
 
-        case 'this_week':
+        case 'this_week': {
           const startOfWeek = new Date(today);
           startOfWeek.setDate(today.getDate() - today.getDay());
           const endOfWeek = new Date(startOfWeek);
           endOfWeek.setDate(startOfWeek.getDate() + 6);
           return eventDay >= startOfWeek && eventDay <= endOfWeek;
+        }
 
-        case 'next_week':
+        case 'next_week': {
           const nextWeekStart = new Date(today);
           nextWeekStart.setDate(today.getDate() + (7 - today.getDay()));
           const nextWeekEnd = new Date(nextWeekStart);
           nextWeekEnd.setDate(nextWeekStart.getDate() + 6);
           return eventDay >= nextWeekStart && eventDay <= nextWeekEnd;
+        }
 
         case 'this_month':
           return (
@@ -266,12 +273,13 @@ export default function EventList({
             eventDateTime.getFullYear() === now.getFullYear()
           );
 
-        case 'next_month':
+        case 'next_month': {
           const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
           return (
             eventDateTime.getMonth() === nextMonth.getMonth() &&
             eventDateTime.getFullYear() === nextMonth.getFullYear()
           );
+        }
 
         default:
           return true;
@@ -766,13 +774,14 @@ export default function EventList({
                           startDate = now.toISOString().split('T')[0];
                           endDate = now.toISOString().split('T')[0];
                           break;
-                        case 'tomorrow':
+                        case 'tomorrow': {
                           const tomorrow = new Date(now);
                           tomorrow.setDate(tomorrow.getDate() + 1);
                           startDate = tomorrow.toISOString().split('T')[0];
                           endDate = tomorrow.toISOString().split('T')[0];
                           break;
-                        case 'this_week':
+                        }
+                        case 'this_week': {
                           const startOfWeek = new Date(now);
                           startOfWeek.setDate(now.getDate() - now.getDay());
                           const endOfWeek = new Date(startOfWeek);
@@ -780,7 +789,8 @@ export default function EventList({
                           startDate = startOfWeek.toISOString().split('T')[0];
                           endDate = endOfWeek.toISOString().split('T')[0];
                           break;
-                        case 'next_week':
+                        }
+                        case 'next_week': {
                           const nextWeekStart = new Date(now);
                           nextWeekStart.setDate(
                             now.getDate() - now.getDay() + 7
@@ -790,7 +800,8 @@ export default function EventList({
                           startDate = nextWeekStart.toISOString().split('T')[0];
                           endDate = nextWeekEnd.toISOString().split('T')[0];
                           break;
-                        case 'this_month':
+                        }
+                        case 'this_month': {
                           const startOfMonth = new Date(
                             now.getFullYear(),
                             now.getMonth(),
@@ -804,7 +815,8 @@ export default function EventList({
                           startDate = startOfMonth.toISOString().split('T')[0];
                           endDate = endOfMonth.toISOString().split('T')[0];
                           break;
-                        case 'next_month':
+                        }
+                        case 'next_month': {
                           const nextMonthStart = new Date(
                             now.getFullYear(),
                             now.getMonth() + 1,
@@ -820,6 +832,7 @@ export default function EventList({
                             .split('T')[0];
                           endDate = nextMonthEnd.toISOString().split('T')[0];
                           break;
+                        }
                       }
 
                       onFilterChange({

@@ -1,21 +1,21 @@
 'use client';
 
-import { useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import {
-  BarChart3,
-  Users,
-  TrendingUp,
-  Calendar,
-  Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  Target,
   Activity,
+  AlertCircle,
+  BarChart3,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Target,
+  TrendingUp,
+  Users,
+  XCircle,
 } from 'lucide-react';
-import { Event, EventAttendee } from '@/lib/api/events';
+import { useMemo } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import type { Event, EventAttendee } from '@/lib/api/events';
 
 interface EventAnalyticsProps {
   event: Event;

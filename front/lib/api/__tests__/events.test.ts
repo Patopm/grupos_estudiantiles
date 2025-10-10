@@ -4,11 +4,11 @@
  */
 
 import {
-  eventsApi,
-  Event,
-  EVENT_TYPES,
-  EVENT_STATUSES,
   ATTENDANCE_STATUSES,
+  EVENT_STATUSES,
+  EVENT_TYPES,
+  type Event,
+  eventsApi,
 } from '../events';
 
 // Mock event data for testing

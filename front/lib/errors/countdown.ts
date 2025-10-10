@@ -3,7 +3,7 @@
  * Requirement 8.4 - Add rate limiting indicators and countdown timers
  */
 
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export interface CountdownState {
   timeRemaining: number;
@@ -119,12 +119,14 @@ export class ProgressiveDelayCalculator {
   private static readonly MULTIPLIER = 2;
 
   static calculateDelay(attemptCount: number): number {
-    const delay = this.BASE_DELAY * Math.pow(this.MULTIPLIER, attemptCount - 1);
-    return Math.min(delay, this.MAX_DELAY);
+    const delay =
+      ProgressiveDelayCalculator.BASE_DELAY *
+      ProgressiveDelayCalculator.MULTIPLIER ** (attemptCount - 1);
+    return Math.min(delay, ProgressiveDelayCalculator.MAX_DELAY);
   }
 
   static getDelayMessage(attemptCount: number): string {
-    const delay = this.calculateDelay(attemptCount);
+    const delay = ProgressiveDelayCalculator.calculateDelay(attemptCount);
 
     if (delay < 60) {
       return `Espera ${delay} segundos antes del próximo intento`;

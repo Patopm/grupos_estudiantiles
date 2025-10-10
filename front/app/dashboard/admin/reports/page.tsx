@@ -1,11 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { ProtectedRoute } from '@/contexts/AuthContext';
+import {
+  BarChart3,
+  Calendar,
+  Download,
+  FileText,
+  TrendingUp,
+  Users,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -13,16 +20,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { ProtectedRoute } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import {
-  BarChart3,
-  Download,
-  Calendar,
-  Users,
-  TrendingUp,
-  FileText,
-} from 'lucide-react';
-import { dashboardApi, AdminDashboardData } from '@/lib/api/dashboard';
+import { type AdminDashboardData, dashboardApi } from '@/lib/api/dashboard';
 
 export default function AdminReportsPage() {
   return (

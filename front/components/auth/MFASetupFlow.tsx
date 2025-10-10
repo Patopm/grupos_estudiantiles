@@ -1,35 +1,35 @@
 'use client';
 
+import {
+  faCheck,
+  faCopy,
+  faDownload,
+  faExclamationTriangle,
+  faKey,
+  faQrcode,
+  faShield,
+  faSpinner,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Image from 'next/image';
 import { useState } from 'react';
-import { Card } from '@/components/ui/card';
+import { toast } from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  mfaApi,
-  type TOTPSetupResponse,
-  type TOTPDevice,
-  type BackupCode,
-} from '@/lib/api/mfa';
-import { type ApiError } from '@/lib/api/client';
-import { toast } from 'react-hot-toast';
 import { useForm } from '@/hooks/useForm';
+import type { ApiError } from '@/lib/api/client';
 import {
-  totpSetupSchema,
+  type BackupCode,
+  mfaApi,
+  type TOTPDevice,
+  type TOTPSetupResponse,
+} from '@/lib/api/mfa';
+import {
   type TotpSetupFormData,
+  totpSetupSchema,
 } from '@/lib/validations/forms';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faShield,
-  faQrcode,
-  faCheck,
-  faSpinner,
-  faKey,
-  faExclamationTriangle,
-  faDownload,
-  faCopy,
-} from '@fortawesome/free-solid-svg-icons';
-import Image from 'next/image';
 
 interface MFASetupFlowProps {
   onSetupComplete?: (device: TOTPDevice, backupCodes: BackupCode[]) => void;

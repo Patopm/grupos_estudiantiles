@@ -1,5 +1,5 @@
-import { apiClient, ApiPaginatedResponse, ApiError } from './client';
-import { eventsApi, Event } from './events';
+import { type ApiError, type ApiPaginatedResponse, apiClient } from './client';
+import { type Event, eventsApi } from './events';
 
 export interface Group {
   group_id: string;

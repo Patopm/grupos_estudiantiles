@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/button';
+import { faGithub, faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGoogle, faGithub } from '@fortawesome/free-brands-svg-icons';
+import { Button } from '@/components/ui/button';
 
 export default function SocialLogin() {
   return (

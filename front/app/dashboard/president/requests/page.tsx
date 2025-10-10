@@ -1,26 +1,26 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { ProtectedRoute } from '@/contexts/AuthContext';
-import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/hooks/use-toast';
-import { groupsApi, GroupRequest } from '@/lib/api/groups';
 import {
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Mail,
+  RefreshCw,
+  User,
+  UserCheck,
   UserPlus,
   Users,
-  Clock,
-  CheckCircle,
   XCircle,
-  Mail,
-  User,
-  AlertCircle,
-  RefreshCw,
-  UserCheck,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import DashboardHeader from '@/components/dashboard/DashboardHeader';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ProtectedRoute } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import { type GroupRequest, groupsApi } from '@/lib/api/groups';
 
 interface GroupWithRequests {
   group_id: string;

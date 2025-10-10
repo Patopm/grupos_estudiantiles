@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
+import type { Group, GroupStatistics } from '@/lib/api/groups';
 import GroupCard from './GroupCard';
-import { Group, GroupStatistics } from '@/lib/api/groups';
 
 // Demo data for testing the enhanced GroupCard
 const demoGroups: Group[] = [

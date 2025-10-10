@@ -1,19 +1,19 @@
 'use client';
 
+import {
+  AlertCircle,
+  CheckCircle,
+  Mail,
+  Phone,
+  Shield,
+  XCircle,
+} from 'lucide-react';
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import {
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  Mail,
-  Phone,
-  Shield,
-} from 'lucide-react';
-import { VerificationStatus } from '@/lib/api/verification';
+import type { VerificationStatus } from '@/lib/api/verification';
 
 interface VerificationStatusIndicatorProps {
   status?: VerificationStatus | null;

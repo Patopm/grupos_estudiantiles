@@ -1,14 +1,23 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import {
+  Calendar,
+  Eye,
+  Filter,
+  Loader2,
+  Plus,
+  Search,
+  Settings,
+  Trash2,
+  Users,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useAuth, ProtectedRoute } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
-import { eventsApi, Event, EventFilters } from '@/lib/api/events';
+import { useEffect, useState } from 'react';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import EventCard from '@/components/events/EventCard';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -17,19 +26,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Plus,
-  Search,
-  Filter,
-  Calendar,
-  Users,
-  Settings,
-  Eye,
-  Trash2,
-  Loader2,
-} from 'lucide-react';
-import EventCard from '@/components/events/EventCard';
+import { ProtectedRoute, useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 import { useDebounce } from '@/hooks/useDebounce';
+import { type Event, type EventFilters, eventsApi } from '@/lib/api/events';
 
 export default function PresidentEventsPage() {
   return (

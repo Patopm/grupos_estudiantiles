@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { CheckCircle, Loader2, Phone, RotateCcw, XCircle } from 'lucide-react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
-import { CheckCircle, XCircle, Loader2, Phone, RotateCcw } from 'lucide-react';
 
 interface PhoneVerificationConfirmProps {
   phoneNumber: string;

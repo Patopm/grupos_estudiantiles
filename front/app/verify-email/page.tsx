@@ -1,10 +1,10 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import { Loader2 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+import React, { Suspense } from 'react';
 import EmailVerificationConfirm from '@/components/auth/EmailVerificationConfirm';
 import { Card } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();

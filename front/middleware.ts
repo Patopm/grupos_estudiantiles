@@ -1,12 +1,12 @@
-import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import {
   AUTH_ROUTES,
-  PUBLIC_ROUTES,
-  isTokenExpired,
-  isProtectedRoute,
-  getRequiredRoles,
   getDashboardUrl,
+  getRequiredRoles,
+  isProtectedRoute,
+  isTokenExpired,
+  PUBLIC_ROUTES,
   type User,
 } from './lib/middleware-utils';
 

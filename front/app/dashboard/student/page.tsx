@@ -1,19 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAuth, ProtectedRoute } from '@/contexts/AuthContext';
+import { Calendar, Search, Users } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import ActivityFeed from '@/components/dashboard/ActivityFeed';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
+import EnhancedParticipationStats from '@/components/dashboard/EnhancedParticipationStats';
+import EventRecommendations from '@/components/dashboard/EventRecommendations';
 import { StudentQuickActions } from '@/components/dashboard/QuickActions';
 import UpcomingEventsSection from '@/components/dashboard/UpcomingEventsSection';
-import EventRecommendations from '@/components/dashboard/EventRecommendations';
-import ActivityFeed from '@/components/dashboard/ActivityFeed';
-import EnhancedParticipationStats from '@/components/dashboard/EnhancedParticipationStats';
-import { dashboardApi, StudentDashboardData } from '@/lib/api/dashboard';
-import { useToast } from '@/hooks/use-toast';
 import GroupList from '@/components/groups/GroupList';
+import { ProtectedRoute, useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
+import { dashboardApi, type StudentDashboardData } from '@/lib/api/dashboard';
 import { groupsApi } from '@/lib/api/groups';
-import { useRouter } from 'next/navigation';
-import { Users, Search, Calendar } from 'lucide-react';
 
 export default function StudentDashboard() {
   return (

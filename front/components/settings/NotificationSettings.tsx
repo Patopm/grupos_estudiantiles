@@ -1,9 +1,9 @@
 'use client';
 
+import { faBell } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell } from '@fortawesome/free-solid-svg-icons';
 
 interface NotificationSettingsProps {
   emailDigest: boolean;

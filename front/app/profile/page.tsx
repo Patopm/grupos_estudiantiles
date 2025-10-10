@@ -1,16 +1,16 @@
 'use client';
 
-import { useAuth } from '@/contexts/AuthContext';
+import { faIdCard, faUser } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-hot-toast';
-import { faUser, faIdCard } from '@fortawesome/free-solid-svg-icons';
-import FormSection from '@/components/common/FormSection';
 import FormField from '@/components/common/FormField';
+import FormSection from '@/components/common/FormSection';
 import {
-  DashboardLayout,
   DashboardHeaders,
+  DashboardLayout,
 } from '@/components/dashboard/DashboardHeader';
+import { useAuth } from '@/contexts/AuthContext';
 import { useForm } from '@/hooks/useForm';
-import { profileSchema, type ProfileFormData } from '@/lib/validations/forms';
+import { type ProfileFormData, profileSchema } from '@/lib/validations/forms';
 
 export default function ProfilePage() {
   const { user } = useAuth();

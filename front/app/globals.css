@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme inline {
   --font-sans: var(--font-geist-sans);
@@ -99,6 +99,6 @@ body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
   font-feature-settings:
-    'rlig' 1,
-    'calt' 1;
+    "rlig" 1,
+    "calt" 1;
 }

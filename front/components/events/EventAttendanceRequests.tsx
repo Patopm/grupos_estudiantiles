@@ -1,15 +1,15 @@
 'use client';
 
+import { Calendar, Check, MessageSquare, X } from 'lucide-react';
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Check, X, Calendar, MessageSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import type { EventAttendee } from '@/lib/api/events';
 import { eventsApi } from '@/lib/api/events';
-import { EventAttendee } from '@/lib/api/events';
 
 interface EventAttendanceRequestsProps {
   eventId: string;

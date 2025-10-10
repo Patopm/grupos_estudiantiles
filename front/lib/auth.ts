@@ -1,7 +1,7 @@
-import {
+import type {
+  ForgotPasswordFormData,
   LoginFormData,
   RegisterFormData,
-  ForgotPasswordFormData,
   ResetPasswordFormData,
 } from './validations/auth';
 
@@ -474,14 +474,16 @@ export class TokenManager {
   static setTokens(tokens: AuthResponse): void {
     if (typeof window !== 'undefined') {
       // Store in localStorage for client-side access
-      localStorage.setItem(this.ACCESS_TOKEN_KEY, tokens.access);
-      localStorage.setItem(this.REFRESH_TOKEN_KEY, tokens.refresh);
-      localStorage.setItem(this.USER_KEY, JSON.stringify(tokens.user));
+      localStorage.setItem(TokenManager.ACCESS_TOKEN_KEY, tokens.access);
+      localStorage.setItem(TokenManager.REFRESH_TOKEN_KEY, tokens.refresh);
+      localStorage.setItem(TokenManager.USER_KEY, JSON.stringify(tokens.user));
 
       // Also store in cookies for server-side middleware access
       // Calculate token expiration for cookie max-age
-      const accessTokenPayload = this.decodeTokenPayload(tokens.access);
-      const refreshTokenPayload = this.decodeTokenPayload(tokens.refresh);
+      const accessTokenPayload = TokenManager.decodeTokenPayload(tokens.access);
+      const refreshTokenPayload = TokenManager.decodeTokenPayload(
+        tokens.refresh
+      );
 
       const accessTokenMaxAge = accessTokenPayload
         ? Math.max(0, accessTokenPayload.exp - Math.floor(Date.now() / 1000))
@@ -491,14 +493,18 @@ export class TokenManager {
         ? Math.max(0, refreshTokenPayload.exp - Math.floor(Date.now() / 1000))
         : 7 * 24 * 60 * 60; // Default 7 days
 
-      this.setCookie(this.ACCESS_TOKEN_KEY, tokens.access, accessTokenMaxAge);
-      this.setCookie(
-        this.REFRESH_TOKEN_KEY,
+      TokenManager.setCookie(
+        TokenManager.ACCESS_TOKEN_KEY,
+        tokens.access,
+        accessTokenMaxAge
+      );
+      TokenManager.setCookie(
+        TokenManager.REFRESH_TOKEN_KEY,
         tokens.refresh,
         refreshTokenMaxAge
       );
-      this.setCookie(
-        this.USER_KEY,
+      TokenManager.setCookie(
+        TokenManager.USER_KEY,
         JSON.stringify(tokens.user),
         refreshTokenMaxAge
       );
@@ -524,7 +530,7 @@ export class TokenManager {
    */
   static getAccessToken(): string | null {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem(this.ACCESS_TOKEN_KEY);
+      return localStorage.getItem(TokenManager.ACCESS_TOKEN_KEY);
     }
     return null;
   }
@@ -534,7 +540,7 @@ export class TokenManager {
    */
   static getRefreshToken(): string | null {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem(this.REFRESH_TOKEN_KEY);
+      return localStorage.getItem(TokenManager.REFRESH_TOKEN_KEY);
     }
     return null;
   }
@@ -544,7 +550,7 @@ export class TokenManager {
    */
   static getUser(): User | null {
     if (typeof window !== 'undefined') {
-      const userData = localStorage.getItem(this.USER_KEY);
+      const userData = localStorage.getItem(TokenManager.USER_KEY);
       return userData ? JSON.parse(userData) : null;
     }
     return null;
@@ -555,15 +561,19 @@ export class TokenManager {
    */
   static updateAccessToken(accessToken: string): void {
     if (typeof window !== 'undefined') {
-      localStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken);
+      localStorage.setItem(TokenManager.ACCESS_TOKEN_KEY, accessToken);
 
       // Also update cookie
-      const tokenPayload = this.decodeTokenPayload(accessToken);
+      const tokenPayload = TokenManager.decodeTokenPayload(accessToken);
       const maxAge = tokenPayload
         ? Math.max(0, tokenPayload.exp - Math.floor(Date.now() / 1000))
         : 15 * 60; // Default 15 minutes
 
-      this.setCookie(this.ACCESS_TOKEN_KEY, accessToken, maxAge);
+      TokenManager.setCookie(
+        TokenManager.ACCESS_TOKEN_KEY,
+        accessToken,
+        maxAge
+      );
     }
   }
 
@@ -573,14 +583,14 @@ export class TokenManager {
   static clearTokens(): void {
     if (typeof window !== 'undefined') {
       // Clear localStorage
-      localStorage.removeItem(this.ACCESS_TOKEN_KEY);
-      localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-      localStorage.removeItem(this.USER_KEY);
+      localStorage.removeItem(TokenManager.ACCESS_TOKEN_KEY);
+      localStorage.removeItem(TokenManager.REFRESH_TOKEN_KEY);
+      localStorage.removeItem(TokenManager.USER_KEY);
 
       // Clear cookies
-      this.removeCookie(this.ACCESS_TOKEN_KEY);
-      this.removeCookie(this.REFRESH_TOKEN_KEY);
-      this.removeCookie(this.USER_KEY);
+      TokenManager.removeCookie(TokenManager.ACCESS_TOKEN_KEY);
+      TokenManager.removeCookie(TokenManager.REFRESH_TOKEN_KEY);
+      TokenManager.removeCookie(TokenManager.USER_KEY);
     }
   }
 
@@ -588,7 +598,7 @@ export class TokenManager {
    * Check if user is authenticated
    */
   static isAuthenticated(): boolean {
-    return !!this.getAccessToken() && !!this.getUser();
+    return !!TokenManager.getAccessToken() && !!TokenManager.getUser();
   }
 
   /**

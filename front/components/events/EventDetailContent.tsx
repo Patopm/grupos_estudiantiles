@@ -1,12 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import {
+  AlertCircle,
+  Calendar,
+  CalendarPlus,
+  CalendarX,
+  CheckCircle,
+  Clock,
+  Copy,
+  ExternalLink,
+  Eye,
+  EyeOff,
+  Facebook,
+  Linkedin,
+  Mail,
+  MapPin,
+  Share2,
+  Twitter,
+  UserMinus,
+  UserPlus,
+  Users,
+  XCircle,
+} from 'lucide-react';
 import Image from 'next/image';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -16,37 +36,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Calendar,
-  Clock,
-  MapPin,
-  Users,
-  UserPlus,
-  UserMinus,
-  Share2,
-  CalendarPlus,
-  Eye,
-  EyeOff,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  CalendarX,
-  ExternalLink,
-  Copy,
-  Facebook,
-  Twitter,
-  Linkedin,
-  Mail,
-} from 'lucide-react';
-import {
-  Event,
-  EventAttendee,
-  EVENT_TYPE_LABELS,
-  EVENT_STATUS_LABELS,
-  ATTENDANCE_STATUS_LABELS,
-} from '@/lib/api/events';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import {
+  ATTENDANCE_STATUS_LABELS,
+  EVENT_STATUS_LABELS,
+  EVENT_TYPE_LABELS,
+  type Event,
+  type EventAttendee,
+} from '@/lib/api/events';
 
 interface EventDetailContentProps {
   event: Event;

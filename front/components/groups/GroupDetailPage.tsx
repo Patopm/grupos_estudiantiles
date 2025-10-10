@@ -1,27 +1,27 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { useAuth } from '@/contexts/AuthContext';
-import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
-  Users,
-  Calendar,
-  UserPlus,
-  UserMinus,
-  MapPin,
-  Clock,
   AlertCircle,
-  RefreshCw,
   ArrowLeft,
+  Calendar,
+  Clock,
+  MapPin,
+  RefreshCw,
+  UserMinus,
+  UserPlus,
+  Users,
 } from 'lucide-react';
-import { GroupDetailData } from '@/lib/api/groups';
-import { Event } from '@/lib/api/events';
-import GroupDetailSkeleton from './GroupDetailSkeleton';
+import Image from 'next/image';
+import { useState } from 'react';
+import DashboardHeader from '@/components/dashboard/DashboardHeader';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/contexts/AuthContext';
+import type { Event } from '@/lib/api/events';
+import type { GroupDetailData } from '@/lib/api/groups';
 import ConfirmationDialog from './ConfirmationDialog';
+import GroupDetailSkeleton from './GroupDetailSkeleton';
 
 interface GroupDetailPageProps {
   groupData: GroupDetailData | null;

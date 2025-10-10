@@ -1,9 +1,9 @@
-import React from 'react';
-import { Label } from '@/components/ui/label';
-import { Card } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
+import { faCalendarAlt, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import type React from 'react';
+import { Card } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 
 interface UserTypeSelectorProps {
   value: string;
