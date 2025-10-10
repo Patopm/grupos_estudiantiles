@@ -49,6 +49,11 @@
     "rules": {
       "recommended": true,
       "correctness": { "noUnusedImports": "error" }
+    },
+    "domains": {
+      "next": "recommended",
+      "project": "recommended",
+      "test": "recommended"
     }
   },
   "javascript": {
