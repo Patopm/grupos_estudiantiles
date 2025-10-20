@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   AlertCircle,
@@ -12,23 +12,23 @@ import {
   UserPlus,
   Users,
   XCircle,
-} from 'lucide-react';
-import Image from 'next/image';
-import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+} from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
-} from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
-import type { Group, GroupStatistics } from '@/lib/api/groups';
+} from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
+import type { Group, GroupStatistics } from "@/lib/api/groups";
 
 interface GroupCardProps {
   group: Group;
-  variant?: 'default' | 'compact' | 'detailed';
+  variant?: "default" | "compact" | "detailed";
   showActions?: boolean;
   onJoin?: (groupId: string) => void;
   onLeave?: (groupId: string) => void;
@@ -41,7 +41,7 @@ interface GroupCardProps {
 
 export default function GroupCard({
   group,
-  variant = 'default',
+  variant = "default",
   showActions = true,
   onJoin,
   onLeave,
@@ -52,13 +52,13 @@ export default function GroupCard({
 }: GroupCardProps) {
   const { user } = useAuth();
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [statusMessage, setStatusMessage] = useState<string>('');
+  const [statusMessage, setStatusMessage] = useState<string>("");
 
   const isPresident =
-    user?.role === 'president' && group.president_id === user.id;
-  const isAdmin = user?.role === 'admin';
+    user?.role === "president" && group.president_id === user.id;
+  const isAdmin = user?.role === "admin";
   const isMember = group.is_member;
-  const isPending = group.membership_status === 'pending';
+  const isPending = group.membership_status === "pending";
   const isGroupFull = group.member_count >= group.max_members;
   const canJoin = !isMember && !isPending && !isGroupFull && group.is_active;
 
@@ -70,33 +70,33 @@ export default function GroupCard({
 
     // Set loading message for screen readers
     const loadingMessages: Record<string, string> = {
-      join: 'Enviando solicitud para unirse al grupo...',
-      leave: 'Procesando salida del grupo...',
-      view: 'Cargando detalles del grupo...',
-      manage: 'Accediendo a la gestión del grupo...',
+      join: "Enviando solicitud para unirse al grupo...",
+      leave: "Procesando salida del grupo...",
+      view: "Cargando detalles del grupo...",
+      manage: "Accediendo a la gestión del grupo...",
     };
 
-    setStatusMessage(loadingMessages[actionType] || 'Procesando...');
+    setStatusMessage(loadingMessages[actionType] || "Procesando...");
 
     try {
       await action();
 
       // Set success message
       const successMessages: Record<string, string> = {
-        join: 'Solicitud enviada correctamente',
-        leave: 'Has salido del grupo',
-        view: 'Detalles del grupo cargados',
-        manage: 'Acceso a gestión concedido',
+        join: "Solicitud enviada correctamente",
+        leave: "Has salido del grupo",
+        view: "Detalles del grupo cargados",
+        manage: "Acceso a gestión concedido",
       };
 
-      setStatusMessage(successMessages[actionType] || 'Acción completada');
+      setStatusMessage(successMessages[actionType] || "Acción completada");
 
       // Clear message after a delay
-      setTimeout(() => setStatusMessage(''), 3000);
+      setTimeout(() => setStatusMessage(""), 3000);
     } catch (error) {
-      console.error('Action failed:', error);
-      setStatusMessage('Error al procesar la acción. Intenta de nuevo.');
-      setTimeout(() => setStatusMessage(''), 5000);
+      console.error("Action failed:", error);
+      setStatusMessage("Error al procesar la acción. Intenta de nuevo.");
+      setTimeout(() => setStatusMessage(""), 5000);
     } finally {
       setActionLoading(null);
     }
@@ -106,48 +106,48 @@ export default function GroupCard({
   const getMembershipStatus = () => {
     if (isMember) {
       return {
-        status: 'active',
-        label: 'Miembro Activo',
+        status: "active",
+        label: "Miembro Activo",
         icon: CheckCircle,
         color:
-          'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-        ariaLabel: 'Eres miembro activo de este grupo',
+          "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+        ariaLabel: "Eres miembro activo de este grupo",
       };
     }
     if (isPending) {
       return {
-        status: 'pending',
-        label: 'Solicitud Pendiente',
+        status: "pending",
+        label: "Solicitud Pendiente",
         icon: Clock,
         color:
-          'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-        ariaLabel: 'Tu solicitud de membresía está pendiente de aprobación',
+          "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+        ariaLabel: "Tu solicitud de membresía está pendiente de aprobación",
       };
     }
     if (isGroupFull) {
       return {
-        status: 'full',
-        label: 'Grupo Lleno',
+        status: "full",
+        label: "Grupo Lleno",
         icon: XCircle,
-        color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-        ariaLabel: 'Este grupo ha alcanzado su capacidad máxima',
+        color: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+        ariaLabel: "Este grupo ha alcanzado su capacidad máxima",
       };
     }
     if (!group.is_active) {
       return {
-        status: 'inactive',
-        label: 'Grupo Inactivo',
+        status: "inactive",
+        label: "Grupo Inactivo",
         icon: AlertCircle,
-        color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
-        ariaLabel: 'Este grupo no está activo actualmente',
+        color: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
+        ariaLabel: "Este grupo no está activo actualmente",
       };
     }
     return {
-      status: 'available',
-      label: 'Disponible',
+      status: "available",
+      label: "Disponible",
       icon: UserPlus,
-      color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-      ariaLabel: 'Puedes solicitar unirte a este grupo',
+      color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+      ariaLabel: "Puedes solicitar unirte a este grupo",
     };
   };
 
@@ -156,59 +156,59 @@ export default function GroupCard({
     const percentage = (group.member_count / group.max_members) * 100;
     if (percentage >= 100) {
       return {
-        level: 'full',
-        color: 'text-red-600 dark:text-red-400',
-        bgColor: 'bg-red-50 dark:bg-red-950',
-        borderColor: 'border-red-200 dark:border-red-800',
+        level: "full",
+        color: "text-red-600 dark:text-red-400",
+        bgColor: "bg-red-50 dark:bg-red-950",
+        borderColor: "border-red-200 dark:border-red-800",
         percentage: 100,
-        label: 'Grupo lleno',
+        label: "Grupo lleno",
       };
     }
     if (percentage >= 80) {
       return {
-        level: 'high',
-        color: 'text-orange-600 dark:text-orange-400',
-        bgColor: 'bg-orange-50 dark:bg-orange-950',
-        borderColor: 'border-orange-200 dark:border-orange-800',
+        level: "high",
+        color: "text-orange-600 dark:text-orange-400",
+        bgColor: "bg-orange-50 dark:bg-orange-950",
+        borderColor: "border-orange-200 dark:border-orange-800",
         percentage: Math.round(percentage),
-        label: 'Casi lleno',
+        label: "Casi lleno",
       };
     }
     if (percentage >= 50) {
       return {
-        level: 'medium',
-        color: 'text-yellow-600 dark:text-yellow-400',
-        bgColor: 'bg-yellow-50 dark:bg-yellow-950',
-        borderColor: 'border-yellow-200 dark:border-yellow-800',
+        level: "medium",
+        color: "text-yellow-600 dark:text-yellow-400",
+        bgColor: "bg-yellow-50 dark:bg-yellow-950",
+        borderColor: "border-yellow-200 dark:border-yellow-800",
         percentage: Math.round(percentage),
-        label: 'Medio lleno',
+        label: "Medio lleno",
       };
     }
     return {
-      level: 'low',
-      color: 'text-green-600 dark:text-green-400',
-      bgColor: 'bg-green-50 dark:bg-green-950',
-      borderColor: 'border-green-200 dark:border-green-800',
+      level: "low",
+      color: "text-green-600 dark:text-green-400",
+      bgColor: "bg-green-50 dark:bg-green-950",
+      borderColor: "border-green-200 dark:border-green-800",
       percentage: Math.round(percentage),
-      label: 'Disponible',
+      label: "Disponible",
     };
   };
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
       Deportivo:
-        'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+        "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
       Cultural:
-        'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+        "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
       Académico:
-        'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+        "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
       Tecnológico:
-        'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-      Social: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
+        "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
+      Social: "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200",
     };
     return (
       colors[category] ||
-      'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+      "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
     );
   };
 
@@ -221,26 +221,26 @@ export default function GroupCard({
     if (onView) {
       actions.push(
         <Button
-          key='view'
-          variant='outline'
-          size='sm'
-          onClick={() => handleAction(() => onView(group.group_id), 'view')}
+          key="view"
+          variant="outline"
+          size="sm"
+          onClick={() => handleAction(() => onView(group.group_id), "view")}
           disabled={actionLoading !== null}
-          className='flex items-center gap-2 text-xs px-3 py-2 transition-all duration-200 hover:scale-105 active:scale-95 bg-muted/50 hover:bg-muted border-border/50'
+          className="flex items-center gap-2 text-xs px-3 py-2 transition-all duration-200 hover:scale-105 active:scale-95 bg-muted/50 hover:bg-muted border-border/50"
           aria-label={`Ver detalles del grupo ${group.name}`}
           aria-describedby={`group-${group.group_id}-description`}
         >
-          <Eye className='w-4 h-4' aria-hidden='true' />
-          {actionLoading === 'view' ? (
+          <Eye className="w-4 h-4" aria-hidden="true" />
+          {actionLoading === "view" ? (
             <>
               <span
-                className='animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full'
-                aria-hidden='true'
+                className="animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full"
+                aria-hidden="true"
               />
-              <span className='sr-only'>Cargando...</span>
+              <span className="sr-only">Cargando...</span>
             </>
           ) : (
-            'Ver Detalles'
+            "Ver Detalles"
           )}
         </Button>
       );
@@ -250,27 +250,27 @@ export default function GroupCard({
     if ((isPresident || isAdmin) && onManage) {
       actions.push(
         <Button
-          key='manage'
-          variant='default'
-          size='sm'
-          onClick={() => handleAction(() => onManage(group.group_id), 'manage')}
+          key="manage"
+          variant="default"
+          size="sm"
+          onClick={() => handleAction(() => onManage(group.group_id), "manage")}
           disabled={actionLoading !== null}
-          className='flex items-center gap-1.5 text-xs px-3 py-1.5 transition-all duration-200 hover:scale-105 active:scale-95'
+          className="flex items-center gap-1.5 text-xs px-3 py-1.5 transition-all duration-200 hover:scale-105 active:scale-95"
           aria-label={`Gestionar grupo ${group.name}. Acceso a configuración, miembros y solicitudes`}
         >
-          <Settings className='w-4 h-4' aria-hidden='true' />
-          {actionLoading === 'manage' ? (
+          <Settings className="w-4 h-4" aria-hidden="true" />
+          {actionLoading === "manage" ? (
             <>
               <span
-                className='animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full'
-                aria-hidden='true'
+                className="animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full"
+                aria-hidden="true"
               />
-              <span className='sr-only'>Cargando gestión...</span>
+              <span className="sr-only">Cargando gestión...</span>
             </>
           ) : (
             <>
-              <span className='hidden sm:inline'>Gestionar</span>
-              <span className='sm:hidden'>Admin</span>
+              <span className="hidden sm:inline">Gestionar</span>
+              <span className="sm:hidden">Admin</span>
             </>
           )}
         </Button>
@@ -278,37 +278,37 @@ export default function GroupCard({
     }
 
     // Student actions
-    if (user?.role === 'student') {
+    if (user?.role === "student") {
       if (isMember) {
         if (onLeave) {
           actions.push(
             <Button
-              key='leave'
-              variant='destructive'
-              size='sm'
+              key="leave"
+              variant="destructive"
+              size="sm"
               onClick={() =>
-                handleAction(() => onLeave(group.group_id), 'leave')
+                handleAction(() => onLeave(group.group_id), "leave")
               }
               disabled={actionLoading !== null}
-              className='flex items-center gap-2 text-xs px-3 py-2 transition-all duration-200 hover:scale-105 active:scale-95 bg-red-600 hover:bg-red-700 text-white'
+              className="flex items-center gap-2 text-xs px-3 py-2 transition-all duration-200 hover:scale-105 active:scale-95 bg-red-600 hover:bg-red-700 text-white"
               aria-label={`Salir del grupo ${group.name}. Esta acción requerirá confirmación`}
               aria-describedby={`group-${group.group_id}-leave-warning`}
             >
-              <UserMinus className='w-4 h-4' aria-hidden='true' />
-              {actionLoading === 'leave' ? (
+              <UserMinus className="w-4 h-4" aria-hidden="true" />
+              {actionLoading === "leave" ? (
                 <>
                   <span
-                    className='animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full'
-                    aria-hidden='true'
+                    className="animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full"
+                    aria-hidden="true"
                   />
-                  <span className='sr-only'>Saliendo del grupo...</span>
+                  <span className="sr-only">Saliendo del grupo...</span>
                 </>
               ) : (
-                'Salir'
+                "Salir"
               )}
               <div
                 id={`group-${group.group_id}-leave-warning`}
-                className='sr-only'
+                className="sr-only"
               >
                 Al salir del grupo perderás acceso a sus eventos y actividades
               </div>
@@ -318,20 +318,20 @@ export default function GroupCard({
       } else if (isPending) {
         actions.push(
           <Button
-            key='pending'
-            variant='secondary'
-            size='sm'
+            key="pending"
+            variant="secondary"
+            size="sm"
             disabled
-            className='flex items-center gap-1.5 text-xs px-3 py-1.5 cursor-not-allowed opacity-75'
-            aria-label='Tu solicitud de membresía está pendiente de aprobación por el presidente del grupo'
+            className="flex items-center gap-1.5 text-xs px-3 py-1.5 cursor-not-allowed opacity-75"
+            aria-label="Tu solicitud de membresía está pendiente de aprobación por el presidente del grupo"
             aria-describedby={`group-${group.group_id}-pending-info`}
           >
-            <Clock className='w-4 h-4 animate-pulse' aria-hidden='true' />
-            <span className='hidden sm:inline'>Solicitud Pendiente</span>
-            <span className='sm:hidden'>Pendiente</span>
+            <Clock className="w-4 h-4 animate-pulse" aria-hidden="true" />
+            <span className="hidden sm:inline">Solicitud Pendiente</span>
+            <span className="sm:hidden">Pendiente</span>
             <div
               id={`group-${group.group_id}-pending-info`}
-              className='sr-only'
+              className="sr-only"
             >
               El presidente del grupo revisará tu solicitud pronto
             </div>
@@ -340,28 +340,28 @@ export default function GroupCard({
       } else if (canJoin && onJoin) {
         actions.push(
           <Button
-            key='join'
-            variant='default'
-            size='sm'
-            onClick={() => handleAction(() => onJoin(group.group_id), 'join')}
+            key="join"
+            variant="default"
+            size="sm"
+            onClick={() => handleAction(() => onJoin(group.group_id), "join")}
             disabled={actionLoading !== null}
-            className='flex items-center gap-1.5 text-xs px-3 py-1.5 transition-all duration-200 hover:scale-105 active:scale-95 bg-primary hover:bg-primary/90'
+            className="flex items-center gap-1.5 text-xs px-3 py-1.5 transition-all duration-200 hover:scale-105 active:scale-95 bg-primary hover:bg-primary/90"
             aria-label={`Solicitar unirse al grupo ${group.name}. Tu solicitud será revisada por el presidente`}
             aria-describedby={`group-${group.group_id}-join-info`}
           >
-            <UserPlus className='w-4 h-4' aria-hidden='true' />
-            {actionLoading === 'join' ? (
+            <UserPlus className="w-4 h-4" aria-hidden="true" />
+            {actionLoading === "join" ? (
               <>
                 <span
-                  className='animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full'
-                  aria-hidden='true'
+                  className="animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full"
+                  aria-hidden="true"
                 />
-                <span className='sr-only'>Enviando solicitud...</span>
+                <span className="sr-only">Enviando solicitud...</span>
               </>
             ) : (
-              'Unirse'
+              "Unirse"
             )}
-            <div id={`group-${group.group_id}-join-info`} className='sr-only'>
+            <div id={`group-${group.group_id}-join-info`} className="sr-only">
               El presidente del grupo revisará tu solicitud de membresía
             </div>
           </Button>
@@ -369,19 +369,19 @@ export default function GroupCard({
       } else if (isGroupFull) {
         actions.push(
           <Button
-            key='full'
-            variant='secondary'
-            size='sm'
+            key="full"
+            variant="secondary"
+            size="sm"
             disabled
-            className='flex items-center gap-1.5 text-xs px-3 py-1.5 cursor-not-allowed opacity-75'
-            aria-label='Este grupo ha alcanzado su capacidad máxima y no acepta nuevos miembros'
+            className="flex items-center gap-1.5 text-xs px-3 py-1.5 cursor-not-allowed opacity-75"
+            aria-label="Este grupo ha alcanzado su capacidad máxima y no acepta nuevos miembros"
             aria-describedby={`group-${group.group_id}-full-info`}
           >
-            <XCircle className='w-4 h-4 text-red-500' aria-hidden='true' />
-            <span className='hidden sm:inline'>Grupo Lleno</span>
-            <span className='sm:hidden'>Lleno</span>
-            <div id={`group-${group.group_id}-full-info`} className='sr-only'>
-              Este grupo tiene {group.member_count} de {group.max_members}{' '}
+            <XCircle className="w-4 h-4 text-red-500" aria-hidden="true" />
+            <span className="hidden sm:inline">Grupo Lleno</span>
+            <span className="sm:hidden">Lleno</span>
+            <div id={`group-${group.group_id}-full-info`} className="sr-only">
+              Este grupo tiene {group.member_count} de {group.max_members}{" "}
               miembros y no puede aceptar más solicitudes
             </div>
           </Button>
@@ -395,50 +395,50 @@ export default function GroupCard({
   // Render enhanced member count with visual progress
   const renderMemberCount = () => {
     const capacityStatus = getCapacityStatus();
-    const isMediumCapacity = capacityStatus.level === 'medium';
-    const isHighCapacity = capacityStatus.level === 'high';
-    const isFullCapacity = capacityStatus.level === 'full';
+    const isMediumCapacity = capacityStatus.level === "medium";
+    const isHighCapacity = capacityStatus.level === "high";
+    const isFullCapacity = capacityStatus.level === "full";
 
     return (
-      <div className='space-y-2'>
+      <div className="space-y-2">
         {/* Member count with status indicator */}
-        <div className='flex items-center justify-between'>
-          <div className='flex items-center gap-2'>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
             <div
               className={`w-2 h-2 rounded-full ${
                 isFullCapacity
-                  ? 'bg-red-500'
+                  ? "bg-red-500"
                   : isHighCapacity
-                    ? 'bg-orange-500'
+                    ? "bg-orange-500"
                     : isMediumCapacity
-                      ? 'bg-yellow-500'
-                      : 'bg-emerald-500'
+                      ? "bg-yellow-500"
+                      : "bg-emerald-500"
               }`}
             />
-            <span className='text-sm font-medium text-foreground'>
+            <span className="text-sm font-medium text-foreground">
               {group.member_count}/{group.max_members} miembros
             </span>
           </div>
-          <span className='text-xs font-medium px-2 py-1 rounded-full bg-muted text-muted-foreground'>
+          <span className="text-xs font-medium px-2 py-1 rounded-full bg-muted text-muted-foreground">
             {capacityStatus.percentage}%
           </span>
         </div>
 
         {/* Modern progress bar */}
-        <div className='relative'>
-          <div className='w-full bg-muted rounded-full h-2 overflow-hidden'>
+        <div className="relative">
+          <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-500 ease-out ${
                 isFullCapacity
-                  ? 'bg-gradient-to-r from-red-500 to-red-600'
+                  ? "bg-gradient-to-r from-red-500 to-red-600"
                   : isHighCapacity
-                    ? 'bg-gradient-to-r from-orange-500 to-orange-600'
+                    ? "bg-gradient-to-r from-orange-500 to-orange-600"
                     : isMediumCapacity
-                      ? 'bg-gradient-to-r from-yellow-500 to-yellow-600'
-                      : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
+                      ? "bg-gradient-to-r from-yellow-500 to-yellow-600"
+                      : "bg-gradient-to-r from-emerald-500 to-emerald-600"
               }`}
               style={{ width: `${capacityStatus.percentage}%` }}
-              role='progressbar'
+              role="progressbar"
               aria-valuenow={capacityStatus.percentage}
               aria-valuemin={0}
               aria-valuemax={100}
@@ -449,22 +449,22 @@ export default function GroupCard({
           <div
             className={`absolute top-0 h-2 rounded-full opacity-20 blur-sm ${
               isFullCapacity
-                ? 'bg-red-500'
+                ? "bg-red-500"
                 : isHighCapacity
-                  ? 'bg-orange-500'
+                  ? "bg-orange-500"
                   : isMediumCapacity
-                    ? 'bg-yellow-500'
-                    : 'bg-emerald-500'
+                    ? "bg-yellow-500"
+                    : "bg-emerald-500"
             }`}
             style={{ width: `${capacityStatus.percentage}%` }}
           />
         </div>
 
         {/* Status label */}
-        <div className='flex items-center justify-between text-xs'>
-          <span className='text-muted-foreground'>{capacityStatus.label}</span>
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-muted-foreground">{capacityStatus.label}</span>
           {!isFullCapacity && (
-            <span className='text-muted-foreground'>
+            <span className="text-muted-foreground">
               {group.max_members - group.member_count} cupos disponibles
             </span>
           )}
@@ -478,63 +478,63 @@ export default function GroupCard({
     if (!showStatistics || !statistics) return null;
 
     return (
-      <div className='grid grid-cols-2 gap-3 mt-3 p-3 bg-muted/50 rounded-lg'>
-        <div className='flex items-center gap-2 text-sm'>
+      <div className="grid grid-cols-2 gap-3 mt-3 p-3 bg-muted/50 rounded-lg">
+        <div className="flex items-center gap-2 text-sm">
           <CheckCircle
-            className='w-4 h-4 text-green-600 dark:text-green-400'
-            aria-hidden='true'
+            className="w-4 h-4 text-green-600 dark:text-green-400"
+            aria-hidden="true"
           />
           <div>
-            <div className='font-medium'>{statistics.activeMembers}</div>
-            <div className='text-xs text-muted-foreground'>Activos</div>
+            <div className="font-medium">{statistics.activeMembers}</div>
+            <div className="text-xs text-muted-foreground">Activos</div>
           </div>
         </div>
-        <div className='flex items-center gap-2 text-sm'>
+        <div className="flex items-center gap-2 text-sm">
           <Calendar
-            className='w-4 h-4 text-blue-600 dark:text-blue-400'
-            aria-hidden='true'
+            className="w-4 h-4 text-blue-600 dark:text-blue-400"
+            aria-hidden="true"
           />
           <div>
-            <div className='font-medium'>{statistics.upcomingEvents}</div>
-            <div className='text-xs text-muted-foreground'>Eventos</div>
+            <div className="font-medium">{statistics.upcomingEvents}</div>
+            <div className="text-xs text-muted-foreground">Eventos</div>
           </div>
         </div>
         {statistics.totalEvents > 0 && (
-          <div className='flex items-center gap-2 text-sm'>
+          <div className="flex items-center gap-2 text-sm">
             <TrendingUp
-              className='w-4 h-4 text-purple-600 dark:text-purple-400'
-              aria-hidden='true'
+              className="w-4 h-4 text-purple-600 dark:text-purple-400"
+              aria-hidden="true"
             />
             <div>
-              <div className='font-medium'>{statistics.totalEvents}</div>
-              <div className='text-xs text-muted-foreground'>Total eventos</div>
+              <div className="font-medium">{statistics.totalEvents}</div>
+              <div className="text-xs text-muted-foreground">Total eventos</div>
             </div>
           </div>
         )}
         {statistics.eventAttendanceRate > 0 && (
-          <div className='flex items-center gap-2 text-sm'>
+          <div className="flex items-center gap-2 text-sm">
             <Users
-              className='w-4 h-4 text-indigo-600 dark:text-indigo-400'
-              aria-hidden='true'
+              className="w-4 h-4 text-indigo-600 dark:text-indigo-400"
+              aria-hidden="true"
             />
             <div>
-              <div className='font-medium'>
+              <div className="font-medium">
                 {Math.round(statistics.eventAttendanceRate)}
               </div>
-              <div className='text-xs text-muted-foreground'>
+              <div className="text-xs text-muted-foreground">
                 Asistencia prom.
               </div>
             </div>
           </div>
         )}
         {statistics.membershipGrowth > 0 && (
-          <div className='flex items-center gap-2 text-sm col-span-2'>
-            <TrendingUp className='w-4 h-4 text-green-600' aria-hidden='true' />
+          <div className="flex items-center gap-2 text-sm col-span-2">
+            <TrendingUp className="w-4 h-4 text-green-600" aria-hidden="true" />
             <div>
-              <div className='font-medium text-green-600'>
+              <div className="font-medium text-green-600">
                 +{statistics.membershipGrowth}%
               </div>
-              <div className='text-xs text-muted-foreground'>Crecimiento</div>
+              <div className="text-xs text-muted-foreground">Crecimiento</div>
             </div>
           </div>
         )}
@@ -542,20 +542,20 @@ export default function GroupCard({
     );
   };
 
-  if (variant === 'compact') {
+  if (variant === "compact") {
     const membershipStatus = getMembershipStatus();
     const capacityStatus = getCapacityStatus();
     const StatusIcon = membershipStatus.icon;
 
     return (
       <Card
-        className='hover:shadow-md transition-all duration-200 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 group bg-card/50 border-border/50'
-        role='article'
+        className="hover:shadow-md transition-all duration-200 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 group bg-card/50 border-border/50"
+        role="article"
         aria-labelledby={`group-${group.group_id}-title`}
         aria-describedby={`group-${group.group_id}-description`}
         tabIndex={0}
         onKeyDown={e => {
-          if (e.key === 'Enter' || e.key === ' ') {
+          if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             if (onView) {
               onView(group.group_id);
@@ -563,19 +563,19 @@ export default function GroupCard({
           }
         }}
       >
-        <CardContent className='p-4 space-y-4'>
+        <CardContent className="p-4 space-y-4">
           {/* Group Name */}
-          <div className='flex justify-start'>
+          <div className="flex justify-start">
             <h3
               id={`group-${group.group_id}-title`}
-              className='font-semibold text-base text-foreground'
+              className="font-semibold text-base text-foreground"
             >
               {group.name}
             </h3>
           </div>
 
           {/* Category Tag */}
-          <div className='flex justify-start'>
+          <div className="flex justify-start">
             <Badge
               className={`text-xs px-2 py-1 ${getCategoryColor(group.category)}`}
               aria-label={`Categoría: ${group.category}`}
@@ -586,56 +586,56 @@ export default function GroupCard({
 
           {/* Status Indicator */}
           {(isMember || isPending || isGroupFull) && (
-            <div className='flex justify-start'>
+            <div className="flex justify-start">
               <Badge
                 className={`text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5 ${membershipStatus.color}`}
                 aria-label={membershipStatus.ariaLabel}
               >
-                <StatusIcon className='w-3 h-3' aria-hidden='true' />
+                <StatusIcon className="w-3 h-3" aria-hidden="true" />
                 {membershipStatus.label}
               </Badge>
             </div>
           )}
 
           {/* Progress/Count Section */}
-          <div className='space-y-2'>
-            <div className='flex items-center justify-between'>
-              <div className='flex items-center gap-2'>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
                 <div
                   className={`w-2 h-2 rounded-full ${
-                    capacityStatus.level === 'full'
-                      ? 'bg-red-500'
-                      : capacityStatus.level === 'high'
-                        ? 'bg-orange-500'
-                        : capacityStatus.level === 'medium'
-                          ? 'bg-yellow-500'
-                          : 'bg-green-500'
+                    capacityStatus.level === "full"
+                      ? "bg-red-500"
+                      : capacityStatus.level === "high"
+                        ? "bg-orange-500"
+                        : capacityStatus.level === "medium"
+                          ? "bg-yellow-500"
+                          : "bg-green-500"
                   }`}
                 />
-                <span className='text-sm font-medium text-foreground'>
+                <span className="text-sm font-medium text-foreground">
                   {group.member_count}/{group.max_members}
                 </span>
               </div>
-              <span className='text-xs text-muted-foreground'>
+              <span className="text-xs text-muted-foreground">
                 {capacityStatus.percentage}%
               </span>
             </div>
 
             {/* Progress bar */}
-            <div className='relative'>
-              <div className='w-full bg-muted rounded-full h-2 overflow-hidden'>
+            <div className="relative">
+              <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ease-out ${
-                    capacityStatus.level === 'full'
-                      ? 'bg-gradient-to-r from-red-500 to-red-600'
-                      : capacityStatus.level === 'high'
-                        ? 'bg-gradient-to-r from-orange-500 to-orange-600'
-                        : capacityStatus.level === 'medium'
-                          ? 'bg-gradient-to-r from-yellow-500 to-yellow-600'
-                          : 'bg-gradient-to-r from-green-500 to-green-600'
+                    capacityStatus.level === "full"
+                      ? "bg-gradient-to-r from-red-500 to-red-600"
+                      : capacityStatus.level === "high"
+                        ? "bg-gradient-to-r from-orange-500 to-orange-600"
+                        : capacityStatus.level === "medium"
+                          ? "bg-gradient-to-r from-yellow-500 to-yellow-600"
+                          : "bg-gradient-to-r from-green-500 to-green-600"
                   }`}
                   style={{ width: `${capacityStatus.percentage}%` }}
-                  role='progressbar'
+                  role="progressbar"
                   aria-valuenow={capacityStatus.percentage}
                   aria-valuemin={0}
                   aria-valuemax={100}
@@ -648,15 +648,15 @@ export default function GroupCard({
           {/* Action Buttons */}
           {showActions && (
             <div
-              className='flex flex-col gap-2'
-              role='group'
-              aria-label='Acciones del grupo'
+              className="flex flex-col gap-2"
+              role="group"
+              aria-label="Acciones del grupo"
             >
               {renderActions()}
             </div>
           )}
 
-          <div id={`group-${group.group_id}-description`} className='sr-only'>
+          <div id={`group-${group.group_id}-description`} className="sr-only">
             {group.description}
           </div>
           {renderStatistics()}
@@ -665,10 +665,10 @@ export default function GroupCard({
         {/* Live region for status announcements */}
         {statusMessage && (
           <div
-            className='sr-only'
-            role='status'
-            aria-live='polite'
-            aria-atomic='true'
+            className="sr-only"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
           >
             {statusMessage}
           </div>
@@ -682,13 +682,13 @@ export default function GroupCard({
 
   return (
     <Card
-      className='hover:shadow-lg transition-all duration-200 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 group'
-      role='article'
+      className="hover:shadow-lg transition-all duration-200 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 group"
+      role="article"
       aria-labelledby={`group-${group.group_id}-title`}
       aria-describedby={`group-${group.group_id}-description`}
       tabIndex={0}
       onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           if (onView) {
             onView(group.group_id);
@@ -696,17 +696,17 @@ export default function GroupCard({
         }
       }}
     >
-      <CardHeader className='pb-3'>
-        <div className='flex items-start justify-between gap-3'>
-          <div className='flex-1 min-w-0'>
-            <div className='flex items-start gap-2 mb-2'>
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start gap-2 mb-2">
               <h3
                 id={`group-${group.group_id}-title`}
-                className='font-semibold text-lg truncate flex-1'
+                className="font-semibold text-lg truncate flex-1"
               >
                 {group.name}
               </h3>
-              <div className='flex flex-col gap-1 items-end'>
+              <div className="flex flex-col gap-1 items-end">
                 <Badge
                   className={getCategoryColor(group.category)}
                   aria-label={`Categoría: ${group.category}`}
@@ -718,14 +718,14 @@ export default function GroupCard({
                     className={`text-xs ${membershipStatus.color}`}
                     aria-label={membershipStatus.ariaLabel}
                   >
-                    <StatusIcon className='w-3 h-3 mr-1' aria-hidden='true' />
+                    <StatusIcon className="w-3 h-3 mr-1" aria-hidden="true" />
                     {membershipStatus.label}
                   </Badge>
                 )}
               </div>
             </div>
             <p
-              className='text-sm text-muted-foreground'
+              className="text-sm text-muted-foreground"
               aria-label={`Presidente: ${group.president_name}`}
             >
               Presidente: {group.president_name}
@@ -735,42 +735,42 @@ export default function GroupCard({
       </CardHeader>
 
       {group.image && (
-        <div className='relative w-full h-48 overflow-hidden'>
+        <div className="relative w-full h-48 overflow-hidden">
           <Image
             src={group.image}
             alt={`Imagen del grupo ${group.name}`}
             fill
-            className='object-cover'
+            className="object-cover"
           />
         </div>
       )}
 
-      <CardContent className='pt-4'>
+      <CardContent className="pt-4">
         <p
           id={`group-${group.group_id}-description`}
-          className='text-sm text-muted-foreground mb-4 line-clamp-3'
+          className="text-sm text-muted-foreground mb-4 line-clamp-3"
         >
           {group.description}
         </p>
 
         {/* Enhanced member count display */}
-        <div className='mb-4'>{renderMemberCount()}</div>
+        <div className="mb-4">{renderMemberCount()}</div>
 
         {/* Quick stats for default view */}
         {showStatistics && statistics && (
-          <div className='flex items-center gap-4 text-sm mb-4'>
+          <div className="flex items-center gap-4 text-sm mb-4">
             <div
-              className='flex items-center gap-1 text-muted-foreground'
+              className="flex items-center gap-1 text-muted-foreground"
               aria-label={`${statistics.activeMembers} miembros activos`}
             >
-              <CheckCircle className='w-4 h-4' aria-hidden='true' />
+              <CheckCircle className="w-4 h-4" aria-hidden="true" />
               <span>{statistics.activeMembers} activos</span>
             </div>
             <div
-              className='flex items-center gap-1 text-muted-foreground'
+              className="flex items-center gap-1 text-muted-foreground"
               aria-label={`${statistics.upcomingEvents} eventos próximos`}
             >
-              <Calendar className='w-4 h-4' aria-hidden='true' />
+              <Calendar className="w-4 h-4" aria-hidden="true" />
               <span>{statistics.upcomingEvents} eventos</span>
             </div>
           </div>
@@ -779,11 +779,11 @@ export default function GroupCard({
         {renderStatistics()}
       </CardContent>
 
-      <CardFooter className='pt-2'>
+      <CardFooter className="pt-2">
         <div
-          className='flex flex-wrap gap-2 w-full'
-          role='group'
-          aria-label='Acciones del grupo'
+          className="flex flex-wrap gap-2 w-full"
+          role="group"
+          aria-label="Acciones del grupo"
         >
           {renderActions()}
         </div>
@@ -792,10 +792,10 @@ export default function GroupCard({
       {/* Live region for status announcements */}
       {statusMessage && (
         <div
-          className='sr-only'
-          role='status'
-          aria-live='polite'
-          aria-atomic='true'
+          className="sr-only"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
         >
           {statusMessage}
         </div>

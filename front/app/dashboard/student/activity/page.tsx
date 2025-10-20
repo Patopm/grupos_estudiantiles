@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import ActivityTable from '@/components/dashboard/ActivityTable';
-import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { ProtectedRoute } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
-import { dashboardApi, type StudentDashboardData } from '@/lib/api/dashboard';
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import ActivityTable from "@/components/dashboard/ActivityTable";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import { ProtectedRoute } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { dashboardApi, type StudentDashboardData } from "@/lib/api/dashboard";
 
 export default function StudentActivityPage() {
   return (
-    <ProtectedRoute allowedRoles={['student']}>
+    <ProtectedRoute allowedRoles={["student"]}>
       <StudentActivityContent />
     </ProtectedRoute>
   );
@@ -30,11 +30,11 @@ function StudentActivityContent() {
         const data = await dashboardApi.getStudentData();
         setDashboardData(data);
       } catch (error) {
-        console.error('Error loading dashboard data:', error);
+        console.error("Error loading dashboard data:", error);
         toast({
-          title: 'Error',
-          description: 'No se pudieron cargar los datos de actividad',
-          variant: 'destructive',
+          title: "Error",
+          description: "No se pudieron cargar los datos de actividad",
+          variant: "destructive",
         });
       } finally {
         setIsLoading(false);
@@ -42,16 +42,16 @@ function StudentActivityContent() {
     };
 
     loadDashboardData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [toast]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (isLoading) {
     return (
-      <div className='min-h-screen bg-background'>
-        <DashboardHeader title='Mi Actividad' description='Cargando...' />
-        <div className='max-w-4xl mx-auto p-6'>
-          <div className='animate-pulse space-y-6'>
+      <div className="min-h-screen bg-background">
+        <DashboardHeader title="Mi Actividad" description="Cargando..." />
+        <div className="max-w-4xl mx-auto p-6">
+          <div className="animate-pulse space-y-6">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className='h-20 bg-muted rounded-lg'></div>
+              <div key={i} className="h-20 bg-muted rounded-lg"></div>
             ))}
           </div>
         </div>
@@ -60,37 +60,37 @@ function StudentActivityContent() {
   }
 
   return (
-    <div className='min-h-screen bg-background'>
+    <div className="min-h-screen bg-background">
       <DashboardHeader
-        title='Mi Actividad'
-        description='Historial completo de tu participación en grupos y eventos'
+        title="Mi Actividad"
+        description="Historial completo de tu participación en grupos y eventos"
       />
 
-      <div className='max-w-4xl mx-auto p-6'>
-        {dashboardData && dashboardData.recent_activity ? (
+      <div className="max-w-4xl mx-auto p-6">
+        {dashboardData?.recent_activity ? (
           <ActivityTable
             activities={dashboardData.recent_activity}
             isLoading={false}
           />
         ) : (
-          <div className='text-center py-12'>
-            <div className='text-6xl mb-4'>📊</div>
-            <h2 className='text-2xl font-bold mb-2'>
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">📊</div>
+            <h2 className="text-2xl font-bold mb-2">
               Sin actividad registrada
             </h2>
-            <p className='text-muted-foreground mb-6'>
+            <p className="text-muted-foreground mb-6">
               Tu actividad aparecerá aquí cuando participes en grupos y eventos
             </p>
-            <div className='flex gap-4 justify-center'>
+            <div className="flex gap-4 justify-center">
               <Link
-                href='/dashboard/student/groups'
-                className='px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90'
+                href="/dashboard/student/groups"
+                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
               >
                 Explorar Grupos
               </Link>
               <a
-                href='/dashboard/student/events'
-                className='px-4 py-2 border border-input bg-background hover:bg-accent rounded-md'
+                href="/dashboard/student/events"
+                className="px-4 py-2 border border-input bg-background hover:bg-accent rounded-md"
               >
                 Ver Eventos
               </a>

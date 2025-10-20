@@ -1,7 +1,7 @@
-import type React from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
+import type React from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 interface FormInputProps {
   id: string;
@@ -33,8 +33,8 @@ export default function FormInput({
   onBlur,
 }: FormInputProps) {
   return (
-    <div className='space-y-2'>
-      <Label htmlFor={id} className='text-sm font-medium'>
+    <div className="space-y-2">
+      <Label htmlFor={id} className="text-sm font-medium">
         {label}
       </Label>
       <Input
@@ -49,10 +49,10 @@ export default function FormInput({
         onBlur={onBlur}
         placeholder={placeholder}
         className={cn(
-          error && 'border-destructive focus-visible:ring-destructive'
+          error && "border-destructive focus-visible:ring-destructive"
         )}
       />
-      {error && <p className='text-sm text-destructive'>{error}</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
   );
 }

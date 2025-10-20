@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Calendar,
@@ -12,23 +12,23 @@ import {
   TrendingUp,
   Users,
   X,
-} from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
+} from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { useDebounce } from '@/hooks/useDebounce';
-import type { Group } from '@/lib/api/groups';
-import GroupCard from './GroupCard';
+} from "@/components/ui/select";
+import { useDebounce } from "@/hooks/useDebounce";
+import type { Group } from "@/lib/api/groups";
+import GroupCard from "./GroupCard";
 
 interface GroupListProps {
   groups: Group[];
@@ -37,7 +37,7 @@ interface GroupListProps {
   showSearch?: boolean;
   showFilters?: boolean;
   showViewToggle?: boolean;
-  variant?: 'default' | 'compact';
+  variant?: "default" | "compact";
   noGroupsMessage?: string;
   noGroupsAction?: {
     label: string;
@@ -60,23 +60,23 @@ interface GroupListProps {
 }
 
 const CATEGORIES = [
-  { value: 'all', label: 'Todos' },
-  { value: 'deportivo', label: 'Deportivo' },
-  { value: 'cultural', label: 'Cultural' },
-  { value: 'academico', label: 'Académico' },
-  { value: 'tecnologico', label: 'Tecnológico' },
-  { value: 'social', label: 'Social' },
-  { value: 'otro', label: 'Otro' },
+  { value: "all", label: "Todos" },
+  { value: "deportivo", label: "Deportivo" },
+  { value: "cultural", label: "Cultural" },
+  { value: "academico", label: "Académico" },
+  { value: "tecnologico", label: "Tecnológico" },
+  { value: "social", label: "Social" },
+  { value: "otro", label: "Otro" },
 ];
 
 const SORT_OPTIONS = [
-  { value: 'name', label: 'Nombre A-Z', icon: null },
-  { value: 'name_desc', label: 'Nombre Z-A', icon: null },
-  { value: 'members', label: 'Más Miembros', icon: Users },
-  { value: 'members_desc', label: 'Menos Miembros', icon: Users },
-  { value: 'recent', label: 'Más Recientes', icon: Calendar },
-  { value: 'oldest', label: 'Más Antiguos', icon: Calendar },
-  { value: 'popularity', label: 'Más Populares', icon: TrendingUp },
+  { value: "name", label: "Nombre A-Z", icon: null },
+  { value: "name_desc", label: "Nombre Z-A", icon: null },
+  { value: "members", label: "Más Miembros", icon: Users },
+  { value: "members_desc", label: "Menos Miembros", icon: Users },
+  { value: "recent", label: "Más Recientes", icon: Calendar },
+  { value: "oldest", label: "Más Antiguos", icon: Calendar },
+  { value: "popularity", label: "Más Populares", icon: TrendingUp },
 ];
 
 export default function GroupList({
@@ -86,8 +86,8 @@ export default function GroupList({
   showSearch = true,
   showFilters = true,
   showViewToggle = false,
-  variant = 'default',
-  noGroupsMessage = 'No tienes grupos registrados',
+  variant = "default",
+  noGroupsMessage = "No tienes grupos registrados",
   noGroupsAction,
   viewAllAction,
   onJoin,
@@ -99,12 +99,12 @@ export default function GroupList({
   itemsPerPage = 12,
 }: GroupListProps) {
   // Search and filter state
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([
-    'all',
+    "all",
   ]);
-  const [sortBy, setSortBy] = useState('name');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [sortBy, setSortBy] = useState("name");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFiltersPanel, setShowFiltersPanel] = useState(false);
 
   // Pagination state
@@ -138,7 +138,7 @@ export default function GroupList({
     }
 
     // Filter by categories (multi-select)
-    if (!selectedCategories.includes('all') && selectedCategories.length > 0) {
+    if (!selectedCategories.includes("all") && selectedCategories.length > 0) {
       filtered = filtered.filter(group =>
         selectedCategories.some(
           category => group.category.toLowerCase() === category.toLowerCase()
@@ -161,32 +161,32 @@ export default function GroupList({
     // Filter by membership status
     if (showPendingOnly) {
       filtered = filtered.filter(
-        group => group.membership_status === 'pending'
+        group => group.membership_status === "pending"
       );
     } else if (showActiveOnly) {
-      filtered = filtered.filter(group => group.membership_status === 'active');
+      filtered = filtered.filter(group => group.membership_status === "active");
     }
 
     // Sort groups
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'name':
+        case "name":
           return a.name.localeCompare(b.name);
-        case 'name_desc':
+        case "name_desc":
           return b.name.localeCompare(a.name);
-        case 'members':
+        case "members":
           return b.member_count - a.member_count;
-        case 'members_desc':
+        case "members_desc":
           return a.member_count - b.member_count;
-        case 'recent':
+        case "recent":
           return (
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
           );
-        case 'oldest':
+        case "oldest":
           return (
             new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
           );
-        case 'popularity':
+        case "popularity":
           // Sort by member count as a proxy for popularity
           return b.member_count - a.member_count;
         default:
@@ -223,37 +223,29 @@ export default function GroupList({
   // Reset pagination when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [
-    debouncedSearchTerm,
-    selectedCategories,
-    sortBy,
-    hasSpaceOnly,
-    activeOnly,
-    showPendingOnly,
-    showActiveOnly,
-  ]);
+  }, []);
 
   // Category selection handlers
   const handleCategoryToggle = useCallback((categoryValue: string) => {
     setSelectedCategories(prev => {
-      if (categoryValue === 'all') {
-        return ['all'];
+      if (categoryValue === "all") {
+        return ["all"];
       }
 
-      const newCategories = prev.includes('all')
+      const newCategories = prev.includes("all")
         ? [categoryValue]
         : prev.includes(categoryValue)
           ? prev.filter(c => c !== categoryValue)
-          : [...prev.filter(c => c !== 'all'), categoryValue];
+          : [...prev.filter(c => c !== "all"), categoryValue];
 
-      return newCategories.length === 0 ? ['all'] : newCategories;
+      return newCategories.length === 0 ? ["all"] : newCategories;
     });
   }, []);
 
   const clearAllFilters = useCallback(() => {
-    setSearchTerm('');
-    setSelectedCategories(['all']);
-    setSortBy('name');
+    setSearchTerm("");
+    setSelectedCategories(["all"]);
+    setSortBy("name");
     setHasSpaceOnly(false);
     setActiveOnly(true);
     setShowPendingOnly(false);
@@ -264,7 +256,7 @@ export default function GroupList({
   const activeFiltersCount = useMemo(() => {
     let count = 0;
     if (debouncedSearchTerm.trim()) count++;
-    if (!selectedCategories.includes('all')) count++;
+    if (!selectedCategories.includes("all")) count++;
     if (hasSpaceOnly) count++;
     if (!activeOnly) count++;
     if (showPendingOnly) count++;
@@ -281,23 +273,23 @@ export default function GroupList({
 
   if (isLoading) {
     return (
-      <Card className='h-full'>
+      <Card className="h-full">
         <CardHeader>
-          <div className='flex items-center justify-between'>
+          <div className="flex items-center justify-between">
             {label && (
-              <CardTitle className='flex items-center gap-2'>
-                <Users className='w-5 h-5' />
+              <CardTitle className="flex items-center gap-2">
+                <Users className="w-5 h-5" />
                 {label}
               </CardTitle>
             )}
             {title && !label && <CardTitle>{title}</CardTitle>}
           </div>
         </CardHeader>
-        <CardContent className='flex-1'>
-          <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+        <CardContent className="flex-1">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className='animate-pulse'>
-                <div className='bg-muted rounded-lg h-64'></div>
+              <div key={i} className="animate-pulse">
+                <div className="bg-muted rounded-lg h-64"></div>
               </div>
             ))}
           </div>
@@ -307,94 +299,94 @@ export default function GroupList({
   }
 
   return (
-    <Card className='h-full'>
+    <Card className="h-full">
       <CardHeader>
-        <div className='flex items-center justify-between'>
+        <div className="flex items-center justify-between">
           {label && (
-            <CardTitle className='flex items-center gap-2'>
-              <Users className='w-5 h-5' />
+            <CardTitle className="flex items-center gap-2">
+              <Users className="w-5 h-5" />
               {label}
             </CardTitle>
           )}
           {title && !label && <CardTitle>{title}</CardTitle>}
           {showViewToggle && (
-            <div className='flex items-center gap-2'>
+            <div className="flex items-center gap-2">
               <Button
-                variant={viewMode === 'grid' ? 'default' : 'outline'}
-                size='sm'
-                onClick={() => setViewMode('grid')}
-                aria-label='Vista de cuadrícula'
+                variant={viewMode === "grid" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("grid")}
+                aria-label="Vista de cuadrícula"
               >
-                <Grid className='w-4 h-4' />
+                <Grid className="w-4 h-4" />
               </Button>
               <Button
-                variant={viewMode === 'list' ? 'default' : 'outline'}
-                size='sm'
-                onClick={() => setViewMode('list')}
-                aria-label='Vista de lista'
+                variant={viewMode === "list" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setViewMode("list")}
+                aria-label="Vista de lista"
               >
-                <List className='w-4 h-4' />
+                <List className="w-4 h-4" />
               </Button>
             </div>
           )}
         </div>
       </CardHeader>
-      <CardContent className='space-y-6 flex-1'>
+      <CardContent className="space-y-6 flex-1">
         {/* Search and filters */}
         {(showSearch || showFilters) && (
-          <div className='space-y-4'>
+          <div className="space-y-4">
             {/* Search bar */}
             {showSearch && (
-              <div className='relative'>
-                <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4' />
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input
-                  placeholder='Buscar grupos por nombre, descripción o presidente...'
+                  placeholder="Buscar grupos por nombre, descripción o presidente..."
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
-                  className='pl-10'
-                  aria-label='Buscar grupos'
+                  className="pl-10"
+                  aria-label="Buscar grupos"
                 />
               </div>
             )}
 
             {/* Filters row */}
             {showFilters && (
-              <div className='flex flex-col sm:flex-row gap-4 items-start sm:items-center'>
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                 {/* Filter toggle button for mobile */}
-                <div className='flex items-center gap-2 sm:hidden'>
+                <div className="flex items-center gap-2 sm:hidden">
                   <Button
-                    variant='outline'
-                    size='sm'
+                    variant="outline"
+                    size="sm"
                     onClick={() => setShowFiltersPanel(!showFiltersPanel)}
-                    className='flex items-center gap-2'
+                    className="flex items-center gap-2"
                   >
-                    <Filter className='w-4 h-4' />
+                    <Filter className="w-4 h-4" />
                     Filtros
                     {activeFiltersCount > 0 && (
-                      <Badge variant='secondary' className='ml-1'>
+                      <Badge variant="secondary" className="ml-1">
                         {activeFiltersCount}
                       </Badge>
                     )}
                     <ChevronDown
-                      className={`w-4 h-4 transition-transform ${showFiltersPanel ? 'rotate-180' : ''}`}
+                      className={`w-4 h-4 transition-transform ${showFiltersPanel ? "rotate-180" : ""}`}
                     />
                   </Button>
                 </div>
 
                 {/* Desktop filters */}
                 <div
-                  className={`flex flex-wrap gap-2 ${showFiltersPanel ? 'block' : 'hidden sm:flex'}`}
+                  className={`flex flex-wrap gap-2 ${showFiltersPanel ? "block" : "hidden sm:flex"}`}
                 >
                   {/* Sort dropdown */}
                   <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className='w-[180px]'>
-                      <SelectValue placeholder='Ordenar por' />
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Ordenar por" />
                     </SelectTrigger>
                     <SelectContent>
                       {SORT_OPTIONS.map(option => (
                         <SelectItem key={option.value} value={option.value}>
-                          <div className='flex items-center gap-2'>
-                            {option.icon && <option.icon className='w-4 h-4' />}
+                          <div className="flex items-center gap-2">
+                            {option.icon && <option.icon className="w-4 h-4" />}
                             {option.label}
                           </div>
                         </SelectItem>
@@ -403,8 +395,8 @@ export default function GroupList({
                   </Select>
 
                   {/* Additional filter toggles */}
-                  <div className='flex items-center gap-4'>
-                    <label className='flex items-center gap-2 text-sm cursor-pointer'>
+                  <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-2 text-sm cursor-pointer">
                       <Checkbox
                         checked={hasSpaceOnly}
                         onCheckedChange={checked =>
@@ -413,7 +405,7 @@ export default function GroupList({
                       />
                       Solo con cupos
                     </label>
-                    <label className='flex items-center gap-2 text-sm cursor-pointer'>
+                    <label className="flex items-center gap-2 text-sm cursor-pointer">
                       <Checkbox
                         checked={activeOnly}
                         onCheckedChange={checked =>
@@ -422,7 +414,7 @@ export default function GroupList({
                       />
                       Solo activos
                     </label>
-                    <label className='flex items-center gap-2 text-sm cursor-pointer'>
+                    <label className="flex items-center gap-2 text-sm cursor-pointer">
                       <Checkbox
                         checked={showPendingOnly}
                         onCheckedChange={checked => {
@@ -432,7 +424,7 @@ export default function GroupList({
                       />
                       Solo pendientes
                     </label>
-                    <label className='flex items-center gap-2 text-sm cursor-pointer'>
+                    <label className="flex items-center gap-2 text-sm cursor-pointer">
                       <Checkbox
                         checked={showActiveOnly}
                         onCheckedChange={checked => {
@@ -447,12 +439,12 @@ export default function GroupList({
                   {/* Clear filters */}
                   {activeFiltersCount > 0 && (
                     <Button
-                      variant='ghost'
-                      size='sm'
+                      variant="ghost"
+                      size="sm"
                       onClick={clearAllFilters}
-                      className='flex items-center gap-1'
+                      className="flex items-center gap-1"
                     >
-                      <X className='w-4 h-4' />
+                      <X className="w-4 h-4" />
                       Limpiar
                     </Button>
                   )}
@@ -463,28 +455,28 @@ export default function GroupList({
             {/* Category filters */}
             {showFilters && (
               <div
-                className={`space-y-2 ${showFiltersPanel ? 'block' : 'hidden sm:block'}`}
+                className={`space-y-2 ${showFiltersPanel ? "block" : "hidden sm:block"}`}
               >
-                <div className='text-sm font-medium text-muted-foreground'>
+                <div className="text-sm font-medium text-muted-foreground">
                   Categorías:
                 </div>
-                <div className='flex flex-wrap gap-2'>
+                <div className="flex flex-wrap gap-2">
                   {CATEGORIES.map(category => (
                     <Button
                       key={category.value}
                       variant={
                         selectedCategories.includes(category.value)
-                          ? 'default'
-                          : 'outline'
+                          ? "default"
+                          : "outline"
                       }
-                      size='sm'
+                      size="sm"
                       onClick={() => handleCategoryToggle(category.value)}
-                      className='text-xs'
+                      className="text-xs"
                     >
                       {category.label}
                       {selectedCategories.includes(category.value) &&
-                        category.value !== 'all' && (
-                          <X className='w-3 h-3 ml-1' />
+                        category.value !== "all" && (
+                          <X className="w-3 h-3 ml-1" />
                         )}
                     </Button>
                   ))}
@@ -494,12 +486,12 @@ export default function GroupList({
 
             {/* Active filters summary */}
             {activeFiltersCount > 0 && (
-              <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-                <Filter className='w-4 h-4' />
-                {activeFiltersCount} filtro{activeFiltersCount > 1 ? 's' : ''}{' '}
-                activo{activeFiltersCount > 1 ? 's' : ''}
-                {!selectedCategories.includes('all') && (
-                  <span>• Categorías: {selectedCategories.join(', ')}</span>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Filter className="w-4 h-4" />
+                {activeFiltersCount} filtro{activeFiltersCount > 1 ? "s" : ""}{" "}
+                activo{activeFiltersCount > 1 ? "s" : ""}
+                {!selectedCategories.includes("all") && (
+                  <span>• Categorías: {selectedCategories.join(", ")}</span>
                 )}
               </div>
             )}
@@ -508,45 +500,42 @@ export default function GroupList({
 
         {/* Results */}
         {filteredAndSortedGroups.length === 0 ? (
-          <div className='text-center py-12'>
-            <div className='w-16 h-16 mx-auto flex items-center justify-center'>
+          <div className="text-center py-12">
+            <div className="w-16 h-16 mx-auto flex items-center justify-center">
               {activeFiltersCount > 0 || debouncedSearchTerm.trim() ? (
-                <Search className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
+                <Search className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
               ) : (
-                <Users className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
+                <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
               )}
             </div>
-            <h3 className='text-lg font-semibold mb-2'>
+            <h3 className="text-lg font-semibold mb-2">
               {activeFiltersCount > 0 || debouncedSearchTerm.trim()
-                ? 'No se encontraron grupos'
-                : 'No tienes grupos registrados'}
+                ? "No se encontraron grupos"
+                : "No tienes grupos registrados"}
             </h3>
-            <p className='text-muted-foreground mb-4'>
+            <p className="text-muted-foreground mb-4">
               {activeFiltersCount > 0 || debouncedSearchTerm.trim()
-                ? 'Intenta ajustar los filtros de búsqueda'
+                ? "Intenta ajustar los filtros de búsqueda"
                 : noGroupsMessage}
             </p>
-            <div className='flex flex-col sm:flex-row gap-2 justify-center'>
+            <div className="flex flex-col sm:flex-row gap-2 justify-center">
               {activeFiltersCount > 0 && (
-                <Button variant='outline' onClick={clearAllFilters}>
+                <Button variant="outline" onClick={clearAllFilters}>
                   Limpiar filtros
                 </Button>
               )}
               {!activeFiltersCount &&
                 !debouncedSearchTerm.trim() &&
-                noGroupsAction && (
-                  <>
-                    {noGroupsAction.href ? (
-                      <Button asChild>
-                        <a href={noGroupsAction.href}>{noGroupsAction.label}</a>
-                      </Button>
-                    ) : (
-                      <Button onClick={noGroupsAction.onClick}>
-                        {noGroupsAction.label}
-                      </Button>
-                    )}
-                  </>
-                )}
+                noGroupsAction &&
+                (noGroupsAction.href ? (
+                  <Button asChild>
+                    <a href={noGroupsAction.href}>{noGroupsAction.label}</a>
+                  </Button>
+                ) : (
+                  <Button onClick={noGroupsAction.onClick}>
+                    {noGroupsAction.label}
+                  </Button>
+                ))}
             </div>
           </div>
         ) : (
@@ -554,16 +543,16 @@ export default function GroupList({
             {/* Groups grid/list */}
             <div
               className={
-                viewMode === 'grid'
-                  ? `grid grid-cols-1 ${variant === 'compact' ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-3'} gap-4`
-                  : 'space-y-4'
+                viewMode === "grid"
+                  ? `grid grid-cols-1 ${variant === "compact" ? "md:grid-cols-2" : "md:grid-cols-2 lg:grid-cols-3"} gap-4`
+                  : "space-y-4"
               }
             >
               {paginatedGroups.map(group => (
                 <GroupCard
                   key={group.group_id}
                   group={group}
-                  variant={viewMode === 'list' ? 'compact' : variant}
+                  variant={viewMode === "list" ? "compact" : variant}
                   onJoin={onJoin}
                   onLeave={onLeave}
                   onView={onView}
@@ -574,28 +563,28 @@ export default function GroupList({
 
             {/* Pagination */}
             {enablePagination && totalPages > 1 && (
-              <div className='flex items-center justify-between'>
-                <div className='text-sm text-muted-foreground'>
-                  Mostrando {(currentPage - 1) * itemsPerPage + 1} -{' '}
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-muted-foreground">
+                  Mostrando {(currentPage - 1) * itemsPerPage + 1} -{" "}
                   {Math.min(
                     currentPage * itemsPerPage,
                     filteredAndSortedGroups.length
-                  )}{' '}
+                  )}{" "}
                   de {filteredAndSortedGroups.length} grupos
                 </div>
-                <div className='flex items-center gap-2'>
+                <div className="flex items-center gap-2">
                   <Button
-                    variant='outline'
-                    size='sm'
+                    variant="outline"
+                    size="sm"
                     onClick={() =>
                       setCurrentPage(prev => Math.max(1, prev - 1))
                     }
                     disabled={!hasPrevPage}
-                    aria-label='Página anterior'
+                    aria-label="Página anterior"
                   >
-                    <ChevronLeft className='w-4 h-4' />
+                    <ChevronLeft className="w-4 h-4" />
                   </Button>
-                  <div className='flex items-center gap-1'>
+                  <div className="flex items-center gap-1">
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                       let pageNum;
                       if (totalPages <= 5) {
@@ -612,11 +601,11 @@ export default function GroupList({
                         <Button
                           key={pageNum}
                           variant={
-                            currentPage === pageNum ? 'default' : 'outline'
+                            currentPage === pageNum ? "default" : "outline"
                           }
-                          size='sm'
+                          size="sm"
                           onClick={() => setCurrentPage(pageNum)}
-                          className='w-8 h-8 p-0'
+                          className="w-8 h-8 p-0"
                         >
                           {pageNum}
                         </Button>
@@ -624,15 +613,15 @@ export default function GroupList({
                     })}
                   </div>
                   <Button
-                    variant='outline'
-                    size='sm'
+                    variant="outline"
+                    size="sm"
                     onClick={() =>
                       setCurrentPage(prev => Math.min(totalPages, prev + 1))
                     }
                     disabled={!hasNextPage}
-                    aria-label='Página siguiente'
+                    aria-label="Página siguiente"
                   >
-                    <ChevronRight className='w-4 h-4' />
+                    <ChevronRight className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
@@ -640,20 +629,20 @@ export default function GroupList({
 
             {/* Results summary */}
             {!enablePagination && (
-              <div className='text-center text-sm text-muted-foreground'>
-                Mostrando {filteredAndSortedGroups.length} de{' '}
+              <div className="text-center text-sm text-muted-foreground">
+                Mostrando {filteredAndSortedGroups.length} de{" "}
                 {groups?.length || 0} grupos
               </div>
             )}
 
             {/* View All Action */}
-            {viewAllAction && viewAllAction.showWhen && (
-              <div className='flex justify-center pt-2'>
+            {viewAllAction?.showWhen && (
+              <div className="flex justify-center pt-2">
                 <Button
-                  variant='outline'
-                  size='sm'
+                  variant="outline"
+                  size="sm"
                   onClick={viewAllAction.onClick}
-                  className='text-xs px-4 py-2 hover:bg-muted/50'
+                  className="text-xs px-4 py-2 hover:bg-muted/50"
                 >
                   {viewAllAction.label}
                 </Button>

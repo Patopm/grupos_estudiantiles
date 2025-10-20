@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   AlertCircle,
@@ -9,10 +9,10 @@ import {
   Clock,
   MapPin,
   XCircle,
-} from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import type { Event } from '@/lib/api/events';
+} from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
+import type { Event } from "@/lib/api/events";
 
 interface MyEventsCalendarProps {
   events: Event[];
@@ -27,21 +27,21 @@ interface CalendarDay {
 }
 
 const MONTHS = [
-  'Enero',
-  'Febrero',
-  'Marzo',
-  'Abril',
-  'Mayo',
-  'Junio',
-  'Julio',
-  'Agosto',
-  'Septiembre',
-  'Octubre',
-  'Noviembre',
-  'Diciembre',
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
 ];
 
-const WEEKDAYS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+const WEEKDAYS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
 export default function MyEventsCalendar({
   events,
@@ -55,7 +55,7 @@ export default function MyEventsCalendar({
 
     events.forEach(event => {
       const eventDate = new Date(event.start_datetime);
-      const dateKey = eventDate.toISOString().split('T')[0];
+      const dateKey = eventDate.toISOString().split("T")[0];
 
       if (!grouped[dateKey]) {
         grouped[dateKey] = [];
@@ -82,7 +82,7 @@ export default function MyEventsCalendar({
       const date = new Date(startDate);
       date.setDate(startDate.getDate() + i);
 
-      const dateKey = date.toISOString().split('T')[0];
+      const dateKey = date.toISOString().split("T")[0];
       const dayEvents = eventsByDate[dateKey] || [];
 
       days.push({
@@ -96,10 +96,10 @@ export default function MyEventsCalendar({
     return days;
   }, [currentDate, eventsByDate]);
 
-  const navigateMonth = useCallback((direction: 'prev' | 'next') => {
+  const navigateMonth = useCallback((direction: "prev" | "next") => {
     setCurrentDate(prev => {
       const newDate = new Date(prev);
-      if (direction === 'prev') {
+      if (direction === "prev") {
         newDate.setMonth(prev.getMonth() - 1);
       } else {
         newDate.setMonth(prev.getMonth() + 1);
@@ -114,15 +114,15 @@ export default function MyEventsCalendar({
 
   const getAttendanceStatusIcon = (status?: string | null) => {
     switch (status) {
-      case 'attended':
-        return <CheckCircle className='w-3 h-3 text-green-500' />;
-      case 'no_show':
-        return <XCircle className='w-3 h-3 text-red-500' />;
-      case 'cancelled':
-        return <XCircle className='w-3 h-3 text-gray-500' />;
-      case 'registered':
-      case 'confirmed':
-        return <AlertCircle className='w-3 h-3 text-blue-500' />;
+      case "attended":
+        return <CheckCircle className="w-3 h-3 text-green-500" />;
+      case "no_show":
+        return <XCircle className="w-3 h-3 text-red-500" />;
+      case "cancelled":
+        return <XCircle className="w-3 h-3 text-gray-500" />;
+      case "registered":
+      case "confirmed":
+        return <AlertCircle className="w-3 h-3 text-blue-500" />;
       default:
         return null;
     }
@@ -132,70 +132,70 @@ export default function MyEventsCalendar({
     const now = new Date();
     const eventDate = new Date(event.start_datetime);
 
-    if (event.user_attendance_status === 'attended') {
-      return 'bg-green-100 border-green-300 text-green-800';
+    if (event.user_attendance_status === "attended") {
+      return "bg-green-100 border-green-300 text-green-800";
     }
-    if (event.user_attendance_status === 'no_show') {
-      return 'bg-red-100 border-red-300 text-red-800';
+    if (event.user_attendance_status === "no_show") {
+      return "bg-red-100 border-red-300 text-red-800";
     }
-    if (event.user_attendance_status === 'cancelled') {
-      return 'bg-gray-100 border-gray-300 text-gray-800';
+    if (event.user_attendance_status === "cancelled") {
+      return "bg-gray-100 border-gray-300 text-gray-800";
     }
     if (eventDate < now) {
-      return 'bg-gray-100 border-gray-300 text-gray-600';
+      return "bg-gray-100 border-gray-300 text-gray-600";
     }
     if (eventDate.toDateString() === now.toDateString()) {
-      return 'bg-blue-100 border-blue-300 text-blue-800';
+      return "bg-blue-100 border-blue-300 text-blue-800";
     }
-    return 'bg-blue-50 border-blue-200 text-blue-700';
+    return "bg-blue-50 border-blue-200 text-blue-700";
   };
 
   return (
-    <div className='space-y-4'>
+    <div className="space-y-4">
       {/* Calendar header */}
-      <div className='flex items-center justify-between'>
-        <div className='flex items-center gap-4'>
-          <h3 className='text-lg font-semibold'>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <h3 className="text-lg font-semibold">
             {MONTHS[currentDate.getMonth()]} {currentDate.getFullYear()}
           </h3>
           <Button
-            variant='outline'
-            size='sm'
+            variant="outline"
+            size="sm"
             onClick={goToToday}
-            className='text-xs'
+            className="text-xs"
           >
             Hoy
           </Button>
         </div>
 
-        <div className='flex items-center gap-2'>
+        <div className="flex items-center gap-2">
           <Button
-            variant='outline'
-            size='sm'
-            onClick={() => navigateMonth('prev')}
-            className='h-8 w-8 p-0'
+            variant="outline"
+            size="sm"
+            onClick={() => navigateMonth("prev")}
+            className="h-8 w-8 p-0"
           >
-            <ChevronLeft className='w-4 h-4' />
+            <ChevronLeft className="w-4 h-4" />
           </Button>
           <Button
-            variant='outline'
-            size='sm'
-            onClick={() => navigateMonth('next')}
-            className='h-8 w-8 p-0'
+            variant="outline"
+            size="sm"
+            onClick={() => navigateMonth("next")}
+            className="h-8 w-8 p-0"
           >
-            <ChevronRight className='w-4 h-4' />
+            <ChevronRight className="w-4 h-4" />
           </Button>
         </div>
       </div>
 
       {/* Calendar grid */}
-      <div className='border rounded-lg overflow-hidden'>
+      <div className="border rounded-lg overflow-hidden">
         {/* Weekday headers */}
-        <div className='grid grid-cols-7 bg-muted/50'>
+        <div className="grid grid-cols-7 bg-muted/50">
           {WEEKDAYS.map(day => (
             <div
               key={day}
-              className='p-3 text-center text-sm font-medium text-muted-foreground'
+              className="p-3 text-center text-sm font-medium text-muted-foreground"
             >
               {day}
             </div>
@@ -203,27 +203,27 @@ export default function MyEventsCalendar({
         </div>
 
         {/* Calendar days */}
-        <div className='grid grid-cols-7'>
+        <div className="grid grid-cols-7">
           {calendarDays.map((day, index) => (
             <div
               key={index}
               className={`min-h-[120px] border-r border-b last:border-r-0 p-2 ${
-                day.isCurrentMonth ? 'bg-background' : 'bg-muted/20'
-              } ${day.isToday ? 'bg-blue-50' : ''}`}
+                day.isCurrentMonth ? "bg-background" : "bg-muted/20"
+              } ${day.isToday ? "bg-blue-50" : ""}`}
             >
               {/* Date number */}
               <div
                 className={`text-sm font-medium mb-1 ${
                   day.isCurrentMonth
-                    ? 'text-foreground'
-                    : 'text-muted-foreground'
-                } ${day.isToday ? 'text-blue-600 font-bold' : ''}`}
+                    ? "text-foreground"
+                    : "text-muted-foreground"
+                } ${day.isToday ? "text-blue-600 font-bold" : ""}`}
               >
                 {day.date.getDate()}
               </div>
 
               {/* Events for this day */}
-              <div className='space-y-1'>
+              <div className="space-y-1">
                 {day.events.slice(0, 3).map(event => (
                   <div
                     key={event.event_id}
@@ -231,38 +231,38 @@ export default function MyEventsCalendar({
                     onClick={() => onView?.(event.event_id)}
                     title={`${event.title} - ${new Date(
                       event.start_datetime
-                    ).toLocaleTimeString('es-ES', {
-                      hour: '2-digit',
-                      minute: '2-digit',
+                    ).toLocaleTimeString("es-ES", {
+                      hour: "2-digit",
+                      minute: "2-digit",
                     })}`}
                   >
-                    <div className='flex items-center gap-1 mb-1'>
+                    <div className="flex items-center gap-1 mb-1">
                       {getAttendanceStatusIcon(event.user_attendance_status)}
-                      <span className='font-medium truncate'>
+                      <span className="font-medium truncate">
                         {event.title}
                       </span>
                     </div>
-                    <div className='flex items-center gap-1 text-xs opacity-75'>
-                      <Clock className='w-2 h-2' />
+                    <div className="flex items-center gap-1 text-xs opacity-75">
+                      <Clock className="w-2 h-2" />
                       <span>
                         {new Date(event.start_datetime).toLocaleTimeString(
-                          'es-ES',
+                          "es-ES",
                           {
-                            hour: '2-digit',
-                            minute: '2-digit',
+                            hour: "2-digit",
+                            minute: "2-digit",
                           }
                         )}
                       </span>
                     </div>
-                    <div className='flex items-center gap-1 text-xs opacity-75'>
-                      <MapPin className='w-2 h-2' />
-                      <span className='truncate'>{event.location}</span>
+                    <div className="flex items-center gap-1 text-xs opacity-75">
+                      <MapPin className="w-2 h-2" />
+                      <span className="truncate">{event.location}</span>
                     </div>
                   </div>
                 ))}
 
                 {day.events.length > 3 && (
-                  <div className='text-xs text-muted-foreground text-center'>
+                  <div className="text-xs text-muted-foreground text-center">
                     +{day.events.length - 3} más
                   </div>
                 )}
@@ -273,51 +273,51 @@ export default function MyEventsCalendar({
       </div>
 
       {/* Legend */}
-      <div className='flex flex-wrap gap-4 text-sm'>
-        <div className='flex items-center gap-2'>
-          <div className='w-3 h-3 rounded bg-green-100 border border-green-300'></div>
+      <div className="flex flex-wrap gap-4 text-sm">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded bg-green-100 border border-green-300"></div>
           <span>Asistido</span>
         </div>
-        <div className='flex items-center gap-2'>
-          <div className='w-3 h-3 rounded bg-red-100 border border-red-300'></div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded bg-red-100 border border-red-300"></div>
           <span>No asistió</span>
         </div>
-        <div className='flex items-center gap-2'>
-          <div className='w-3 h-3 rounded bg-blue-100 border border-blue-300'></div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded bg-blue-100 border border-blue-300"></div>
           <span>Próximo</span>
         </div>
-        <div className='flex items-center gap-2'>
-          <div className='w-3 h-3 rounded bg-gray-100 border border-gray-300'></div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded bg-gray-100 border border-gray-300"></div>
           <span>Pasado</span>
         </div>
       </div>
 
       {/* Event summary */}
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-4 mt-6'>
-        <div className='bg-muted/50 rounded-lg p-4'>
-          <div className='flex items-center gap-2 mb-2'>
-            <Calendar className='w-4 h-4 text-blue-500' />
-            <span className='font-medium'>Total de eventos</span>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+        <div className="bg-muted/50 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Calendar className="w-4 h-4 text-blue-500" />
+            <span className="font-medium">Total de eventos</span>
           </div>
-          <div className='text-2xl font-bold'>{events.length}</div>
+          <div className="text-2xl font-bold">{events.length}</div>
         </div>
 
-        <div className='bg-muted/50 rounded-lg p-4'>
-          <div className='flex items-center gap-2 mb-2'>
-            <CheckCircle className='w-4 h-4 text-green-500' />
-            <span className='font-medium'>Asistidos</span>
+        <div className="bg-muted/50 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <CheckCircle className="w-4 h-4 text-green-500" />
+            <span className="font-medium">Asistidos</span>
           </div>
-          <div className='text-2xl font-bold'>
-            {events.filter(e => e.user_attendance_status === 'attended').length}
+          <div className="text-2xl font-bold">
+            {events.filter(e => e.user_attendance_status === "attended").length}
           </div>
         </div>
 
-        <div className='bg-muted/50 rounded-lg p-4'>
-          <div className='flex items-center gap-2 mb-2'>
-            <Clock className='w-4 h-4 text-orange-500' />
-            <span className='font-medium'>Próximos</span>
+        <div className="bg-muted/50 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Clock className="w-4 h-4 text-orange-500" />
+            <span className="font-medium">Próximos</span>
           </div>
-          <div className='text-2xl font-bold'>
+          <div className="text-2xl font-bold">
             {events.filter(e => new Date(e.start_datetime) > new Date()).length}
           </div>
         </div>

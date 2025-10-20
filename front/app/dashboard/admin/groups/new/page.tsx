@@ -1,29 +1,29 @@
-'use client';
+"use client";
 
-import { ArrowLeft, Save, Users, X } from 'lucide-react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { ArrowLeft, Save, Users, X } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { ProtectedRoute } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
-import { type AvailablePresident, groupsApi } from '@/lib/api/groups';
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { ProtectedRoute } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { type AvailablePresident, groupsApi } from "@/lib/api/groups";
 
 export default function AdminGroupsNewPage() {
   return (
-    <ProtectedRoute allowedRoles={['admin']}>
+    <ProtectedRoute allowedRoles={["admin"]}>
       <AdminGroupsNewContent />
     </ProtectedRoute>
   );
@@ -34,11 +34,11 @@ function AdminGroupsNewContent() {
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    category: '',
+    name: "",
+    description: "",
+    category: "",
     max_members: 50,
-    president_id: '',
+    president_id: "",
     is_active: true,
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -50,12 +50,12 @@ function AdminGroupsNewContent() {
   const [loadingPresidents, setLoadingPresidents] = useState(false);
 
   const categories = [
-    'deportivo',
-    'cultural',
-    'academico',
-    'social',
-    'tecnologico',
-    'otro',
+    "deportivo",
+    "cultural",
+    "academico",
+    "social",
+    "tecnologico",
+    "otro",
   ];
 
   // Load available presidents on component mount
@@ -66,11 +66,11 @@ function AdminGroupsNewContent() {
         const presidents = await groupsApi.getAvailablePresidents();
         setAvailablePresidents(presidents);
       } catch (error) {
-        console.error('Error loading available presidents:', error);
+        console.error("Error loading available presidents:", error);
         toast({
-          title: 'Error',
-          description: 'No se pudieron cargar los presidentes disponibles',
-          variant: 'destructive',
+          title: "Error",
+          description: "No se pudieron cargar los presidentes disponibles",
+          variant: "destructive",
         });
       } finally {
         setLoadingPresidents(false);
@@ -78,7 +78,7 @@ function AdminGroupsNewContent() {
     };
 
     loadAvailablePresidents();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [toast]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleInputChange = (
     field: string,
@@ -112,9 +112,9 @@ function AdminGroupsNewContent() {
 
     if (!formData.name || !formData.description || !formData.category) {
       toast({
-        title: 'Error',
-        description: 'Por favor completa todos los campos obligatorios',
-        variant: 'destructive',
+        title: "Error",
+        description: "Por favor completa todos los campos obligatorios",
+        variant: "destructive",
       });
       return;
     }
@@ -126,7 +126,7 @@ function AdminGroupsNewContent() {
         ...formData,
         max_members: Number(formData.max_members),
         president_id:
-          formData.president_id && formData.president_id !== 'none'
+          formData.president_id && formData.president_id !== "none"
             ? Number(formData.president_id)
             : undefined,
       };
@@ -134,17 +134,17 @@ function AdminGroupsNewContent() {
       await groupsApi.create(submitData, imageFile || undefined);
 
       toast({
-        title: 'Éxito',
-        description: 'Grupo creado correctamente',
+        title: "Éxito",
+        description: "Grupo creado correctamente",
       });
 
-      router.push('/dashboard/admin/groups');
+      router.push("/dashboard/admin/groups");
     } catch (error) {
-      console.error('Error creating group:', error);
+      console.error("Error creating group:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudo crear el grupo',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudo crear el grupo",
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
@@ -152,65 +152,65 @@ function AdminGroupsNewContent() {
   };
 
   return (
-    <div className='min-h-screen bg-background'>
+    <div className="min-h-screen bg-background">
       <DashboardHeader
-        title='Crear Nuevo Grupo'
-        description='Crear un nuevo grupo estudiantil'
+        title="Crear Nuevo Grupo"
+        description="Crear un nuevo grupo estudiantil"
       />
 
-      <div className='max-w-4xl mx-auto p-6'>
-        <div className='mb-6'>
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="mb-6">
           <Button
-            variant='outline'
-            onClick={() => router.push('/dashboard/admin/groups')}
-            className='mb-4'
+            variant="outline"
+            onClick={() => router.push("/dashboard/admin/groups")}
+            className="mb-4"
           >
-            <ArrowLeft className='w-4 h-4 mr-2' />
+            <ArrowLeft className="w-4 h-4 mr-2" />
             Volver a Grupos
           </Button>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle className='flex items-center gap-2'>
-              <Users className='w-5 h-5' />
+            <CardTitle className="flex items-center gap-2">
+              <Users className="w-5 h-5" />
               Información del Grupo
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className='space-y-6'>
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                <div className='space-y-2'>
-                  <Label htmlFor='name'>Nombre del Grupo *</Label>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Nombre del Grupo *</Label>
                   <Input
-                    id='name'
+                    id="name"
                     value={formData.name}
-                    onChange={e => handleInputChange('name', e.target.value)}
-                    placeholder='Ej: Club de Programación'
+                    onChange={e => handleInputChange("name", e.target.value)}
+                    placeholder="Ej: Club de Programación"
                     required
                   />
                 </div>
 
-                <div className='space-y-2'>
-                  <Label htmlFor='category'>Categoría *</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="category">Categoría *</Label>
                   <Select
                     value={formData.category}
                     onValueChange={value =>
-                      handleInputChange('category', value)
+                      handleInputChange("category", value)
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder='Selecciona una categoría' />
+                      <SelectValue placeholder="Selecciona una categoría" />
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map(category => {
                         const categoryLabels: { [key: string]: string } = {
-                          deportivo: 'Deportivo',
-                          cultural: 'Cultural',
-                          academico: 'Académico',
-                          social: 'Social',
-                          tecnologico: 'Tecnológico',
-                          otro: 'Otro',
+                          deportivo: "Deportivo",
+                          cultural: "Cultural",
+                          academico: "Académico",
+                          social: "Social",
+                          tecnologico: "Tecnológico",
+                          otro: "Otro",
                         };
                         return (
                           <SelectItem key={category} value={category}>
@@ -223,54 +223,54 @@ function AdminGroupsNewContent() {
                 </div>
               </div>
 
-              <div className='space-y-2'>
-                <Label htmlFor='description'>Descripción *</Label>
+              <div className="space-y-2">
+                <Label htmlFor="description">Descripción *</Label>
                 <Textarea
-                  id='description'
+                  id="description"
                   value={formData.description}
                   onChange={e =>
-                    handleInputChange('description', e.target.value)
+                    handleInputChange("description", e.target.value)
                   }
-                  placeholder='Describe el propósito y actividades del grupo...'
+                  placeholder="Describe el propósito y actividades del grupo..."
                   rows={4}
                   required
                 />
               </div>
 
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                <div className='space-y-2'>
-                  <Label htmlFor='max_members'>Máximo de Miembros</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="max_members">Máximo de Miembros</Label>
                   <Input
-                    id='max_members'
-                    type='number'
+                    id="max_members"
+                    type="number"
                     value={formData.max_members}
                     onChange={e =>
-                      handleInputChange('max_members', Number(e.target.value))
+                      handleInputChange("max_members", Number(e.target.value))
                     }
-                    min='1'
-                    max='1000'
+                    min="1"
+                    max="1000"
                   />
                 </div>
 
-                <div className='space-y-2'>
-                  <Label htmlFor='president_id'>Presidente (Opcional)</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="president_id">Presidente (Opcional)</Label>
                   <Select
                     value={formData.president_id}
                     onValueChange={value =>
-                      handleInputChange('president_id', value)
+                      handleInputChange("president_id", value)
                     }
                   >
                     <SelectTrigger>
                       <SelectValue
                         placeholder={
                           loadingPresidents
-                            ? 'Cargando presidentes...'
-                            : 'Selecciona un presidente'
+                            ? "Cargando presidentes..."
+                            : "Selecciona un presidente"
                         }
                       />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value='none'>
+                      <SelectItem value="none">
                         Sin presidente asignado
                       </SelectItem>
                       {availablePresidents.map(president => (
@@ -286,67 +286,67 @@ function AdminGroupsNewContent() {
                 </div>
               </div>
 
-              <div className='space-y-2'>
-                <Label htmlFor='image'>Imagen del Grupo</Label>
-                <div className='space-y-4'>
-                  <div className='flex items-center gap-4'>
+              <div className="space-y-2">
+                <Label htmlFor="image">Imagen del Grupo</Label>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
                     <Input
-                      id='image'
-                      type='file'
-                      accept='image/*'
+                      id="image"
+                      type="file"
+                      accept="image/*"
                       onChange={handleImageChange}
-                      className='flex-1'
+                      className="flex-1"
                     />
                     {imagePreview && (
                       <Button
-                        type='button'
-                        variant='outline'
-                        size='sm'
+                        type="button"
+                        variant="outline"
+                        size="sm"
                         onClick={removeImage}
                       >
-                        <X className='w-4 h-4 mr-1' />
+                        <X className="w-4 h-4 mr-1" />
                         Eliminar
                       </Button>
                     )}
                   </div>
                   {imagePreview && (
-                    <div className='mt-4'>
+                    <div className="mt-4">
                       <Image
                         src={imagePreview}
-                        alt='Preview'
-                        className='w-32 h-32 object-cover rounded-lg border'
+                        alt="Preview"
+                        className="w-32 h-32 object-cover rounded-lg border"
                       />
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className='flex items-center space-x-2'>
+              <div className="flex items-center space-x-2">
                 <input
-                  type='checkbox'
-                  id='is_active'
+                  type="checkbox"
+                  id="is_active"
                   checked={formData.is_active}
                   onChange={e =>
-                    handleInputChange('is_active', e.target.checked)
+                    handleInputChange("is_active", e.target.checked)
                   }
-                  className='rounded'
+                  className="rounded"
                 />
-                <Label htmlFor='is_active'>Grupo activo</Label>
+                <Label htmlFor="is_active">Grupo activo</Label>
               </div>
 
-              <div className='flex gap-4 pt-6'>
+              <div className="flex gap-4 pt-6">
                 <Button
-                  type='submit'
+                  type="submit"
                   disabled={isSubmitting}
-                  className='flex-1'
+                  className="flex-1"
                 >
-                  <Save className='w-4 h-4 mr-2' />
-                  {isSubmitting ? 'Creando...' : 'Crear Grupo'}
+                  <Save className="w-4 h-4 mr-2" />
+                  {isSubmitting ? "Creando..." : "Crear Grupo"}
                 </Button>
                 <Button
-                  type='button'
-                  variant='outline'
-                  onClick={() => router.push('/dashboard/admin/groups')}
+                  type="button"
+                  variant="outline"
+                  onClick={() => router.push("/dashboard/admin/groups")}
                 >
                   Cancelar
                 </Button>

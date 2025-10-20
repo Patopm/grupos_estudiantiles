@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import GroupDetailPage from '@/components/groups/GroupDetailPage';
-import { ProtectedRoute } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
+import { useParams, useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import GroupDetailPage from "@/components/groups/GroupDetailPage";
+import { ProtectedRoute } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import {
   type GroupDetailData,
   type GroupError,
   groupsApi,
-} from '@/lib/api/groups';
+} from "@/lib/api/groups";
 
 export default function StudentGroupDetailPage() {
   return (
-    <ProtectedRoute allowedRoles={['student']}>
+    <ProtectedRoute allowedRoles={["student"]}>
       <StudentGroupDetailContent />
     </ProtectedRoute>
   );
@@ -30,9 +30,9 @@ function StudentGroupDetailContent() {
 
   const groupId = params.id as string;
 
-  const loadGroupData = async () => {
+  const loadGroupData = useCallback(async () => {
     if (!groupId) {
-      setError('ID de grupo inválido');
+      setError("ID de grupo inválido");
       setIsLoading(false);
       return;
     }
@@ -41,31 +41,31 @@ function StudentGroupDetailContent() {
       setIsLoading(true);
       setError(null);
       const data = await groupsApi.getDetailedById(groupId);
-      console.log('data', data);
+      console.log("data", data);
       setGroupData(data);
     } catch (error) {
-      console.error('Error loading group details:', error);
+      console.error("Error loading group details:", error);
       const groupError = error as GroupError;
 
-      if (groupError.type === 'NOT_FOUND') {
-        setError('El grupo no fue encontrado');
-      } else if (groupError.type === 'PERMISSION_DENIED') {
-        setError('No tienes permisos para ver este grupo');
-      } else if (groupError.type === 'NETWORK_ERROR') {
-        setError('Error de conexión. Verifica tu conexión a internet.');
+      if (groupError.type === "NOT_FOUND") {
+        setError("El grupo no fue encontrado");
+      } else if (groupError.type === "PERMISSION_DENIED") {
+        setError("No tienes permisos para ver este grupo");
+      } else if (groupError.type === "NETWORK_ERROR") {
+        setError("Error de conexión. Verifica tu conexión a internet.");
       } else {
         setError(
-          groupError.message || 'Error al cargar los detalles del grupo'
+          groupError.message || "Error al cargar los detalles del grupo"
         );
       }
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [groupId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     loadGroupData();
-  }, [groupId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loadGroupData]);
 
   const handleJoinGroup = async () => {
     if (!groupData) return;
@@ -73,29 +73,29 @@ function StudentGroupDetailContent() {
     try {
       await groupsApi.joinWithErrorHandling(groupData.group_id);
       toast({
-        title: 'Solicitud Enviada',
+        title: "Solicitud Enviada",
         description:
-          'Tu solicitud de ingreso ha sido enviada al presidente del grupo',
+          "Tu solicitud de ingreso ha sido enviada al presidente del grupo",
       });
       // Reload group data to update status
       await loadGroupData();
     } catch (error) {
-      console.error('Error joining group:', error);
+      console.error("Error joining group:", error);
       const groupError = error as GroupError;
 
-      let errorMessage = 'No se pudo enviar la solicitud de ingreso';
-      if (groupError.type === 'GROUP_FULL') {
-        errorMessage = 'El grupo ha alcanzado su capacidad máxima';
-      } else if (groupError.type === 'ALREADY_MEMBER') {
-        errorMessage = 'Ya eres miembro de este grupo';
-      } else if (groupError.type === 'PENDING_REQUEST') {
-        errorMessage = 'Ya tienes una solicitud pendiente para este grupo';
+      let errorMessage = "No se pudo enviar la solicitud de ingreso";
+      if (groupError.type === "GROUP_FULL") {
+        errorMessage = "El grupo ha alcanzado su capacidad máxima";
+      } else if (groupError.type === "ALREADY_MEMBER") {
+        errorMessage = "Ya eres miembro de este grupo";
+      } else if (groupError.type === "PENDING_REQUEST") {
+        errorMessage = "Ya tienes una solicitud pendiente para este grupo";
       }
 
       toast({
-        title: 'Error',
+        title: "Error",
         description: errorMessage,
-        variant: 'destructive',
+        variant: "destructive",
       });
     }
   };
@@ -106,25 +106,25 @@ function StudentGroupDetailContent() {
     try {
       await groupsApi.leaveWithErrorHandling(groupData.group_id);
       toast({
-        title: 'Salida Exitosa',
-        description: 'Has salido del grupo exitosamente',
+        title: "Salida Exitosa",
+        description: "Has salido del grupo exitosamente",
       });
       // Reload group data to update status
       await loadGroupData();
     } catch (error) {
-      console.error('Error leaving group:', error);
+      console.error("Error leaving group:", error);
       const groupError = error as GroupError;
 
       toast({
-        title: 'Error',
-        description: groupError.message || 'No se pudo salir del grupo',
-        variant: 'destructive',
+        title: "Error",
+        description: groupError.message || "No se pudo salir del grupo",
+        variant: "destructive",
       });
     }
   };
 
   const handleBackToGroups = () => {
-    router.push('/dashboard/student/groups');
+    router.push("/dashboard/student/groups");
   };
 
   const handleRetry = () => {

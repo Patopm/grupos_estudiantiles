@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Activity,
@@ -11,30 +11,30 @@ import {
   UserCheck,
   Users,
   Wrench,
-} from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   AdministrativeTools,
   GroupEventPerformance,
   PlatformHealthIndicators,
   SystemEventsAnalytics,
   UserEngagementReports,
-} from '@/components/dashboard';
-import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { AdminStats } from '@/components/dashboard/DashboardStats';
-import { AdminQuickActions } from '@/components/dashboard/QuickActions';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ProtectedRoute, useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
-import { type AdminDashboardData, dashboardApi } from '@/lib/api/dashboard';
+} from "@/components/dashboard";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import { AdminStats } from "@/components/dashboard/DashboardStats";
+import { AdminQuickActions } from "@/components/dashboard/QuickActions";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ProtectedRoute, useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { type AdminDashboardData, dashboardApi } from "@/lib/api/dashboard";
 
 export default function AdminDashboard() {
   return (
-    <ProtectedRoute allowedRoles={['admin']}>
+    <ProtectedRoute allowedRoles={["admin"]}>
       <AdminDashboardContent />
     </ProtectedRoute>
   );
@@ -57,11 +57,11 @@ function AdminDashboardContent() {
         const data = await dashboardApi.getAdminData();
         setDashboardData(data);
       } catch (error) {
-        console.error('Error loading dashboard data:', error);
+        console.error("Error loading dashboard data:", error);
         toast({
-          title: 'Error',
-          description: 'No se pudieron cargar los datos del dashboard',
-          variant: 'destructive',
+          title: "Error",
+          description: "No se pudieron cargar los datos del dashboard",
+          variant: "destructive",
         });
       } finally {
         setIsLoading(false);
@@ -69,20 +69,20 @@ function AdminDashboardContent() {
     };
 
     loadDashboardData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [toast]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (isLoading) {
     return (
-      <div className='min-h-screen bg-background'>
+      <div className="min-h-screen bg-background">
         <DashboardHeader
-          title='Dashboard Administrador'
-          description='Cargando...'
+          title="Dashboard Administrador"
+          description="Cargando..."
         />
-        <div className='max-w-7xl mx-auto p-6'>
-          <div className='animate-pulse space-y-6'>
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
+        <div className="max-w-7xl mx-auto p-6">
+          <div className="animate-pulse space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className='h-32 bg-muted rounded-lg'></div>
+                <div key={i} className="h-32 bg-muted rounded-lg"></div>
               ))}
             </div>
           </div>
@@ -92,13 +92,13 @@ function AdminDashboardContent() {
   }
 
   return (
-    <div className='min-h-screen bg-background'>
+    <div className="min-h-screen bg-background">
       <DashboardHeader
         title={`¡Hola, ${user?.first_name}!`}
-        description='Bienvenido al panel de administración. Aquí podrás gestionar todo el sistema.'
+        description="Bienvenido al panel de administración. Aquí podrás gestionar todo el sistema."
       />
 
-      <div className='max-w-7xl mx-auto p-6 space-y-8'>
+      <div className="max-w-7xl mx-auto p-6 space-y-8">
         {/* Statistics */}
         {dashboardData && (
           <AdminStats
@@ -115,64 +115,64 @@ function AdminDashboardContent() {
 
         {/* Enhanced Analytics Tabs */}
         {dashboardData && (
-          <Tabs defaultValue='analytics' className='w-full'>
-            <TabsList className='grid w-full grid-cols-5'>
+          <Tabs defaultValue="analytics" className="w-full">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger
-                value='analytics'
-                className='flex items-center gap-2'
+                value="analytics"
+                className="flex items-center gap-2"
               >
-                <BarChart3 className='w-4 h-4' />
+                <BarChart3 className="w-4 h-4" />
                 Analytics
               </TabsTrigger>
               <TabsTrigger
-                value='performance'
-                className='flex items-center gap-2'
+                value="performance"
+                className="flex items-center gap-2"
               >
-                <Activity className='w-4 h-4' />
+                <Activity className="w-4 h-4" />
                 Rendimiento
               </TabsTrigger>
               <TabsTrigger
-                value='engagement'
-                className='flex items-center gap-2'
+                value="engagement"
+                className="flex items-center gap-2"
               >
-                <Users className='w-4 h-4' />
+                <Users className="w-4 h-4" />
                 Participación
               </TabsTrigger>
-              <TabsTrigger value='health' className='flex items-center gap-2'>
-                <Shield className='w-4 h-4' />
+              <TabsTrigger value="health" className="flex items-center gap-2">
+                <Shield className="w-4 h-4" />
                 Salud
               </TabsTrigger>
-              <TabsTrigger value='tools' className='flex items-center gap-2'>
-                <Wrench className='w-4 h-4' />
+              <TabsTrigger value="tools" className="flex items-center gap-2">
+                <Wrench className="w-4 h-4" />
                 Herramientas
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value='analytics' className='space-y-6'>
+            <TabsContent value="analytics" className="space-y-6">
               <SystemEventsAnalytics
                 analyticsData={dashboardData.events_analytics}
               />
             </TabsContent>
 
-            <TabsContent value='performance' className='space-y-6'>
+            <TabsContent value="performance" className="space-y-6">
               <GroupEventPerformance
                 performanceData={dashboardData.performance_metrics}
               />
             </TabsContent>
 
-            <TabsContent value='engagement' className='space-y-6'>
+            <TabsContent value="engagement" className="space-y-6">
               <UserEngagementReports
                 engagementData={dashboardData.user_engagement}
               />
             </TabsContent>
 
-            <TabsContent value='health' className='space-y-6'>
+            <TabsContent value="health" className="space-y-6">
               <PlatformHealthIndicators
                 healthData={dashboardData.platform_health}
               />
             </TabsContent>
 
-            <TabsContent value='tools' className='space-y-6'>
+            <TabsContent value="tools" className="space-y-6">
               <AdministrativeTools
                 toolsData={dashboardData.administrative_tools}
               />
@@ -182,65 +182,65 @@ function AdminDashboardContent() {
 
         {/* Recent Groups Section */}
         {dashboardData && dashboardData.recent_groups.length > 0 && (
-          <div className='space-y-4'>
-            <h2 className='text-2xl font-bold'>Grupos Recientes</h2>
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold">Grupos Recientes</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {dashboardData.recent_groups.slice(0, 6).map(group => (
                 <Card
                   key={group.group_id}
-                  className='hover:shadow-md transition-shadow'
+                  className="hover:shadow-md transition-shadow"
                 >
-                  <CardHeader className='pb-3'>
-                    <div className='flex items-start justify-between'>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
                       <div>
-                        <CardTitle className='text-lg'>{group.name}</CardTitle>
-                        <p className='text-sm text-muted-foreground mt-1'>
+                        <CardTitle className="text-lg">{group.name}</CardTitle>
+                        <p className="text-sm text-muted-foreground mt-1">
                           {group.category}
                         </p>
                       </div>
-                      <Badge variant='outline' className='text-xs'>
+                      <Badge variant="outline" className="text-xs">
                         {group.member_count} miembros
                       </Badge>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className='space-y-3'>
-                      <div className='flex items-center justify-between text-sm'>
-                        <div className='flex items-center gap-1'>
-                          <UserCheck className='w-4 h-4 text-muted-foreground' />
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-1">
+                          <UserCheck className="w-4 h-4 text-muted-foreground" />
                           <span>Presidente: {group.president_name}</span>
                         </div>
                       </div>
 
-                      <div className='text-xs text-muted-foreground'>
-                        Creado:{' '}
+                      <div className="text-xs text-muted-foreground">
+                        Creado:{" "}
                         {new Date(group.created_at).toLocaleDateString()}
                       </div>
 
-                      <div className='flex gap-2 pt-2'>
+                      <div className="flex gap-2 pt-2">
                         <Button
-                          size='sm'
-                          variant='outline'
+                          size="sm"
+                          variant="outline"
                           onClick={() =>
                             router.push(
                               `/dashboard/admin/groups/${group.group_id}`
                             )
                           }
-                          className='flex-1'
+                          className="flex-1"
                         >
-                          <Eye className='w-4 h-4 mr-1' />
+                          <Eye className="w-4 h-4 mr-1" />
                           Ver
                         </Button>
                         <Button
-                          size='sm'
+                          size="sm"
                           onClick={() =>
                             router.push(
                               `/dashboard/admin/groups/${group.group_id}/edit`
                             )
                           }
-                          className='flex-1'
+                          className="flex-1"
                         >
-                          <Edit className='w-4 h-4 mr-1' />
+                          <Edit className="w-4 h-4 mr-1" />
                           Editar
                         </Button>
                       </div>
@@ -250,10 +250,11 @@ function AdminDashboardContent() {
               ))}
             </div>
             {dashboardData.recent_groups.length > 6 && (
-              <div className='text-center'>
+              <div className="text-center">
                 <button
-                  onClick={() => router.push('/dashboard/admin/groups')}
-                  className='text-primary hover:underline'
+                  type="button"
+                  onClick={() => router.push("/dashboard/admin/groups")}
+                  className="text-primary hover:underline"
                 >
                   Ver todos los grupos (
                   {dashboardData.system_stats.total_groups})
@@ -265,52 +266,52 @@ function AdminDashboardContent() {
 
         {/* Recent Users Section */}
         {dashboardData && dashboardData.recent_users.length > 0 && (
-          <div className='space-y-4'>
-            <h2 className='text-2xl font-bold'>Usuarios Recientes</h2>
-            <div className='space-y-3'>
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold">Usuarios Recientes</h2>
+            <div className="space-y-3">
               {dashboardData.recent_users.slice(0, 5).map(userItem => (
                 <Card key={userItem.id}>
-                  <CardContent className='p-4'>
-                    <div className='flex items-center justify-between'>
-                      <div className='flex items-center gap-3'>
-                        <div className='w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center'>
-                          <Users className='w-5 h-5 text-primary' />
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Users className="w-5 h-5 text-primary" />
                         </div>
                         <div>
-                          <p className='font-medium'>{userItem.full_name}</p>
-                          <p className='text-sm text-muted-foreground'>
+                          <p className="font-medium">{userItem.full_name}</p>
+                          <p className="text-sm text-muted-foreground">
                             {userItem.email}
                           </p>
                         </div>
                       </div>
-                      <div className='flex items-center gap-2'>
+                      <div className="flex items-center gap-2">
                         <Badge
                           variant={
-                            userItem.role === 'admin'
-                              ? 'destructive'
-                              : userItem.role === 'president'
-                                ? 'default'
-                                : 'secondary'
+                            userItem.role === "admin"
+                              ? "destructive"
+                              : userItem.role === "president"
+                                ? "default"
+                                : "secondary"
                           }
-                          className='text-xs'
+                          className="text-xs"
                         >
-                          {userItem.role === 'admin'
-                            ? 'Admin'
-                            : userItem.role === 'president'
-                              ? 'Presidente'
-                              : 'Estudiante'}
+                          {userItem.role === "admin"
+                            ? "Admin"
+                            : userItem.role === "president"
+                              ? "Presidente"
+                              : "Estudiante"}
                         </Badge>
-                        <div className='text-xs text-muted-foreground'>
+                        <div className="text-xs text-muted-foreground">
                           {new Date(userItem.created_at).toLocaleDateString()}
                         </div>
                         <Button
-                          size='sm'
-                          variant='outline'
+                          size="sm"
+                          variant="outline"
                           onClick={() =>
                             router.push(`/dashboard/admin/users/${userItem.id}`)
                           }
                         >
-                          <Settings className='w-4 h-4 mr-1' />
+                          <Settings className="w-4 h-4 mr-1" />
                           Gestionar
                         </Button>
                       </div>
@@ -319,10 +320,11 @@ function AdminDashboardContent() {
                 </Card>
               ))}
               {dashboardData.recent_users.length > 5 && (
-                <div className='text-center'>
+                <div className="text-center">
                   <button
-                    onClick={() => router.push('/dashboard/admin/users')}
-                    className='text-primary hover:underline'
+                    type="button"
+                    onClick={() => router.push("/dashboard/admin/users")}
+                    className="text-primary hover:underline"
                   >
                     Ver todos los usuarios (
                     {dashboardData.system_stats.total_users})
@@ -334,31 +336,31 @@ function AdminDashboardContent() {
         )}
 
         {/* System Overview */}
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle className='flex items-center gap-2'>
-                <Calendar className='w-5 h-5' />
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="w-5 h-5" />
                 Actividad del Sistema
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className='space-y-4'>
-                <div className='flex justify-between items-center'>
-                  <span className='text-sm'>Eventos próximos</span>
-                  <Badge variant='secondary'>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Eventos próximos</span>
+                  <Badge variant="secondary">
                     {dashboardData?.system_stats.upcoming_events}
                   </Badge>
                 </div>
-                <div className='flex justify-between items-center'>
-                  <span className='text-sm'>Grupos activos</span>
-                  <Badge variant='default'>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Grupos activos</span>
+                  <Badge variant="default">
                     {dashboardData?.system_stats.active_groups}
                   </Badge>
                 </div>
-                <div className='flex justify-between items-center'>
-                  <span className='text-sm'>Total membresías</span>
-                  <Badge variant='outline'>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Total membresías</span>
+                  <Badge variant="outline">
                     {dashboardData?.activity_summary.total_memberships}
                   </Badge>
                 </div>
@@ -368,35 +370,35 @@ function AdminDashboardContent() {
 
           <Card>
             <CardHeader>
-              <CardTitle className='flex items-center gap-2'>
-                <Settings className='w-5 h-5' />
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="w-5 h-5" />
                 Acciones Rápidas
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className='space-y-3'>
+              <div className="space-y-3">
                 <Button
-                  className='w-full justify-start'
-                  variant='outline'
-                  onClick={() => router.push('/dashboard/admin/groups/new')}
+                  className="w-full justify-start"
+                  variant="outline"
+                  onClick={() => router.push("/dashboard/admin/groups/new")}
                 >
-                  <UserCheck className='w-4 h-4 mr-2' />
+                  <UserCheck className="w-4 h-4 mr-2" />
                   Crear Nuevo Grupo
                 </Button>
                 <Button
-                  className='w-full justify-start'
-                  variant='outline'
-                  onClick={() => router.push('/dashboard/admin/users')}
+                  className="w-full justify-start"
+                  variant="outline"
+                  onClick={() => router.push("/dashboard/admin/users")}
                 >
-                  <Users className='w-4 h-4 mr-2' />
+                  <Users className="w-4 h-4 mr-2" />
                   Gestionar Usuarios
                 </Button>
                 <Button
-                  className='w-full justify-start'
-                  variant='outline'
-                  onClick={() => router.push('/dashboard/admin/reports')}
+                  className="w-full justify-start"
+                  variant="outline"
+                  onClick={() => router.push("/dashboard/admin/reports")}
                 >
-                  <Calendar className='w-4 h-4 mr-2' />
+                  <Calendar className="w-4 h-4 mr-2" />
                   Ver Reportes
                 </Button>
               </div>
@@ -405,14 +407,14 @@ function AdminDashboardContent() {
         </div>
 
         {/* User Information */}
-        <div className='p-6 bg-primary/5 dark:bg-primary/10 rounded-lg'>
-          <h2 className='text-xl font-semibold mb-4'>Información de Usuario</h2>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4 text-sm'>
+        <div className="p-6 bg-primary/5 dark:bg-primary/10 rounded-lg">
+          <h2 className="text-xl font-semibold mb-4">Información de Usuario</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
               <strong>Email:</strong> {user?.email}
             </div>
             <div>
-              <strong>Matrícula:</strong> {user?.student_id || 'N/A'}
+              <strong>Matrícula:</strong> {user?.student_id || "N/A"}
             </div>
             <div>
               <strong>Teléfono:</strong> {user?.phone}

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { formatDistanceToNow } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { formatDistanceToNow } from "date-fns";
+import { es } from "date-fns/locale";
 import {
   AlertCircle,
   Calendar,
@@ -11,10 +11,10 @@ import {
   User,
   Users,
   XCircle,
-} from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface MembershipStatusCardProps {
   membership: {
@@ -22,8 +22,8 @@ interface MembershipStatusCardProps {
     user_id: number;
     full_name: string;
     email: string;
-    role: 'member' | 'president';
-    status: 'pending' | 'active' | 'inactive';
+    role: "member" | "president";
+    status: "pending" | "active" | "inactive";
     joined_at: string;
     group_name: string;
     group_id: string;
@@ -39,67 +39,67 @@ export default function MembershipStatusCard({
 }: MembershipStatusCardProps) {
   const getStatusInfo = (status: string) => {
     switch (status) {
-      case 'pending':
+      case "pending":
         return {
-          label: 'Pendiente',
+          label: "Pendiente",
           color:
-            'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+            "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
           icon: Clock,
           description:
-            'Tu solicitud está siendo revisada por el presidente del grupo',
-          bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
+            "Tu solicitud está siendo revisada por el presidente del grupo",
+          bgColor: "bg-yellow-50 dark:bg-yellow-900/20",
         };
-      case 'active':
+      case "active":
         return {
-          label: 'Activo',
+          label: "Activo",
           color:
-            'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+            "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
           icon: CheckCircle,
-          description: 'Eres miembro activo de este grupo',
-          bgColor: 'bg-green-50 dark:bg-green-900/20',
+          description: "Eres miembro activo de este grupo",
+          bgColor: "bg-green-50 dark:bg-green-900/20",
         };
-      case 'inactive':
+      case "inactive":
         return {
-          label: 'Inactivo',
+          label: "Inactivo",
           color:
-            'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+            "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
           icon: XCircle,
-          description: 'Ya no eres miembro de este grupo',
-          bgColor: 'bg-gray-50 dark:bg-gray-900/20',
+          description: "Ya no eres miembro de este grupo",
+          bgColor: "bg-gray-50 dark:bg-gray-900/20",
         };
       default:
         return {
-          label: 'Desconocido',
+          label: "Desconocido",
           color:
-            'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+            "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
           icon: AlertCircle,
-          description: 'Estado de membresía desconocido',
-          bgColor: 'bg-gray-50 dark:bg-gray-900/20',
+          description: "Estado de membresía desconocido",
+          bgColor: "bg-gray-50 dark:bg-gray-900/20",
         };
     }
   };
 
   const getRoleInfo = (role: string) => {
     switch (role) {
-      case 'president':
+      case "president":
         return {
-          label: 'Presidente',
+          label: "Presidente",
           color:
-            'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+            "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
           icon: Users,
         };
-      case 'member':
+      case "member":
         return {
-          label: 'Miembro',
+          label: "Miembro",
           color:
-            'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+            "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
           icon: User,
         };
       default:
         return {
-          label: 'Miembro',
+          label: "Miembro",
           color:
-            'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+            "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
           icon: User,
         };
     }
@@ -120,57 +120,57 @@ export default function MembershipStatusCard({
     <Card
       className={`transition-all duration-200 hover:shadow-md ${statusInfo.bgColor}`}
     >
-      <CardContent className='p-4'>
-        <div className='flex items-center justify-between'>
-          <div className='flex items-center gap-4'>
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
             <div
               className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                membership.status === 'pending'
-                  ? 'bg-yellow-100 dark:bg-yellow-900'
-                  : membership.status === 'active'
-                    ? 'bg-green-100 dark:bg-green-900'
-                    : 'bg-gray-100 dark:bg-gray-900'
+                membership.status === "pending"
+                  ? "bg-yellow-100 dark:bg-yellow-900"
+                  : membership.status === "active"
+                    ? "bg-green-100 dark:bg-green-900"
+                    : "bg-gray-100 dark:bg-gray-900"
               }`}
             >
               <StatusIcon
                 className={`w-6 h-6 ${
-                  membership.status === 'pending'
-                    ? 'text-yellow-600'
-                    : membership.status === 'active'
-                      ? 'text-green-600'
-                      : 'text-gray-600'
+                  membership.status === "pending"
+                    ? "text-yellow-600"
+                    : membership.status === "active"
+                      ? "text-green-600"
+                      : "text-gray-600"
                 }`}
               />
             </div>
             <div>
-              <h4 className='font-medium'>{membership.group_name}</h4>
-              <div className='flex items-center gap-4 text-sm text-muted-foreground'>
-                <div className='flex items-center gap-1'>
-                  <Calendar className='w-4 h-4' />
+              <h4 className="font-medium">{membership.group_name}</h4>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Calendar className="w-4 h-4" />
                   {formatDistanceToNow(new Date(membership.joined_at), {
                     addSuffix: true,
                     locale: es,
                   })}
                 </div>
               </div>
-              <p className='text-xs text-muted-foreground mt-1'>
+              <p className="text-xs text-muted-foreground mt-1">
                 {statusInfo.description}
               </p>
             </div>
           </div>
 
-          <div className='flex items-center gap-3'>
+          <div className="flex items-center gap-3">
             <Badge className={`text-xs ${statusInfo.color}`}>
-              <StatusIcon className='w-3 h-3 mr-1' />
+              <StatusIcon className="w-3 h-3 mr-1" />
               {statusInfo.label}
             </Badge>
-            <Badge variant='outline' className='text-xs'>
-              <RoleIcon className='w-3 h-3 mr-1' />
+            <Badge variant="outline" className="text-xs">
+              <RoleIcon className="w-3 h-3 mr-1" />
               {roleInfo.label}
             </Badge>
-            {showViewButton && membership.status === 'active' && (
-              <Button size='sm' variant='outline' onClick={handleViewGroup}>
-                <Eye className='w-4 h-4 mr-1' />
+            {showViewButton && membership.status === "active" && (
+              <Button size="sm" variant="outline" onClick={handleViewGroup}>
+                <Eye className="w-4 h-4 mr-1" />
                 Ver Grupo
               </Button>
             )}

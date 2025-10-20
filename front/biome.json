@@ -48,7 +48,29 @@
     "enabled": true,
     "rules": {
       "recommended": true,
-      "correctness": { "noUnusedImports": "error" }
+      "correctness": {
+        "noUnusedImports": "error",
+        "useExhaustiveDependencies": "warn",
+        "noInvalidUseBeforeDeclaration": "warn"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "warn",
+        "noAssignInExpressions": "warn",
+        "noImplicitAnyLet": "warn",
+        "noUnknownAtRules": "off"
+      },
+      "a11y": {
+        "noLabelWithoutControl": "warn",
+        "useButtonType": "error",
+        "useSemanticElements": "warn",
+        "useAriaPropsSupportedByRole": "warn",
+        "useKeyWithClickEvents": "warn",
+        "noStaticElementInteractions": "warn",
+        "useFocusableInteractive": "warn"
+      },
+      "complexity": {
+        "noStaticOnlyClass": "warn"
+      }
     },
     "domains": {
       "next": "recommended",
@@ -58,13 +80,11 @@
   },
   "javascript": {
     "formatter": {
-      "jsxQuoteStyle": "single",
       "quoteProperties": "asNeeded",
       "trailingCommas": "es5",
       "semicolons": "always",
       "arrowParentheses": "asNeeded",
       "bracketSameLine": false,
-      "quoteStyle": "single",
       "attributePosition": "auto",
       "bracketSpacing": true
     }

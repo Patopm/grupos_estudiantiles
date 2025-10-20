@@ -1,5 +1,5 @@
-import { apiClient } from './client';
-import type { Group } from './groups';
+import { apiClient } from "./client";
+import type { Group } from "./groups";
 
 // Simplified event interface for dashboard data
 export interface DashboardEvent {
@@ -7,15 +7,15 @@ export interface DashboardEvent {
   title: string;
   description: string;
   event_type:
-    | 'academic'
-    | 'social'
-    | 'sports'
-    | 'cultural'
-    | 'meeting'
-    | 'workshop'
-    | 'conference'
-    | 'other';
-  status: 'draft' | 'published' | 'cancelled' | 'completed';
+    | "academic"
+    | "social"
+    | "sports"
+    | "cultural"
+    | "meeting"
+    | "workshop"
+    | "conference"
+    | "other";
+  status: "draft" | "published" | "cancelled" | "completed";
   start_datetime: string;
   end_datetime: string;
   location: string;
@@ -50,11 +50,11 @@ export interface StudentDashboardData {
   recent_activity: Array<{
     id: string;
     type:
-      | 'group_joined'
-      | 'group_left'
-      | 'event_registered'
-      | 'event_attended'
-      | 'event_cancelled';
+      | "group_joined"
+      | "group_left"
+      | "event_registered"
+      | "event_attended"
+      | "event_cancelled";
     title: string;
     description: string;
     timestamp: string;
@@ -374,7 +374,7 @@ export interface AdminDashboardData {
     };
     alerts: Array<{
       id: string;
-      type: 'warning' | 'error' | 'info';
+      type: "warning" | "error" | "info";
       message: string;
       timestamp: string;
       resolved: boolean;
@@ -431,18 +431,18 @@ export interface AdminDashboardData {
 export const dashboardApi = {
   // Get student dashboard data
   getStudentData: async (): Promise<StudentDashboardData> => {
-    return await apiClient.get<StudentDashboardData>('/api/dashboard/student/');
+    return await apiClient.get<StudentDashboardData>("/api/dashboard/student/");
   },
 
   // Get president dashboard data
   getPresidentData: async (): Promise<PresidentDashboardData> => {
     return await apiClient.get<PresidentDashboardData>(
-      '/api/dashboard/president/'
+      "/api/dashboard/president/"
     );
   },
 
   // Get admin dashboard data
   getAdminData: async (): Promise<AdminDashboardData> => {
-    return await apiClient.get<AdminDashboardData>('/api/dashboard/admin/');
+    return await apiClient.get<AdminDashboardData>("/api/dashboard/admin/");
   },
 };

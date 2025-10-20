@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { CheckCircle, Loader2, Phone } from 'lucide-react';
-import type React from 'react';
-import { useState } from 'react';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useAuth } from '@/contexts/AuthContext';
+import { CheckCircle, Loader2, Phone } from "lucide-react";
+import type React from "react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface PhoneVerificationRequestProps {
   onSuccess?: (phoneNumber: string) => void;
@@ -25,14 +25,14 @@ export default function PhoneVerificationRequest({
 }: PhoneVerificationRequestProps) {
   const { user, requestPhoneVerification } = useAuth();
   const [phoneNumber, setPhoneNumber] = useState(
-    defaultPhone || user?.phone || ''
+    defaultPhone || user?.phone || ""
   );
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   const formatPhoneNumber = (value: string) => {
     // Remove all non-digit characters
-    const digits = value.replace(/\D/g, '');
+    const digits = value.replace(/\D/g, "");
 
     // Limit to 15 digits (international standard)
     const limited = digits.slice(0, 15);
@@ -58,14 +58,14 @@ export default function PhoneVerificationRequest({
     e.preventDefault();
 
     if (!phoneNumber.trim()) {
-      toast.error('Por favor ingresa un número de teléfono válido');
+      toast.error("Por favor ingresa un número de teléfono válido");
       return;
     }
 
     // Validate phone number length (at least 9 digits)
-    const digits = phoneNumber.replace(/\D/g, '');
+    const digits = phoneNumber.replace(/\D/g, "");
     if (digits.length < 9) {
-      toast.error('El número de teléfono debe tener al menos 9 dígitos');
+      toast.error("El número de teléfono debe tener al menos 9 dígitos");
       return;
     }
 
@@ -75,14 +75,14 @@ export default function PhoneVerificationRequest({
         showPhoneInput ? { phone_number: phoneNumber } : {}
       );
       setIsSuccess(true);
-      toast.success('Código de verificación enviado por SMS');
+      toast.success("Código de verificación enviado por SMS");
       onSuccess?.(phoneNumber);
     } catch (error) {
-      console.error('Phone verification request error:', error);
+      console.error("Phone verification request error:", error);
       const errorMessage =
         error instanceof Error
           ? error.message
-          : 'Error enviando código de verificación';
+          : "Error enviando código de verificación";
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -91,25 +91,25 @@ export default function PhoneVerificationRequest({
 
   if (isSuccess) {
     return (
-      <Card className='max-w-md mx-auto p-6'>
-        <div className='text-center space-y-4'>
-          <div className='flex justify-center'>
-            <CheckCircle className='h-12 w-12 text-green-500' />
+      <Card className="max-w-md mx-auto p-6">
+        <div className="text-center space-y-4">
+          <div className="flex justify-center">
+            <CheckCircle className="h-12 w-12 text-green-500" />
           </div>
           <div>
-            <h3 className='text-lg font-semibold text-foreground'>
+            <h3 className="text-lg font-semibold text-foreground">
               SMS Enviado
             </h3>
-            <p className='text-sm text-muted-foreground mt-2'>
-              Hemos enviado un código de verificación de 6 dígitos a{' '}
-              <span className='font-medium'>{phoneNumber}</span>
+            <p className="text-sm text-muted-foreground mt-2">
+              Hemos enviado un código de verificación de 6 dígitos a{" "}
+              <span className="font-medium">{phoneNumber}</span>
             </p>
-            <p className='text-sm text-muted-foreground mt-2'>
+            <p className="text-sm text-muted-foreground mt-2">
               El código expira en 10 minutos.
             </p>
           </div>
           {onCancel && (
-            <Button onClick={onCancel} variant='outline' className='w-full'>
+            <Button onClick={onCancel} variant="outline" className="w-full">
               Continuar
             </Button>
           )}
@@ -119,78 +119,78 @@ export default function PhoneVerificationRequest({
   }
 
   return (
-    <Card className='max-w-md mx-auto p-6'>
-      <form onSubmit={handleSubmit} className='space-y-6'>
-        <div className='text-center space-y-2'>
-          <div className='flex justify-center'>
-            <Phone className='h-8 w-8 text-primary' />
+    <Card className="max-w-md mx-auto p-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="text-center space-y-2">
+          <div className="flex justify-center">
+            <Phone className="h-8 w-8 text-primary" />
           </div>
-          <h2 className='text-xl font-semibold text-foreground'>
+          <h2 className="text-xl font-semibold text-foreground">
             Verificar Teléfono
           </h2>
-          <p className='text-sm text-muted-foreground'>
+          <p className="text-sm text-muted-foreground">
             Te enviaremos un código de verificación por SMS
           </p>
         </div>
 
         {showPhoneInput && (
-          <div className='space-y-2'>
-            <Label htmlFor='phone'>Número de Teléfono</Label>
+          <div className="space-y-2">
+            <Label htmlFor="phone">Número de Teléfono</Label>
             <Input
-              id='phone'
-              type='tel'
+              id="phone"
+              type="tel"
               value={phoneNumber}
               onChange={handlePhoneChange}
-              placeholder='555-123-4567'
+              placeholder="555-123-4567"
               required
               disabled={isLoading}
-              className='w-full'
+              className="w-full"
             />
-            <p className='text-xs text-muted-foreground'>
+            <p className="text-xs text-muted-foreground">
               Ingresa tu número de teléfono móvil (9-15 dígitos)
             </p>
           </div>
         )}
 
         {!showPhoneInput && (
-          <div className='text-center p-4 bg-muted rounded-lg'>
-            <p className='text-sm text-muted-foreground'>
+          <div className="text-center p-4 bg-muted rounded-lg">
+            <p className="text-sm text-muted-foreground">
               Se enviará el código SMS a:
             </p>
-            <p className='font-medium text-foreground'>{phoneNumber}</p>
+            <p className="font-medium text-foreground">{phoneNumber}</p>
           </div>
         )}
 
-        <div className='flex gap-3'>
+        <div className="flex gap-3">
           {onCancel && (
             <Button
-              type='button'
+              type="button"
               onClick={onCancel}
-              variant='outline'
+              variant="outline"
               disabled={isLoading}
-              className='flex-1'
+              className="flex-1"
             >
               Cancelar
             </Button>
           )}
           <Button
-            type='submit'
+            type="submit"
             disabled={isLoading || !phoneNumber.trim()}
-            className='flex-1'
+            className="flex-1"
           >
             {isLoading ? (
               <>
-                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Enviando...
               </>
             ) : (
-              'Enviar Código'
+              "Enviar Código"
             )}
           </Button>
         </div>
 
-        <div className='text-center'>
-          <p className='text-xs text-muted-foreground'>
+        <div className="text-center">
+          <p className="text-xs text-muted-foreground">
             Límite: 3 SMS por hora por número de teléfono
           </p>
         </div>

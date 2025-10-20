@@ -16,29 +16,29 @@ export interface AuthError {
 }
 
 export type AuthErrorType =
-  | 'network'
-  | 'authentication'
-  | 'validation'
-  | 'authorization'
-  | 'server'
-  | 'rate_limit'
-  | 'mfa_required'
-  | 'mfa_invalid'
-  | 'verification_required'
-  | 'verification_invalid'
-  | 'token_expired'
-  | 'session_timeout'
-  | 'security_violation';
+  | "network"
+  | "authentication"
+  | "validation"
+  | "authorization"
+  | "server"
+  | "rate_limit"
+  | "mfa_required"
+  | "mfa_invalid"
+  | "verification_required"
+  | "verification_invalid"
+  | "token_expired"
+  | "session_timeout"
+  | "security_violation";
 
 export interface NetworkError extends AuthError {
-  type: 'network';
+  type: "network";
   retryable: true;
   retryCount?: number;
   maxRetries?: number;
 }
 
 export interface RateLimitError extends AuthError {
-  type: 'rate_limit';
+  type: "rate_limit";
   retryable: true;
   retryAfter: number;
   remainingAttempts?: number;
@@ -46,36 +46,36 @@ export interface RateLimitError extends AuthError {
 }
 
 export interface MFAError extends AuthError {
-  type: 'mfa_required' | 'mfa_invalid';
-  mfaType?: 'totp' | 'backup_code' | 'sms';
+  type: "mfa_required" | "mfa_invalid";
+  mfaType?: "totp" | "backup_code" | "sms";
   attemptsRemaining?: number;
   backupCodesRemaining?: number;
 }
 
 export interface VerificationError extends AuthError {
-  type: 'verification_required' | 'verification_invalid';
-  verificationType?: 'email' | 'phone';
+  type: "verification_required" | "verification_invalid";
+  verificationType?: "email" | "phone";
   canResend?: boolean;
   resendAvailableAt?: Date;
 }
 
 export interface ValidationError extends AuthError {
-  type: 'validation';
+  type: "validation";
   fieldErrors?: Record<string, string[]>;
 }
 
 export interface SecurityError extends AuthError {
-  type: 'security_violation';
+  type: "security_violation";
   violationType?:
-    | 'suspicious_activity'
-    | 'multiple_failures'
-    | 'location_change';
-  securityLevel?: 'low' | 'medium' | 'high' | 'critical';
+    | "suspicious_activity"
+    | "multiple_failures"
+    | "location_change";
+  securityLevel?: "low" | "medium" | "high" | "critical";
   recommendedActions?: string[];
 }
 
 // Error severity levels
-export type ErrorSeverity = 'info' | 'warning' | 'error' | 'critical';
+export type ErrorSeverity = "info" | "warning" | "error" | "critical";
 
 export interface ErrorContext {
   userAgent?: string;
@@ -97,7 +97,7 @@ export interface RetryConfig {
 }
 
 export interface ErrorRecoveryAction {
-  type: 'retry' | 'redirect' | 'refresh' | 'logout' | 'contact_support';
+  type: "retry" | "redirect" | "refresh" | "logout" | "contact_support";
   label: string;
   action: () => void | Promise<void>;
   primary?: boolean;

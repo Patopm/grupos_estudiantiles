@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useParams, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
-import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { EventDetailContent } from '@/components/events';
-import { ProtectedRoute } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
-import { type Event, type EventAttendee, eventsApi } from '@/lib/api/events';
+import { useParams, useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import { EventDetailContent } from "@/components/events";
+import { ProtectedRoute } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { type Event, type EventAttendee, eventsApi } from "@/lib/api/events";
 
 export default function EventDetailPage() {
   return (
-    <ProtectedRoute allowedRoles={['student', 'president', 'admin']}>
+    <ProtectedRoute allowedRoles={["student", "president", "admin"]}>
       <EventDetailPageContent />
     </ProtectedRoute>
   );
@@ -39,13 +39,13 @@ function EventDetailPageContent() {
       const eventData = await eventsApi.getById(eventId);
       setEvent(eventData);
     } catch (error) {
-      console.error('Error loading event details:', error);
+      console.error("Error loading event details:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudo cargar la información del evento',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudo cargar la información del evento",
+        variant: "destructive",
       });
-      router.push('/dashboard');
+      router.push("/dashboard");
     } finally {
       setIsLoading(false);
     }
@@ -59,16 +59,16 @@ function EventDetailPageContent() {
       const attendeesData = await eventsApi.getAttendees(eventId);
       setAttendees(attendeesData);
     } catch (error) {
-      console.error('Error loading attendees:', error);
+      console.error("Error loading attendees:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudieron cargar los asistentes del evento',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudieron cargar los asistentes del evento",
+        variant: "destructive",
       });
     } finally {
       setIsLoadingAttendees(false);
     }
-  }, [eventId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [eventId, toast]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadRelatedEvents = useCallback(async () => {
     if (!event) return;
@@ -89,7 +89,7 @@ function EventDetailPageContent() {
         setRelatedEvents(allRelated);
       }
     } catch (error) {
-      console.error('Error loading related events:', error);
+      console.error("Error loading related events:", error);
       // Don't show error toast for related events as it's not critical
     } finally {
       setIsLoadingRelated(false);
@@ -113,17 +113,17 @@ function EventDetailPageContent() {
     try {
       const response = await eventsApi.register(event.event_id, notes);
       toast({
-        title: 'Registro Exitoso',
+        title: "Registro Exitoso",
         description:
-          response.message || 'Te has registrado correctamente al evento',
+          response.message || "Te has registrado correctamente al evento",
       });
       // Refresh event data to update registration status
       loadEventDetails();
     } catch (error: unknown) {
-      console.error('Error registering for event:', error);
+      console.error("Error registering for event:", error);
 
       // Check if this is a permission error that requires a request
-      if (error && typeof error === 'object' && 'response' in error) {
+      if (error && typeof error === "object" && "response" in error) {
         const apiError = error as {
           response?: {
             status?: number;
@@ -141,9 +141,9 @@ function EventDetailPageContent() {
       }
 
       toast({
-        title: 'Error',
-        description: 'No se pudo registrar al evento',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudo registrar al evento",
+        variant: "destructive",
       });
     }
   };
@@ -154,18 +154,18 @@ function EventDetailPageContent() {
     try {
       const response = await eventsApi.requestAttendance(event.event_id, notes);
       toast({
-        title: 'Solicitud Enviada',
+        title: "Solicitud Enviada",
         description: response.message,
       });
       setShowRequestDialog(false);
       // Refresh event data to update status
       loadEventDetails();
     } catch (error: unknown) {
-      console.error('Error requesting attendance:', error);
+      console.error("Error requesting attendance:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudo enviar la solicitud',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudo enviar la solicitud",
+        variant: "destructive",
       });
     }
   };
@@ -176,17 +176,17 @@ function EventDetailPageContent() {
     try {
       await eventsApi.unregister(event.event_id);
       toast({
-        title: 'Cancelación Exitosa',
-        description: 'Te has desregistrado del evento',
+        title: "Cancelación Exitosa",
+        description: "Te has desregistrado del evento",
       });
       // Refresh event data to update registration status
       loadEventDetails();
     } catch (error) {
-      console.error('Error unregistering from event:', error);
+      console.error("Error unregistering from event:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudo cancelar el registro',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudo cancelar el registro",
+        variant: "destructive",
       });
     }
   };
@@ -197,19 +197,19 @@ function EventDetailPageContent() {
 
   if (isLoading) {
     return (
-      <div className='min-h-screen bg-background'>
+      <div className="min-h-screen bg-background">
         <DashboardHeader
-          title='Cargando Evento'
-          description='Obteniendo información del evento...'
+          title="Cargando Evento"
+          description="Obteniendo información del evento..."
         />
-        <div className='max-w-7xl mx-auto p-6'>
-          <div className='animate-pulse space-y-6'>
-            <div className='h-8 bg-muted rounded w-1/3'></div>
-            <div className='h-64 bg-muted rounded'></div>
-            <div className='space-y-4'>
-              <div className='h-4 bg-muted rounded w-3/4'></div>
-              <div className='h-4 bg-muted rounded w-1/2'></div>
-              <div className='h-4 bg-muted rounded w-2/3'></div>
+        <div className="max-w-7xl mx-auto p-6">
+          <div className="animate-pulse space-y-6">
+            <div className="h-8 bg-muted rounded w-1/3"></div>
+            <div className="h-64 bg-muted rounded"></div>
+            <div className="space-y-4">
+              <div className="h-4 bg-muted rounded w-3/4"></div>
+              <div className="h-4 bg-muted rounded w-1/2"></div>
+              <div className="h-4 bg-muted rounded w-2/3"></div>
             </div>
           </div>
         </div>
@@ -219,20 +219,21 @@ function EventDetailPageContent() {
 
   if (!event) {
     return (
-      <div className='min-h-screen bg-background'>
+      <div className="min-h-screen bg-background">
         <DashboardHeader
-          title='Evento No Encontrado'
-          description='El evento solicitado no existe o no tienes acceso a él'
+          title="Evento No Encontrado"
+          description="El evento solicitado no existe o no tienes acceso a él"
         />
-        <div className='max-w-7xl mx-auto p-6'>
-          <div className='text-center py-12'>
-            <h2 className='text-2xl font-bold mb-4'>Evento no encontrado</h2>
-            <p className='text-muted-foreground mb-6'>
+        <div className="max-w-7xl mx-auto p-6">
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-bold mb-4">Evento no encontrado</h2>
+            <p className="text-muted-foreground mb-6">
               El evento que buscas no existe o no tienes permisos para verlo.
             </p>
             <button
-              onClick={() => router.push('/dashboard')}
-              className='px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90'
+              type="button"
+              onClick={() => router.push("/dashboard")}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
             >
               Volver al Dashboard
             </button>
@@ -243,13 +244,13 @@ function EventDetailPageContent() {
   }
 
   return (
-    <div className='min-h-screen bg-background'>
+    <div className="min-h-screen bg-background">
       <DashboardHeader
         title={event.title}
         description={`Evento ${event.event_type} - ${event.location}`}
       />
 
-      <div className='max-w-7xl mx-auto p-6'>
+      <div className="max-w-7xl mx-auto p-6">
         <EventDetailContent
           event={event}
           attendees={attendees}

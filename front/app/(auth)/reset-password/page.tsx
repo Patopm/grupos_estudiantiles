@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useEffect, useState } from 'react';
-import AuthButton from '@/components/auth/AuthButton';
-import AuthCard from '@/components/auth/AuthCard';
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import AuthButton from "@/components/auth/AuthButton";
+import AuthCard from "@/components/auth/AuthCard";
 import {
   AuthErrorMessage,
   AuthSuccessMessage,
-} from '@/components/auth/AuthFormError';
-import PasswordStrength from '@/components/auth/PasswordStrength';
-import FormInput from '@/components/forms/FormInput';
-import { useAuth } from '@/contexts/AuthContext';
+} from "@/components/auth/AuthFormError";
+import PasswordStrength from "@/components/auth/PasswordStrength";
+import FormInput from "@/components/forms/FormInput";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   type ResetPasswordFormData,
   validateResetPassword,
-} from '@/lib/validations/auth';
+} from "@/lib/validations/auth";
 
 function ResetPasswordForm() {
   const { resetPassword } = useAuth();
@@ -22,20 +22,20 @@ function ResetPasswordForm() {
   const searchParams = useSearchParams();
 
   const [formData, setFormData] = useState<ResetPasswordFormData>({
-    password: '',
-    confirmPassword: '',
+    password: "",
+    confirmPassword: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSuccess, setIsSuccess] = useState(false);
-  const [token, setToken] = useState<string>('');
-  const [uid, setUid] = useState<string>('');
+  const [token, setToken] = useState<string>("");
+  const [uid, setUid] = useState<string>("");
   const [isValidLink, setIsValidLink] = useState(true);
 
   // Extract token and uid from URL parameters
   useEffect(() => {
-    const tokenParam = searchParams.get('token');
-    const uidParam = searchParams.get('uid');
+    const tokenParam = searchParams.get("token");
+    const uidParam = searchParams.get("uid");
 
     if (!tokenParam || !uidParam) {
       setIsValidLink(false);
@@ -51,7 +51,7 @@ function ResetPasswordForm() {
 
     if (!isValidLink || !token || !uid) {
       setErrors({
-        general: 'El enlace de restablecimiento es inválido o ha expirado.',
+        general: "El enlace de restablecimiento es inválido o ha expirado.",
       });
       return;
     }
@@ -72,11 +72,11 @@ function ResetPasswordForm() {
       await resetPassword(token, uid, validationResult.data);
       setIsSuccess(true);
     } catch (error) {
-      console.error('Password reset error:', error);
+      console.error("Password reset error:", error);
       const errorMessage =
         error instanceof Error
           ? error.message
-          : 'Hubo un problema al restablecer tu contraseña. Por favor intenta de nuevo.';
+          : "Hubo un problema al restablecer tu contraseña. Por favor intenta de nuevo.";
 
       setErrors({
         general: errorMessage,
@@ -97,7 +97,7 @@ function ResetPasswordForm() {
     if (errors[name]) {
       setErrors({
         ...errors,
-        [name]: '',
+        [name]: "",
       });
     }
   };
@@ -119,37 +119,37 @@ function ResetPasswordForm() {
   };
 
   const handleLoginRedirect = () => {
-    router.push('/login?message=password-reset-success');
+    router.push("/login?message=password-reset-success");
   };
 
   if (!isValidLink) {
     return (
       <AuthCard
-        title='Enlace inválido'
-        subtitle='El enlace de restablecimiento no es válido'
-        footerText='¿Necesitas ayuda?'
-        footerLinkText='Solicitar nuevo enlace'
-        footerLinkHref='/forgot-password'
+        title="Enlace inválido"
+        subtitle="El enlace de restablecimiento no es válido"
+        footerText="¿Necesitas ayuda?"
+        footerLinkText="Solicitar nuevo enlace"
+        footerLinkHref="/forgot-password"
       >
-        <div className='space-y-6'>
-          <AuthErrorMessage message='El enlace de restablecimiento de contraseña es inválido o ha expirado. Por favor solicita un nuevo enlace.' />
+        <div className="space-y-6">
+          <AuthErrorMessage message="El enlace de restablecimiento de contraseña es inválido o ha expirado. Por favor solicita un nuevo enlace." />
 
-          <div className='text-center space-y-4'>
+          <div className="text-center space-y-4">
             <AuthButton
               isLoading={false}
-              loadingText=''
-              type='button'
-              onClick={() => router.push('/forgot-password')}
+              loadingText=""
+              type="button"
+              onClick={() => router.push("/forgot-password")}
             >
               Solicitar nuevo enlace
             </AuthButton>
 
             <AuthButton
               isLoading={false}
-              loadingText=''
-              type='button'
-              onClick={() => router.push('/login')}
-              variant='outline'
+              loadingText=""
+              type="button"
+              onClick={() => router.push("/login")}
+              variant="outline"
             >
               Volver al inicio de sesión
             </AuthButton>
@@ -162,20 +162,20 @@ function ResetPasswordForm() {
   if (isSuccess) {
     return (
       <AuthCard
-        title='¡Contraseña restablecida!'
-        subtitle='Tu contraseña ha sido actualizada exitosamente'
-        footerText='¿Listo para continuar?'
-        footerLinkText='Iniciar sesión'
-        footerLinkHref='/login'
+        title="¡Contraseña restablecida!"
+        subtitle="Tu contraseña ha sido actualizada exitosamente"
+        footerText="¿Listo para continuar?"
+        footerLinkText="Iniciar sesión"
+        footerLinkHref="/login"
       >
-        <div className='space-y-6'>
-          <AuthSuccessMessage message='Tu contraseña ha sido restablecida exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña.' />
+        <div className="space-y-6">
+          <AuthSuccessMessage message="Tu contraseña ha sido restablecida exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña." />
 
-          <div className='text-center'>
+          <div className="text-center">
             <AuthButton
               isLoading={false}
-              loadingText=''
-              type='button'
+              loadingText=""
+              type="button"
               onClick={handleLoginRedirect}
             >
               Iniciar sesión
@@ -188,59 +188,59 @@ function ResetPasswordForm() {
 
   return (
     <AuthCard
-      title='Crear nueva contraseña'
-      subtitle='Ingresa tu nueva contraseña para completar el restablecimiento'
-      footerText='¿Recordaste tu contraseña?'
-      footerLinkText='Volver al inicio de sesión'
-      footerLinkHref='/login'
+      title="Crear nueva contraseña"
+      subtitle="Ingresa tu nueva contraseña para completar el restablecimiento"
+      footerText="¿Recordaste tu contraseña?"
+      footerLinkText="Volver al inicio de sesión"
+      footerLinkHref="/login"
     >
-      <form className='space-y-6' onSubmit={handleSubmit} noValidate>
+      <form className="space-y-6" onSubmit={handleSubmit} noValidate>
         {errors.general && <AuthErrorMessage message={errors.general} />}
 
         <FormInput
-          id='password'
-          name='password'
-          type='password'
-          label='Nueva Contraseña'
-          placeholder='Crea una contraseña segura'
+          id={"password"}
+          name="password"
+          type="password"
+          label="Nueva Contraseña"
+          placeholder="Crea una contraseña segura"
           value={formData.password}
           error={errors.password}
           onChange={handleChange}
           onBlur={handleBlur}
-          autoComplete='new-password'
+          autoComplete="new-password"
           autoFocus
         />
 
         {formData.password && <PasswordStrength password={formData.password} />}
 
         <FormInput
-          id='confirmPassword'
-          name='confirmPassword'
-          type='password'
-          label='Confirmar Nueva Contraseña'
-          placeholder='Confirma tu nueva contraseña'
+          id={"confirmPassword"}
+          name="confirmPassword"
+          type="password"
+          label="Confirmar Nueva Contraseña"
+          placeholder="Confirma tu nueva contraseña"
           value={formData.confirmPassword}
           error={errors.confirmPassword}
           onChange={handleChange}
           onBlur={handleBlur}
-          autoComplete='new-password'
+          autoComplete="new-password"
         />
 
         <AuthButton
           isLoading={isLoading}
-          loadingText='Restableciendo contraseña...'
+          loadingText="Restableciendo contraseña..."
         >
           Restablecer contraseña
         </AuthButton>
       </form>
 
-      <div className='mt-6'>
-        <div className='relative'>
-          <div className='absolute inset-0 flex items-center'>
-            <div className='w-full border-t border-muted-foreground/20' />
+      <div className="mt-6">
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-muted-foreground/20" />
           </div>
-          <div className='relative flex justify-center text-sm'>
-            <span className='bg-background px-2 text-muted-foreground'>
+          <div className="relative flex justify-center text-sm">
+            <span className="bg-background px-2 text-muted-foreground">
               Restablecimiento seguro para cuentas de Tecmilenio
             </span>
           </div>
@@ -254,8 +254,8 @@ export default function ResetPasswordPage() {
   return (
     <Suspense
       fallback={
-        <div className='min-h-screen flex items-center justify-center'>
-          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary'></div>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
       }
     >

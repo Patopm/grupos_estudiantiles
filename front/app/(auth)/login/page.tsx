@@ -1,33 +1,33 @@
-'use client';
+"use client";
 
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import AuthButton from '@/components/auth/AuthButton';
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import AuthButton from "@/components/auth/AuthButton";
 import {
   AuthErrorMessage,
   AuthSuccessMessage,
-} from '@/components/auth/AuthFormError';
-import AuthFormWrapper from '@/components/auth/AuthFormWrapper';
-import MFAInput from '@/components/auth/MFAInput';
-import CheckboxField from '@/components/forms/CheckboxField';
-import FormInput from '@/components/forms/FormInput';
-import { useAuth } from '@/contexts/AuthContext';
-import { useAuthError } from '@/hooks/useAuthError';
-import { ProgressiveSecurityManager } from '@/lib/errors/security';
-import { type LoginFormData, validateLogin } from '@/lib/validations/auth';
+} from "@/components/auth/AuthFormError";
+import AuthFormWrapper from "@/components/auth/AuthFormWrapper";
+import MFAInput from "@/components/auth/MFAInput";
+import CheckboxField from "@/components/forms/CheckboxField";
+import FormInput from "@/components/forms/FormInput";
+import { useAuth } from "@/contexts/AuthContext";
+import { useAuthError } from "@/hooks/useAuthError";
+import { ProgressiveSecurityManager } from "@/lib/errors/security";
+import { type LoginFormData, validateLogin } from "@/lib/validations/auth";
 
 export default function LoginPage() {
   const { login, mfaRequired, clearMFAState } = useAuth();
   const searchParams = useSearchParams();
 
   const [formData, setFormData] = useState<LoginFormData>({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
     rememberMe: false,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [successMessage, setSuccessMessage] = useState<string>('');
+  const [successMessage, setSuccessMessage] = useState<string>("");
 
   // Enhanced error handling
   const {
@@ -44,14 +44,14 @@ export default function LoginPage() {
 
   // Check for success message from registration or password reset
   useEffect(() => {
-    const message = searchParams.get('message');
-    if (message === 'registration-success') {
+    const message = searchParams.get("message");
+    if (message === "registration-success") {
       setSuccessMessage(
-        '¡Registro exitoso! Ahora puedes iniciar sesión con tu cuenta.'
+        "¡Registro exitoso! Ahora puedes iniciar sesión con tu cuenta."
       );
-    } else if (message === 'password-reset-success') {
+    } else if (message === "password-reset-success") {
       setSuccessMessage(
-        '¡Contraseña restablecida exitosamente! Ahora puedes iniciar sesión con tu nueva contraseña.'
+        "¡Contraseña restablecida exitosamente! Ahora puedes iniciar sesión con tu nueva contraseña."
       );
     }
   }, [searchParams]);
@@ -73,28 +73,28 @@ export default function LoginPage() {
       setErrors({
         general:
           securityCheck.reason ||
-          'No se puede intentar iniciar sesión en este momento.',
+          "No se puede intentar iniciar sesión en este momento.",
       });
       return;
     }
 
     // Clear any existing errors and success messages
     setErrors({});
-    setSuccessMessage('');
+    setSuccessMessage("");
     setIsLoading(true);
 
     try {
       await executeWithErrorHandling(
         () => login(validationResult.data),
-        'authentication'
+        "authentication"
       );
       // Redirect is handled by AuthContext based on user role
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
 
       // Handle specific error types
       if (error instanceof Error) {
-        if (error.message.includes('MFA')) {
+        if (error.message.includes("MFA")) {
           // MFA error is handled by the MFA component
           return;
         }
@@ -105,7 +105,7 @@ export default function LoginPage() {
       } else {
         setErrors({
           general:
-            'Hubo un problema al iniciar sesión. Por favor verifica tus datos e intenta de nuevo.',
+            "Hubo un problema al iniciar sesión. Por favor verifica tus datos e intenta de nuevo.",
         });
       }
 
@@ -115,7 +115,7 @@ export default function LoginPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    const newValue = type === 'checkbox' ? checked : value;
+    const newValue = type === "checkbox" ? checked : value;
 
     setFormData({
       ...formData,
@@ -126,7 +126,7 @@ export default function LoginPage() {
     if (errors[name]) {
       setErrors({
         ...errors,
-        [name]: '',
+        [name]: "",
       });
     }
 
@@ -155,7 +155,7 @@ export default function LoginPage() {
   const handleBackFromMFA = () => {
     clearMFAState();
     setErrors({});
-    setSuccessMessage('');
+    setSuccessMessage("");
     clearError();
   };
 
@@ -171,63 +171,63 @@ export default function LoginPage() {
 
   return (
     <AuthFormWrapper
-      title='Bienvenido de vuelta'
-      subtitle='Inicia sesión en tu cuenta para continuar'
-      footerText='¿No tienes una cuenta?'
-      footerLinkText='Regístrate aquí'
-      footerLinkHref='/register'
+      title="Bienvenido de vuelta"
+      subtitle="Inicia sesión en tu cuenta para continuar"
+      footerText="¿No tienes una cuenta?"
+      footerLinkText="Regístrate aquí"
+      footerLinkHref="/register"
       isLoading={isLoading}
-      loadingMessage='Iniciando sesión...'
+      loadingMessage="Iniciando sesión..."
       error={authError}
       onErrorDismiss={handleErrorDismiss}
       enableRetry={true}
       showSecurityMeasures={true}
     >
-      <form className='space-y-6' onSubmit={handleSubmit} noValidate>
+      <form className="space-y-6" onSubmit={handleSubmit} noValidate>
         {successMessage && <AuthSuccessMessage message={successMessage} />}
 
         {errors.general && <AuthErrorMessage message={errors.general} />}
 
         <FormInput
-          id='email'
-          name='email'
-          type='email'
-          label='Correo Electrónico'
-          placeholder='Ingresa tu email'
+          id={"email"}
+          name="email"
+          type="email"
+          label="Correo Electrónico"
+          placeholder="Ingresa tu email"
           value={formData.email}
           error={errors.email}
           onChange={handleChange}
           onBlur={handleBlur}
-          autoComplete='email'
+          autoComplete="email"
         />
 
         <FormInput
-          id='password'
-          name='password'
-          type='password'
-          label='Contraseña'
-          placeholder='Ingresa tu contraseña'
+          id={"password"}
+          name="password"
+          type="password"
+          label="Contraseña"
+          placeholder="Ingresa tu contraseña"
           value={formData.password}
           error={errors.password}
           onChange={handleChange}
           onBlur={handleBlur}
-          autoComplete='current-password'
+          autoComplete="current-password"
         />
 
-        <div className='flex items-center justify-between'>
+        <div className="flex items-center justify-between">
           <CheckboxField
-            id='rememberMe'
-            name='rememberMe'
+            id={"rememberMe"}
+            name="rememberMe"
             checked={formData.rememberMe}
             onChange={handleChange}
           >
             Recordarme
           </CheckboxField>
 
-          <div className='text-sm'>
+          <div className="text-sm">
             <a
-              href='/forgot-password'
-              className='font-medium text-primary hover:text-primary/80 underline'
+              href="/forgot-password"
+              className="font-medium text-primary hover:text-primary/80 underline"
             >
               ¿Olvidaste tu contraseña?
             </a>
@@ -236,20 +236,20 @@ export default function LoginPage() {
 
         <AuthButton
           isLoading={isLoading}
-          loadingText='Iniciando sesión...'
+          loadingText="Iniciando sesión..."
           disabled={isLoading || !!authError}
         >
           Iniciar Sesión
         </AuthButton>
       </form>
 
-      <div className='mt-6'>
-        <div className='relative'>
-          <div className='absolute inset-0 flex items-center'>
-            <div className='w-full border-t border-muted-foreground/20' />
+      <div className="mt-6">
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-muted-foreground/20" />
           </div>
-          <div className='relative flex justify-center text-sm'>
-            <span className='bg-background px-2 text-muted-foreground'>
+          <div className="relative flex justify-center text-sm">
+            <span className="bg-background px-2 text-muted-foreground">
               Acceso para estudiantes, presidentes y administradores
             </span>
           </div>

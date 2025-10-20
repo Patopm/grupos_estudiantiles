@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+import { apiClient } from "./client";
 
 export interface TOTPDevice {
   id: string;
@@ -22,7 +22,7 @@ export interface NotificationPreferences {
   login_notifications: boolean;
   newsletter: boolean;
   promotional_emails: boolean;
-  email_frequency: 'immediate' | 'daily' | 'weekly';
+  email_frequency: "immediate" | "daily" | "weekly";
   updated_at: string;
 }
 
@@ -32,8 +32,8 @@ export interface EmailNotification {
   recipient_name: string;
   template_name: string;
   subject: string;
-  priority: 'low' | 'normal' | 'high' | 'urgent';
-  status: 'pending' | 'sending' | 'sent' | 'failed' | 'cancelled';
+  priority: "low" | "normal" | "high" | "urgent";
+  status: "pending" | "sending" | "sent" | "failed" | "cancelled";
   scheduled_at: string;
   sent_at: string | null;
   failed_at: string | null;
@@ -46,7 +46,7 @@ export interface EventReminder {
   event_title: string;
   event_start_datetime: string;
   recipient_email: string;
-  reminder_type: '1_week' | '3_days' | '1_day' | '2_hours' | '30_minutes';
+  reminder_type: "1_week" | "3_days" | "1_day" | "2_hours" | "30_minutes";
   scheduled_at: string;
   sent: boolean;
   sent_at: string | null;
@@ -59,13 +59,13 @@ export const totpApi = {
   async getDevices(): Promise<TOTPDevice[]> {
     const response = await apiClient.get<
       TOTPDevice[] | { results: TOTPDevice[] }
-    >('/api/notifications/totp/');
+    >("/api/notifications/totp/");
     return Array.isArray(response) ? response : response.results;
   },
 
   // Setup new TOTP device
-  async setupDevice(name: string = 'Tecmilenio 2FA'): Promise<TOTPDevice> {
-    return await apiClient.post<TOTPDevice>('/api/notifications/totp/', {
+  async setupDevice(name: string = "Tecmilenio 2FA"): Promise<TOTPDevice> {
+    return await apiClient.post<TOTPDevice>("/api/notifications/totp/", {
       name,
     });
   },
@@ -115,7 +115,7 @@ export const preferencesApi = {
   async getPreferences(): Promise<NotificationPreferences> {
     // Since it's a singleton, we can use a fixed ID or the endpoint handles it
     return await apiClient.get<NotificationPreferences>(
-      '/api/notifications/preferences/1/'
+      "/api/notifications/preferences/1/"
     );
   },
 
@@ -124,7 +124,7 @@ export const preferencesApi = {
     preferences: Partial<NotificationPreferences>
   ): Promise<NotificationPreferences> {
     return await apiClient.patch<NotificationPreferences>(
-      '/api/notifications/preferences/1/',
+      "/api/notifications/preferences/1/",
       preferences
     );
   },
@@ -148,7 +148,7 @@ export const emailNotificationsApi = {
     search?: string;
   }): Promise<PaginatedResponse<EmailNotification>> {
     const response = await apiClient.get<PaginatedResponse<EmailNotification>>(
-      '/api/notifications/emails/',
+      "/api/notifications/emails/",
       {
         params,
       }
@@ -180,7 +180,7 @@ export const eventRemindersApi = {
     page?: number;
   }): Promise<PaginatedResponse<EventReminder>> {
     const response = await apiClient.get<PaginatedResponse<EventReminder>>(
-      '/api/notifications/reminders/',
+      "/api/notifications/reminders/",
       {
         params,
       }
@@ -194,11 +194,11 @@ export const notificationUtils = {
   // Format reminder type for display
   formatReminderType(type: string): string {
     const types: Record<string, string> = {
-      '1_week': '1 semana antes',
-      '3_days': '3 días antes',
-      '1_day': '1 día antes',
-      '2_hours': '2 horas antes',
-      '30_minutes': '30 minutos antes',
+      "1_week": "1 semana antes",
+      "3_days": "3 días antes",
+      "1_day": "1 día antes",
+      "2_hours": "2 horas antes",
+      "30_minutes": "30 minutos antes",
     };
     return types[type] || type;
   },
@@ -206,32 +206,32 @@ export const notificationUtils = {
   // Format notification status
   formatStatus(status: string): { text: string; color: string } {
     const statusMap: Record<string, { text: string; color: string }> = {
-      pending: { text: 'Pendiente', color: 'text-yellow-600' },
-      sending: { text: 'Enviando', color: 'text-blue-600' },
-      sent: { text: 'Enviado', color: 'text-green-600' },
-      failed: { text: 'Fallido', color: 'text-red-600' },
-      cancelled: { text: 'Cancelado', color: 'text-gray-600' },
+      pending: { text: "Pendiente", color: "text-yellow-600" },
+      sending: { text: "Enviando", color: "text-blue-600" },
+      sent: { text: "Enviado", color: "text-green-600" },
+      failed: { text: "Fallido", color: "text-red-600" },
+      cancelled: { text: "Cancelado", color: "text-gray-600" },
     };
-    return statusMap[status] || { text: status, color: 'text-gray-600' };
+    return statusMap[status] || { text: status, color: "text-gray-600" };
   },
 
   // Format priority
   formatPriority(priority: string): { text: string; color: string } {
     const priorityMap: Record<string, { text: string; color: string }> = {
-      low: { text: 'Baja', color: 'text-gray-600' },
-      normal: { text: 'Normal', color: 'text-blue-600' },
-      high: { text: 'Alta', color: 'text-orange-600' },
-      urgent: { text: 'Urgente', color: 'text-red-600' },
+      low: { text: "Baja", color: "text-gray-600" },
+      normal: { text: "Normal", color: "text-blue-600" },
+      high: { text: "Alta", color: "text-orange-600" },
+      urgent: { text: "Urgente", color: "text-red-600" },
     };
-    return priorityMap[priority] || { text: priority, color: 'text-gray-600' };
+    return priorityMap[priority] || { text: priority, color: "text-gray-600" };
   },
 
   // Format email frequency
   formatEmailFrequency(frequency: string): string {
     const frequencies: Record<string, string> = {
-      immediate: 'Inmediato',
-      daily: 'Diario',
-      weekly: 'Semanal',
+      immediate: "Inmediato",
+      daily: "Diario",
+      weekly: "Semanal",
     };
     return frequencies[frequency] || frequency;
   },

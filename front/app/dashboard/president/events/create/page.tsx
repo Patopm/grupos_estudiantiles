@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { ArrowLeft, Calendar, CheckCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import EventCreationForm from '@/components/events/EventCreationForm';
-import { Button } from '@/components/ui/button';
+import { ArrowLeft, Calendar, CheckCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import EventCreationForm from "@/components/events/EventCreationForm";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -12,20 +12,18 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/dialog";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function CreateEventPage() {
   const { user } = useAuth();
   const router = useRouter();
-  const { toast } = useToast();
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [createdEventId, setCreatedEventId] = useState<string | null>(null);
 
   // Redirect if user is not a president
-  if (!user || user.role !== 'president') {
-    router.push('/dashboard');
+  if (!user || user.role !== "president") {
+    router.push("/dashboard");
     return null;
   }
 
@@ -51,46 +49,46 @@ export default function CreateEventPage() {
   };
 
   const handleGoToEvents = () => {
-    router.push('/dashboard/president/events');
+    router.push("/dashboard/president/events");
   };
 
   return (
-    <div className='min-h-screen bg-background'>
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className='border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
-        <div className='container mx-auto px-4 py-4'>
-          <div className='flex items-center gap-4'>
+      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center gap-4">
             <Button
-              variant='ghost'
-              size='sm'
+              variant="ghost"
+              size="sm"
               onClick={handleCancel}
-              className='flex items-center gap-2'
+              className="flex items-center gap-2"
             >
-              <ArrowLeft className='h-4 w-4' />
+              <ArrowLeft className="h-4 w-4" />
               Volver
             </Button>
-            <div className='flex items-center gap-2'>
-              <Calendar className='h-5 w-5 text-primary' />
-              <h1 className='text-2xl font-bold'>Crear Nuevo Evento</h1>
+            <div className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-primary" />
+              <h1 className="text-2xl font-bold">Crear Nuevo Evento</h1>
             </div>
           </div>
-          <p className='text-muted-foreground mt-2'>
+          <p className="text-muted-foreground mt-2">
             Crea un nuevo evento para tus grupos estudiantiles
           </p>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className='container mx-auto px-4 py-6'>
+      <div className="container mx-auto px-4 py-6">
         <EventCreationForm onSuccess={handleSuccess} onCancel={handleCancel} />
       </div>
 
       {/* Success Dialog */}
       <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <DialogContent className='sm:max-w-md'>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className='flex items-center gap-2'>
-              <CheckCircle className='h-5 w-5 text-green-500' />
+            <DialogTitle className="flex items-center gap-2">
+              <CheckCircle className="h-5 w-5 text-green-500" />
               Evento Creado Exitosamente
             </DialogTitle>
             <DialogDescription>
@@ -100,10 +98,10 @@ export default function CreateEventPage() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className='space-y-4'>
-            <div className='bg-muted/50 p-4 rounded-lg'>
-              <h4 className='font-medium mb-2'>Próximos pasos:</h4>
-              <ul className='text-sm text-muted-foreground space-y-1'>
+          <div className="space-y-4">
+            <div className="bg-muted/50 p-4 rounded-lg">
+              <h4 className="font-medium mb-2">Próximos pasos:</h4>
+              <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• Revisa la información del evento</li>
                 <li>• Publica el evento cuando esté listo</li>
                 <li>• Comparte el evento con los grupos</li>
@@ -112,22 +110,22 @@ export default function CreateEventPage() {
             </div>
           </div>
 
-          <DialogFooter className='flex-col sm:flex-row gap-2'>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button
-              variant='outline'
+              variant="outline"
               onClick={handleGoToEvents}
-              className='w-full sm:w-auto'
+              className="w-full sm:w-auto"
             >
               Ver Todos los Eventos
             </Button>
             <Button
-              variant='outline'
+              variant="outline"
               onClick={handleCreateAnother}
-              className='w-full sm:w-auto'
+              className="w-full sm:w-auto"
             >
               Crear Otro Evento
             </Button>
-            <Button onClick={handleViewEvent} className='w-full sm:w-auto'>
+            <Button onClick={handleViewEvent} className="w-full sm:w-auto">
               Ver Evento Creado
             </Button>
           </DialogFooter>

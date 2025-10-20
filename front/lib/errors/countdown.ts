@@ -3,7 +3,7 @@
  * Requirement 8.4 - Add rate limiting indicators and countdown timers
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from "react";
 
 export interface CountdownState {
   timeRemaining: number;
@@ -107,8 +107,8 @@ export function useRateLimitCountdown(retryAfter?: number) {
     message: countdown.isActive
       ? `Podrás intentar de nuevo en ${countdown.formattedTime}`
       : countdown.isComplete
-        ? 'Ya puedes intentar de nuevo'
-        : '',
+        ? "Ya puedes intentar de nuevo"
+        : "",
   };
 }
 
@@ -132,10 +132,10 @@ export class ProgressiveDelayCalculator {
       return `Espera ${delay} segundos antes del próximo intento`;
     } else if (delay < 3600) {
       const minutes = Math.floor(delay / 60);
-      return `Espera ${minutes} minuto${minutes > 1 ? 's' : ''} antes del próximo intento`;
+      return `Espera ${minutes} minuto${minutes > 1 ? "s" : ""} antes del próximo intento`;
     } else {
       const hours = Math.floor(delay / 3600);
-      return `Espera ${hours} hora${hours > 1 ? 's' : ''} antes del próximo intento`;
+      return `Espera ${hours} hora${hours > 1 ? "s" : ""} antes del próximo intento`;
     }
   }
 }
@@ -149,8 +149,8 @@ export function formatTimeRemaining(seconds: number): {
   if (seconds < 60) {
     return {
       value: seconds,
-      unit: 'segundo',
-      display: `${seconds} segundo${seconds !== 1 ? 's' : ''}`,
+      unit: "segundo",
+      display: `${seconds} segundo${seconds !== 1 ? "s" : ""}`,
     };
   }
 
@@ -158,15 +158,15 @@ export function formatTimeRemaining(seconds: number): {
   if (minutes < 60) {
     return {
       value: minutes,
-      unit: 'minuto',
-      display: `${minutes} minuto${minutes !== 1 ? 's' : ''}`,
+      unit: "minuto",
+      display: `${minutes} minuto${minutes !== 1 ? "s" : ""}`,
     };
   }
 
   const hours = Math.floor(minutes / 60);
   return {
     value: hours,
-    unit: 'hora',
-    display: `${hours} hora${hours !== 1 ? 's' : ''}`,
+    unit: "hora",
+    display: `${hours} hora${hours !== 1 ? "s" : ""}`,
   };
 }

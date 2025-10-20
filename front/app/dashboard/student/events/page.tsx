@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
-import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import EventList from '@/components/events/EventList';
-import { ProtectedRoute } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
-import { type Event, type EventFilters, eventsApi } from '@/lib/api/events';
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import EventList from "@/components/events/EventList";
+import { ProtectedRoute } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { type Event, type EventFilters, eventsApi } from "@/lib/api/events";
 
 export default function StudentEventsPage() {
   return (
-    <ProtectedRoute allowedRoles={['student']}>
+    <ProtectedRoute allowedRoles={["student"]}>
       <StudentEventsContent />
     </ProtectedRoute>
   );
@@ -23,7 +23,7 @@ function StudentEventsContent() {
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState<EventFilters>({});
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   const loadEvents = useCallback(
     async (currentFilters: EventFilters = {}) => {
@@ -32,21 +32,21 @@ function StudentEventsContent() {
         const eventsData = await eventsApi.getAll(currentFilters);
         setEvents(eventsData);
       } catch (error: unknown) {
-        console.error('Error loading events:', error);
+        console.error("Error loading events:", error);
         const errorMessage =
-          error && typeof error === 'object' && 'message' in error
+          error && typeof error === "object" && "message" in error
             ? (error as { message: string }).message
-            : 'No se pudieron cargar los eventos';
+            : "No se pudieron cargar los eventos";
         toast({
-          title: 'Error',
+          title: "Error",
           description: errorMessage,
-          variant: 'destructive',
+          variant: "destructive",
         });
       } finally {
         setIsLoading(false);
       }
     },
-    [] // eslint-disable-line react-hooks/exhaustive-deps
+    [toast] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   useEffect(() => {
@@ -75,17 +75,17 @@ function StudentEventsContent() {
     try {
       const response = await eventsApi.register(eventId);
       toast({
-        title: 'Registro Exitoso',
+        title: "Registro Exitoso",
         description:
-          response.message || 'Te has registrado correctamente al evento',
+          response.message || "Te has registrado correctamente al evento",
       });
       // Refresh events to update registration status
       loadEvents(filters);
     } catch (error: unknown) {
-      console.error('Error registering for event:', error);
+      console.error("Error registering for event:", error);
 
       // Check if this is a permission error that requires a request
-      if (error && typeof error === 'object' && 'response' in error) {
+      if (error && typeof error === "object" && "response" in error) {
         const apiError = error as {
           response?: {
             status?: number;
@@ -97,19 +97,19 @@ function StudentEventsContent() {
           apiError.response?.data?.requires_request
         ) {
           toast({
-            title: 'Solicitud Requerida',
+            title: "Solicitud Requerida",
             description:
-              'No eres miembro del grupo. Debes solicitar permiso al presidente.',
-            variant: 'destructive',
+              "No eres miembro del grupo. Debes solicitar permiso al presidente.",
+            variant: "destructive",
           });
           return;
         }
       }
 
       toast({
-        title: 'Error',
-        description: 'No se pudo registrar al evento',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudo registrar al evento",
+        variant: "destructive",
       });
     }
   };
@@ -118,17 +118,17 @@ function StudentEventsContent() {
     try {
       await eventsApi.unregister(eventId);
       toast({
-        title: 'Cancelación Exitosa',
-        description: 'Te has desregistrado del evento',
+        title: "Cancelación Exitosa",
+        description: "Te has desregistrado del evento",
       });
       // Refresh events to update registration status
       loadEvents(filters);
     } catch (error) {
-      console.error('Error unregistering from event:', error);
+      console.error("Error unregistering from event:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudo cancelar el registro',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudo cancelar el registro",
+        variant: "destructive",
       });
     }
   };
@@ -138,29 +138,30 @@ function StudentEventsContent() {
   };
 
   return (
-    <div className='min-h-screen bg-background'>
+    <div className="min-h-screen bg-background">
       <DashboardHeader
-        title='Descubrir Eventos'
-        description='Explora y regístrate en eventos de tus grupos estudiantiles'
+        title="Descubrir Eventos"
+        description="Explora y regístrate en eventos de tus grupos estudiantiles"
         actions={
           <button
-            onClick={() => router.push('/dashboard/student/events/my-events')}
-            className='px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors'
+            type="button"
+            onClick={() => router.push("/dashboard/student/events/my-events")}
+            className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
           >
             Mis Eventos
           </button>
         }
       />
 
-      <div className='max-w-7xl mx-auto p-6'>
+      <div className="max-w-7xl mx-auto p-6">
         <EventList
           events={events}
-          title='Eventos Disponibles'
+          title="Eventos Disponibles"
           showSearch={true}
           showFilters={true}
           showViewToggle={true}
-          variant='default'
-          emptyMessage='No hay eventos disponibles en este momento'
+          variant="default"
+          emptyMessage="No hay eventos disponibles en este momento"
           onRegister={handleRegister}
           onUnregister={handleUnregister}
           onView={handleViewEvent}

@@ -1,6 +1,6 @@
-import type React from 'react';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
+import type React from "react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 interface CheckboxFieldProps {
   id: string;
@@ -20,8 +20,8 @@ export default function CheckboxField({
   children,
 }: CheckboxFieldProps) {
   return (
-    <div className='space-y-2'>
-      <div className='flex items-center space-x-2'>
+    <div className="space-y-2">
+      <div className="flex items-center space-x-2">
         <Checkbox
           id={id}
           name={name}
@@ -31,22 +31,22 @@ export default function CheckboxField({
             const syntheticEvent = {
               target: {
                 name,
-                type: 'checkbox',
+                type: "checkbox",
                 checked: checkedState === true,
               },
             } as React.ChangeEvent<HTMLInputElement>;
             onChange(syntheticEvent);
           }}
-          className='mt-0.5'
+          className="mt-0.5"
         />
         <Label
           htmlFor={id}
-          className='text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+          className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
           {children}
         </Label>
       </div>
-      {error && <p className='text-sm text-destructive'>{error}</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
   );
 }

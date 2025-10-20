@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Calendar,
@@ -17,26 +17,26 @@ import {
   TrendingUp,
   Users,
   X,
-} from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
+} from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { useDebounce } from '@/hooks/useDebounce';
+} from "@/components/ui/select";
+import { useDebounce } from "@/hooks/useDebounce";
 import {
   EVENT_TYPE_LABELS,
   type Event,
   type EventFilters,
-} from '@/lib/api/events';
-import EventCard from './EventCard';
+} from "@/lib/api/events";
+import EventCard from "./EventCard";
 
 interface EventListProps {
   events: Event[];
@@ -44,7 +44,7 @@ interface EventListProps {
   showSearch?: boolean;
   showFilters?: boolean;
   showViewToggle?: boolean;
-  variant?: 'default' | 'compact';
+  variant?: "default" | "compact";
   emptyMessage?: string;
   onRegister?: (eventId: string) => void;
   onUnregister?: (eventId: string) => void;
@@ -69,88 +69,88 @@ interface EventListProps {
 }
 
 const EVENT_TYPES = [
-  { value: 'all', label: 'Todos' },
-  { value: 'academic', label: 'Académico' },
-  { value: 'social', label: 'Social' },
-  { value: 'sports', label: 'Deportivo' },
-  { value: 'cultural', label: 'Cultural' },
-  { value: 'meeting', label: 'Reunión' },
-  { value: 'workshop', label: 'Taller' },
-  { value: 'conference', label: 'Conferencia' },
-  { value: 'other', label: 'Otro' },
+  { value: "all", label: "Todos" },
+  { value: "academic", label: "Académico" },
+  { value: "social", label: "Social" },
+  { value: "sports", label: "Deportivo" },
+  { value: "cultural", label: "Cultural" },
+  { value: "meeting", label: "Reunión" },
+  { value: "workshop", label: "Taller" },
+  { value: "conference", label: "Conferencia" },
+  { value: "other", label: "Otro" },
 ];
 
 const EVENT_STATUSES = [
-  { value: 'all', label: 'Todos' },
-  { value: 'published', label: 'Publicados' },
-  { value: 'draft', label: 'Borradores' },
-  { value: 'cancelled', label: 'Cancelados' },
-  { value: 'completed', label: 'Completados' },
+  { value: "all", label: "Todos" },
+  { value: "published", label: "Publicados" },
+  { value: "draft", label: "Borradores" },
+  { value: "cancelled", label: "Cancelados" },
+  { value: "completed", label: "Completados" },
 ];
 
 const SORT_OPTIONS = [
-  { value: 'date_asc', label: 'Fecha: Próximos primero', icon: Calendar },
-  { value: 'date_desc', label: 'Fecha: Lejanos primero', icon: Calendar },
-  { value: 'title', label: 'Título A-Z', icon: null },
-  { value: 'title_desc', label: 'Título Z-A', icon: null },
-  { value: 'attendees', label: 'Más Registrados', icon: Users },
-  { value: 'attendees_desc', label: 'Menos Registrados', icon: Users },
-  { value: 'recent', label: 'Creados Recientemente', icon: Clock },
-  { value: 'popularity', label: 'Más Populares', icon: TrendingUp },
+  { value: "date_asc", label: "Fecha: Próximos primero", icon: Calendar },
+  { value: "date_desc", label: "Fecha: Lejanos primero", icon: Calendar },
+  { value: "title", label: "Título A-Z", icon: null },
+  { value: "title_desc", label: "Título Z-A", icon: null },
+  { value: "attendees", label: "Más Registrados", icon: Users },
+  { value: "attendees_desc", label: "Menos Registrados", icon: Users },
+  { value: "recent", label: "Creados Recientemente", icon: Clock },
+  { value: "popularity", label: "Más Populares", icon: TrendingUp },
 ];
 
 const TIME_FILTERS = [
-  { value: 'all', label: 'Todos los tiempos' },
-  { value: 'today', label: 'Hoy' },
-  { value: 'tomorrow', label: 'Mañana' },
-  { value: 'this_week', label: 'Esta semana' },
-  { value: 'next_week', label: 'Próxima semana' },
-  { value: 'this_month', label: 'Este mes' },
-  { value: 'next_month', label: 'Próximo mes' },
+  { value: "all", label: "Todos los tiempos" },
+  { value: "today", label: "Hoy" },
+  { value: "tomorrow", label: "Mañana" },
+  { value: "this_week", label: "Esta semana" },
+  { value: "next_week", label: "Próxima semana" },
+  { value: "this_month", label: "Este mes" },
+  { value: "next_month", label: "Próximo mes" },
 ];
 
 const QUICK_FILTERS = [
   {
-    id: 'upcoming',
-    label: 'Próximos',
+    id: "upcoming",
+    label: "Próximos",
     icon: Calendar,
-    description: 'Eventos que están por ocurrir',
-    filter: { upcomingOnly: true, selectedStatus: 'published' },
+    description: "Eventos que están por ocurrir",
+    filter: { upcomingOnly: true, selectedStatus: "published" },
   },
   {
-    id: 'my_events',
-    label: 'Mis Eventos',
+    id: "my_events",
+    label: "Mis Eventos",
     icon: Users,
-    description: 'Eventos en los que estoy registrado',
+    description: "Eventos en los que estoy registrado",
     filter: { myEventsOnly: true },
   },
   {
-    id: 'this_week',
-    label: 'Esta Semana',
+    id: "this_week",
+    label: "Esta Semana",
     icon: CalendarDays,
-    description: 'Eventos de esta semana',
-    filter: { timeFilter: 'this_week', selectedStatus: 'published' },
+    description: "Eventos de esta semana",
+    filter: { timeFilter: "this_week", selectedStatus: "published" },
   },
   {
-    id: 'academic',
-    label: 'Académicos',
+    id: "academic",
+    label: "Académicos",
     icon: TrendingUp,
-    description: 'Eventos académicos y educativos',
-    filter: { selectedTypes: ['academic'], selectedStatus: 'published' },
+    description: "Eventos académicos y educativos",
+    filter: { selectedTypes: ["academic"], selectedStatus: "published" },
   },
   {
-    id: 'social',
-    label: 'Sociales',
+    id: "social",
+    label: "Sociales",
     icon: Users,
-    description: 'Eventos sociales y de entretenimiento',
-    filter: { selectedTypes: ['social'], selectedStatus: 'published' },
+    description: "Eventos sociales y de entretenimiento",
+    filter: { selectedTypes: ["social"], selectedStatus: "published" },
   },
   {
-    id: 'available',
-    label: 'Disponibles',
+    id: "available",
+    label: "Disponibles",
     icon: Clock,
-    description: 'Eventos con cupo disponible',
-    filter: { availableOnly: true, selectedStatus: 'published' },
+    description: "Eventos con cupo disponible",
+    filter: { availableOnly: true, selectedStatus: "published" },
   },
 ];
 
@@ -160,8 +160,8 @@ export default function EventList({
   showSearch = true,
   showFilters = true,
   showViewToggle = false,
-  variant = 'default',
-  emptyMessage = 'No hay eventos disponibles',
+  variant = "default",
+  emptyMessage = "No hay eventos disponibles",
   onRegister,
   onUnregister,
   onView,
@@ -185,21 +185,21 @@ export default function EventList({
 }: EventListProps) {
   // Search and filter state - use external control if provided
   const [searchTerm, setSearchTerm] = useState(
-    searchQuery ?? (defaultFilters.search || '')
+    searchQuery ?? (defaultFilters.search || "")
   );
   const [selectedTypes, setSelectedTypes] = useState<string[]>(
     currentFilters?.type
       ? [currentFilters.type]
       : defaultFilters.type
         ? [defaultFilters.type]
-        : ['all']
+        : ["all"]
   );
   const [selectedStatus, setSelectedStatus] = useState(
-    currentFilters?.status ?? (defaultFilters.status || 'all')
+    currentFilters?.status ?? (defaultFilters.status || "all")
   );
-  const [timeFilter, setTimeFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('date_asc');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [timeFilter, setTimeFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("date_asc");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFiltersPanel, setShowFiltersPanel] = useState(false);
   const [activeQuickFilter, setActiveQuickFilter] = useState<string | null>(
     null
@@ -207,10 +207,10 @@ export default function EventList({
 
   // Date range filters
   const [startDate, setStartDate] = useState(
-    currentFilters?.start_date ?? (defaultFilters.start_date || '')
+    currentFilters?.start_date ?? (defaultFilters.start_date || "")
   );
   const [endDate, setEndDate] = useState(
-    currentFilters?.end_date ?? (defaultFilters.end_date || '')
+    currentFilters?.end_date ?? (defaultFilters.end_date || "")
   );
   const [showDateRange, setShowDateRange] = useState(false);
 
@@ -242,16 +242,16 @@ export default function EventList({
       );
 
       switch (filter) {
-        case 'today':
+        case "today":
           return eventDay.getTime() === today.getTime();
 
-        case 'tomorrow': {
+        case "tomorrow": {
           const tomorrow = new Date(today);
           tomorrow.setDate(tomorrow.getDate() + 1);
           return eventDay.getTime() === tomorrow.getTime();
         }
 
-        case 'this_week': {
+        case "this_week": {
           const startOfWeek = new Date(today);
           startOfWeek.setDate(today.getDate() - today.getDay());
           const endOfWeek = new Date(startOfWeek);
@@ -259,7 +259,7 @@ export default function EventList({
           return eventDay >= startOfWeek && eventDay <= endOfWeek;
         }
 
-        case 'next_week': {
+        case "next_week": {
           const nextWeekStart = new Date(today);
           nextWeekStart.setDate(today.getDate() + (7 - today.getDay()));
           const nextWeekEnd = new Date(nextWeekStart);
@@ -267,13 +267,13 @@ export default function EventList({
           return eventDay >= nextWeekStart && eventDay <= nextWeekEnd;
         }
 
-        case 'this_month':
+        case "this_month":
           return (
             eventDateTime.getMonth() === now.getMonth() &&
             eventDateTime.getFullYear() === now.getFullYear()
           );
 
-        case 'next_month': {
+        case "next_month": {
           const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
           return (
             eventDateTime.getMonth() === nextMonth.getMonth() &&
@@ -309,19 +309,19 @@ export default function EventList({
     }
 
     // Filter by event types (multi-select)
-    if (!selectedTypes.includes('all') && selectedTypes.length > 0) {
+    if (!selectedTypes.includes("all") && selectedTypes.length > 0) {
       filtered = filtered.filter(event =>
         selectedTypes.includes(event.event_type)
       );
     }
 
     // Filter by status
-    if (selectedStatus !== 'all') {
+    if (selectedStatus !== "all") {
       filtered = filtered.filter(event => event.status === selectedStatus);
     }
 
     // Filter by time range
-    if (timeFilter !== 'all') {
+    if (timeFilter !== "all") {
       filtered = filtered.filter(event =>
         isDateInTimeFilter(event.start_datetime, timeFilter)
       );
@@ -367,29 +367,29 @@ export default function EventList({
     // Sort events
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'date_asc':
+        case "date_asc":
           return (
             new Date(a.start_datetime).getTime() -
             new Date(b.start_datetime).getTime()
           );
-        case 'date_desc':
+        case "date_desc":
           return (
             new Date(b.start_datetime).getTime() -
             new Date(a.start_datetime).getTime()
           );
-        case 'title':
+        case "title":
           return a.title.localeCompare(b.title);
-        case 'title_desc':
+        case "title_desc":
           return b.title.localeCompare(a.title);
-        case 'attendees':
+        case "attendees":
           return b.attendee_count - a.attendee_count;
-        case 'attendees_desc':
+        case "attendees_desc":
           return a.attendee_count - b.attendee_count;
-        case 'recent':
+        case "recent":
           return (
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
           );
-        case 'popularity':
+        case "popularity":
           // Sort by attendee count as a proxy for popularity
           return b.attendee_count - a.attendee_count;
         default:
@@ -431,41 +431,29 @@ export default function EventList({
   // Reset pagination when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [
-    debouncedSearchTerm,
-    selectedTypes,
-    selectedStatus,
-    timeFilter,
-    startDate,
-    endDate,
-    sortBy,
-    requiresRegistrationOnly,
-    availableOnly,
-    myEventsOnly,
-    upcomingOnly,
-  ]);
+  }, []);
 
   // Event type selection handlers
   const handleTypeToggle = useCallback(
     (typeValue: string) => {
       const newTypes = (() => {
-        if (typeValue === 'all') {
-          return ['all'];
+        if (typeValue === "all") {
+          return ["all"];
         }
 
         const currentTypes = selectedTypes;
-        const newTypes = currentTypes.includes('all')
+        const newTypes = currentTypes.includes("all")
           ? [typeValue]
           : currentTypes.includes(typeValue)
             ? currentTypes.filter(t => t !== typeValue)
-            : [...currentTypes.filter(t => t !== 'all'), typeValue];
+            : [...currentTypes.filter(t => t !== "all"), typeValue];
 
-        return newTypes.length === 0 ? ['all'] : newTypes;
+        return newTypes.length === 0 ? ["all"] : newTypes;
       })();
 
       if (onFilterChange) {
         onFilterChange({
-          type: newTypes.includes('all') ? undefined : newTypes[0],
+          type: newTypes.includes("all") ? undefined : newTypes[0],
         });
       } else {
         setSelectedTypes(newTypes);
@@ -479,15 +467,15 @@ export default function EventList({
       onFilterChange({});
     }
     if (onSearch) {
-      onSearch('');
+      onSearch("");
     }
-    setSearchTerm('');
-    setSelectedTypes(['all']);
-    setSelectedStatus('all');
-    setTimeFilter('all');
-    setStartDate('');
-    setEndDate('');
-    setSortBy('date_asc');
+    setSearchTerm("");
+    setSelectedTypes(["all"]);
+    setSelectedStatus("all");
+    setTimeFilter("all");
+    setStartDate("");
+    setEndDate("");
+    setSortBy("date_asc");
     setRequiresRegistrationOnly(false);
     setAvailableOnly(false);
     setMyEventsOnly(false);
@@ -514,12 +502,12 @@ export default function EventList({
       setActiveQuickFilter(filterId);
 
       // Reset all filters first
-      setSearchTerm('');
-      setSelectedTypes(['all']);
-      setSelectedStatus('all');
-      setTimeFilter('all');
-      setStartDate('');
-      setEndDate('');
+      setSearchTerm("");
+      setSelectedTypes(["all"]);
+      setSelectedStatus("all");
+      setTimeFilter("all");
+      setStartDate("");
+      setEndDate("");
       setRequiresRegistrationOnly(false);
       setAvailableOnly(false);
       setMyEventsOnly(false);
@@ -542,9 +530,9 @@ export default function EventList({
   const activeFiltersCount = useMemo(() => {
     let count = 0;
     if (debouncedSearchTerm.trim()) count++;
-    if (!selectedTypes.includes('all')) count++;
-    if (selectedStatus !== 'all') count++;
-    if (timeFilter !== 'all') count++;
+    if (!selectedTypes.includes("all")) count++;
+    if (selectedStatus !== "all") count++;
+    if (timeFilter !== "all") count++;
     if (startDate || endDate) count++;
     if (requiresRegistrationOnly) count++;
     if (availableOnly) count++;
@@ -566,12 +554,12 @@ export default function EventList({
 
   if (isLoading) {
     return (
-      <div className='space-y-4'>
-        {title && <h2 className='text-2xl font-bold'>{title}</h2>}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+      <div className="space-y-4">
+        {title && <h2 className="text-2xl font-bold">{title}</h2>}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className='animate-pulse'>
-              <div className='bg-muted rounded-lg h-64'></div>
+            <div key={i} className="animate-pulse">
+              <div className="bg-muted rounded-lg h-64"></div>
             </div>
           ))}
         </div>
@@ -580,79 +568,79 @@ export default function EventList({
   }
 
   return (
-    <div className='space-y-6'>
+    <div className="space-y-6">
       {/* Header with title and action buttons */}
       {title && (
-        <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
-          <div className='flex items-center gap-3'>
-            <h2 className='text-2xl font-bold'>{title}</h2>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold">{title}</h2>
             {filteredAndSortedEvents.length > 0 && (
-              <Badge variant='secondary' className='text-sm'>
+              <Badge variant="secondary" className="text-sm">
                 {filteredAndSortedEvents.length} evento
-                {filteredAndSortedEvents.length !== 1 ? 's' : ''}
+                {filteredAndSortedEvents.length !== 1 ? "s" : ""}
               </Badge>
             )}
           </div>
 
-          <div className='flex items-center gap-2'>
+          <div className="flex items-center gap-2">
             {/* Action buttons */}
             {showRefresh && onRefresh && (
               <Button
-                variant='outline'
-                size='sm'
+                variant="outline"
+                size="sm"
                 onClick={onRefresh}
                 disabled={isLoading}
-                aria-label='Actualizar eventos'
+                aria-label="Actualizar eventos"
               >
                 <RefreshCw
-                  className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`}
+                  className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
                 />
               </Button>
             )}
 
             {showExport && onExport && (
               <Button
-                variant='outline'
-                size='sm'
+                variant="outline"
+                size="sm"
                 onClick={() => onExport(filteredAndSortedEvents)}
                 disabled={filteredAndSortedEvents.length === 0}
-                aria-label='Exportar eventos'
+                aria-label="Exportar eventos"
               >
-                <Download className='w-4 h-4' />
+                <Download className="w-4 h-4" />
               </Button>
             )}
 
             {showShare && onShare && (
               <Button
-                variant='outline'
-                size='sm'
+                variant="outline"
+                size="sm"
                 onClick={() => onShare(filteredAndSortedEvents)}
                 disabled={filteredAndSortedEvents.length === 0}
-                aria-label='Compartir eventos'
+                aria-label="Compartir eventos"
               >
-                <Share2 className='w-4 h-4' />
+                <Share2 className="w-4 h-4" />
               </Button>
             )}
 
             {showViewToggle && (
-              <div className='flex items-center gap-1 border rounded-md p-1'>
+              <div className="flex items-center gap-1 border rounded-md p-1">
                 <Button
-                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                  size='sm'
-                  onClick={() => setViewMode('grid')}
-                  aria-label='Vista de cuadrícula'
-                  className='h-8 w-8 p-0'
+                  variant={viewMode === "grid" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("grid")}
+                  aria-label="Vista de cuadrícula"
+                  className="h-8 w-8 p-0"
                 >
-                  <Grid className='w-4 h-4' />
+                  <Grid className="w-4 h-4" />
                 </Button>
                 <Button
-                  variant={viewMode === 'list' ? 'default' : 'ghost'}
-                  size='sm'
-                  onClick={() => setViewMode('list')}
-                  aria-label='Vista de lista'
-                  className='h-8 w-8 p-0'
+                  variant={viewMode === "list" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("list")}
+                  aria-label="Vista de lista"
+                  className="h-8 w-8 p-0"
                 >
-                  <List className='w-4 h-4' />
+                  <List className="w-4 h-4" />
                 </Button>
               </div>
             )}
@@ -662,13 +650,13 @@ export default function EventList({
 
       {/* Search and filters */}
       {(showSearch || showFilters) && (
-        <div className='space-y-4'>
+        <div className="space-y-4">
           {/* Search bar */}
           {showSearch && (
-            <div className='relative'>
-              <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4' />
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
-                placeholder='Buscar eventos por título, descripción, ubicación o grupo organizador...'
+                placeholder="Buscar eventos por título, descripción, ubicación o grupo organizador..."
                 value={searchQuery ?? searchTerm}
                 onChange={e => {
                   const value = e.target.value;
@@ -678,19 +666,19 @@ export default function EventList({
                     setSearchTerm(value);
                   }
                 }}
-                className='pl-10'
-                aria-label='Buscar eventos'
+                className="pl-10"
+                aria-label="Buscar eventos"
               />
             </div>
           )}
 
           {/* Quick filters */}
           {enableQuickFilters && (
-            <div className='space-y-2'>
-              <div className='text-sm font-medium text-muted-foreground'>
+            <div className="space-y-2">
+              <div className="text-sm font-medium text-muted-foreground">
                 Filtros rápidos:
               </div>
-              <div className='flex flex-wrap gap-2'>
+              <div className="flex flex-wrap gap-2">
                 {QUICK_FILTERS.map(filter => {
                   const Icon = filter.icon;
                   const isActive = activeQuickFilter === filter.id;
@@ -698,15 +686,15 @@ export default function EventList({
                   return (
                     <Button
                       key={filter.id}
-                      variant={isActive ? 'default' : 'outline'}
-                      size='sm'
+                      variant={isActive ? "default" : "outline"}
+                      size="sm"
                       onClick={() => handleQuickFilter(filter.id)}
-                      className='flex items-center gap-2 text-xs'
+                      className="flex items-center gap-2 text-xs"
                       title={filter.description}
                     >
-                      <Icon className='w-3 h-3' />
+                      <Icon className="w-3 h-3" />
                       {filter.label}
-                      {isActive && <X className='w-3 h-3' />}
+                      {isActive && <X className="w-3 h-3" />}
                     </Button>
                   );
                 })}
@@ -716,42 +704,42 @@ export default function EventList({
 
           {/* Filters row */}
           {showFilters && (
-            <div className='flex flex-col sm:flex-row gap-4 items-start sm:items-center'>
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
               {/* Filter toggle button for mobile */}
-              <div className='flex items-center gap-2 sm:hidden'>
+              <div className="flex items-center gap-2 sm:hidden">
                 <Button
-                  variant='outline'
-                  size='sm'
+                  variant="outline"
+                  size="sm"
                   onClick={() => setShowFiltersPanel(!showFiltersPanel)}
-                  className='flex items-center gap-2'
+                  className="flex items-center gap-2"
                 >
-                  <Filter className='w-4 h-4' />
+                  <Filter className="w-4 h-4" />
                   Filtros
                   {activeFiltersCount > 0 && (
-                    <Badge variant='secondary' className='ml-1'>
+                    <Badge variant="secondary" className="ml-1">
                       {activeFiltersCount}
                     </Badge>
                   )}
                   <ChevronDown
-                    className={`w-4 h-4 transition-transform ${showFiltersPanel ? 'rotate-180' : ''}`}
+                    className={`w-4 h-4 transition-transform ${showFiltersPanel ? "rotate-180" : ""}`}
                   />
                 </Button>
               </div>
 
               {/* Desktop filters */}
               <div
-                className={`flex flex-wrap gap-2 ${showFiltersPanel ? 'block' : 'hidden sm:flex'}`}
+                className={`flex flex-wrap gap-2 ${showFiltersPanel ? "block" : "hidden sm:flex"}`}
               >
                 {/* Sort dropdown */}
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className='w-[200px]'>
-                    <SelectValue placeholder='Ordenar por' />
+                  <SelectTrigger className="w-[200px]">
+                    <SelectValue placeholder="Ordenar por" />
                   </SelectTrigger>
                   <SelectContent>
                     {SORT_OPTIONS.map(option => (
                       <SelectItem key={option.value} value={option.value}>
-                        <div className='flex items-center gap-2'>
-                          {option.icon && <option.icon className='w-4 h-4' />}
+                        <div className="flex items-center gap-2">
+                          {option.icon && <option.icon className="w-4 h-4" />}
                           {option.label}
                         </div>
                       </SelectItem>
@@ -766,42 +754,42 @@ export default function EventList({
                     if (onFilterChange) {
                       // Map time filter to date range
                       const now = new Date();
-                      let startDate = '';
-                      let endDate = '';
+                      let startDate = "";
+                      let endDate = "";
 
                       switch (value) {
-                        case 'today':
-                          startDate = now.toISOString().split('T')[0];
-                          endDate = now.toISOString().split('T')[0];
+                        case "today":
+                          startDate = now.toISOString().split("T")[0];
+                          endDate = now.toISOString().split("T")[0];
                           break;
-                        case 'tomorrow': {
+                        case "tomorrow": {
                           const tomorrow = new Date(now);
                           tomorrow.setDate(tomorrow.getDate() + 1);
-                          startDate = tomorrow.toISOString().split('T')[0];
-                          endDate = tomorrow.toISOString().split('T')[0];
+                          startDate = tomorrow.toISOString().split("T")[0];
+                          endDate = tomorrow.toISOString().split("T")[0];
                           break;
                         }
-                        case 'this_week': {
+                        case "this_week": {
                           const startOfWeek = new Date(now);
                           startOfWeek.setDate(now.getDate() - now.getDay());
                           const endOfWeek = new Date(startOfWeek);
                           endOfWeek.setDate(startOfWeek.getDate() + 6);
-                          startDate = startOfWeek.toISOString().split('T')[0];
-                          endDate = endOfWeek.toISOString().split('T')[0];
+                          startDate = startOfWeek.toISOString().split("T")[0];
+                          endDate = endOfWeek.toISOString().split("T")[0];
                           break;
                         }
-                        case 'next_week': {
+                        case "next_week": {
                           const nextWeekStart = new Date(now);
                           nextWeekStart.setDate(
                             now.getDate() - now.getDay() + 7
                           );
                           const nextWeekEnd = new Date(nextWeekStart);
                           nextWeekEnd.setDate(nextWeekStart.getDate() + 6);
-                          startDate = nextWeekStart.toISOString().split('T')[0];
-                          endDate = nextWeekEnd.toISOString().split('T')[0];
+                          startDate = nextWeekStart.toISOString().split("T")[0];
+                          endDate = nextWeekEnd.toISOString().split("T")[0];
                           break;
                         }
-                        case 'this_month': {
+                        case "this_month": {
                           const startOfMonth = new Date(
                             now.getFullYear(),
                             now.getMonth(),
@@ -812,11 +800,11 @@ export default function EventList({
                             now.getMonth() + 1,
                             0
                           );
-                          startDate = startOfMonth.toISOString().split('T')[0];
-                          endDate = endOfMonth.toISOString().split('T')[0];
+                          startDate = startOfMonth.toISOString().split("T")[0];
+                          endDate = endOfMonth.toISOString().split("T")[0];
                           break;
                         }
-                        case 'next_month': {
+                        case "next_month": {
                           const nextMonthStart = new Date(
                             now.getFullYear(),
                             now.getMonth() + 1,
@@ -829,8 +817,8 @@ export default function EventList({
                           );
                           startDate = nextMonthStart
                             .toISOString()
-                            .split('T')[0];
-                          endDate = nextMonthEnd.toISOString().split('T')[0];
+                            .split("T")[0];
+                          endDate = nextMonthEnd.toISOString().split("T")[0];
                           break;
                         }
                       }
@@ -844,8 +832,8 @@ export default function EventList({
                     }
                   }}
                 >
-                  <SelectTrigger className='w-[160px]'>
-                    <SelectValue placeholder='Cuándo' />
+                  <SelectTrigger className="w-[160px]">
+                    <SelectValue placeholder="Cuándo" />
                   </SelectTrigger>
                   <SelectContent>
                     {TIME_FILTERS.map(filter => (
@@ -862,15 +850,15 @@ export default function EventList({
                   onValueChange={value => {
                     if (onFilterChange) {
                       onFilterChange({
-                        status: value === 'all' ? undefined : value,
+                        status: value === "all" ? undefined : value,
                       });
                     } else {
                       setSelectedStatus(value);
                     }
                   }}
                 >
-                  <SelectTrigger className='w-[140px]'>
-                    <SelectValue placeholder='Estado' />
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder="Estado" />
                   </SelectTrigger>
                   <SelectContent>
                     {EVENT_STATUSES.map(status => (
@@ -884,12 +872,12 @@ export default function EventList({
                 {/* Clear filters */}
                 {activeFiltersCount > 0 && (
                   <Button
-                    variant='ghost'
-                    size='sm'
+                    variant="ghost"
+                    size="sm"
                     onClick={clearAllFilters}
-                    className='flex items-center gap-1'
+                    className="flex items-center gap-1"
                   >
-                    <X className='w-4 h-4' />
+                    <X className="w-4 h-4" />
                     Limpiar
                   </Button>
                 )}
@@ -900,104 +888,104 @@ export default function EventList({
           {/* Advanced filters panel */}
           {showFilters && (
             <div
-              className={`space-y-4 ${showFiltersPanel ? 'block' : 'hidden sm:block'}`}
+              className={`space-y-4 ${showFiltersPanel ? "block" : "hidden sm:block"}`}
             >
               {/* Event type filters */}
-              <div className='space-y-2'>
-                <div className='text-sm font-medium text-muted-foreground'>
+              <div className="space-y-2">
+                <div className="text-sm font-medium text-muted-foreground">
                   Tipos de evento:
                 </div>
-                <div className='flex flex-wrap gap-2'>
+                <div className="flex flex-wrap gap-2">
                   {EVENT_TYPES.map(type => (
                     <Button
                       key={type.value}
                       variant={
                         selectedTypes.includes(type.value)
-                          ? 'default'
-                          : 'outline'
+                          ? "default"
+                          : "outline"
                       }
-                      size='sm'
+                      size="sm"
                       onClick={() => handleTypeToggle(type.value)}
-                      className='text-xs'
+                      className="text-xs"
                     >
                       {type.label}
                       {selectedTypes.includes(type.value) &&
-                        type.value !== 'all' && <X className='w-3 h-3 ml-1' />}
+                        type.value !== "all" && <X className="w-3 h-3 ml-1" />}
                     </Button>
                   ))}
                 </div>
               </div>
 
               {/* Date range filters */}
-              <div className='space-y-3'>
-                <div className='flex items-center justify-between'>
-                  <div className='text-sm font-medium text-muted-foreground'>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm font-medium text-muted-foreground">
                     Rango de fechas:
                   </div>
                   <Button
-                    variant='ghost'
-                    size='sm'
+                    variant="ghost"
+                    size="sm"
                     onClick={() => setShowDateRange(!showDateRange)}
-                    className='flex items-center gap-2 text-xs'
+                    className="flex items-center gap-2 text-xs"
                   >
-                    <CalendarDays className='w-3 h-3' />
-                    {showDateRange ? 'Ocultar' : 'Mostrar'} calendario
+                    <CalendarDays className="w-3 h-3" />
+                    {showDateRange ? "Ocultar" : "Mostrar"} calendario
                   </Button>
                 </div>
 
                 {showDateRange && (
-                  <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg border'>
-                    <div className='space-y-2'>
-                      <label className='text-sm font-medium text-muted-foreground flex items-center gap-2'>
-                        <Calendar className='w-4 h-4' />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg border">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
                         Desde:
                       </label>
                       <Input
-                        type='date'
+                        type="date"
                         value={startDate}
                         onChange={e => setStartDate(e.target.value)}
-                        className='w-full'
-                        min={new Date().toISOString().split('T')[0]}
-                        aria-label='Fecha de inicio del rango'
+                        className="w-full"
+                        min={new Date().toISOString().split("T")[0]}
+                        aria-label="Fecha de inicio del rango"
                       />
                     </div>
-                    <div className='space-y-2'>
-                      <label className='text-sm font-medium text-muted-foreground flex items-center gap-2'>
-                        <Calendar className='w-4 h-4' />
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
                         Hasta:
                       </label>
                       <Input
-                        type='date'
+                        type="date"
                         value={endDate}
                         onChange={e => setEndDate(e.target.value)}
-                        className='w-full'
+                        className="w-full"
                         min={
-                          startDate || new Date().toISOString().split('T')[0]
+                          startDate || new Date().toISOString().split("T")[0]
                         }
-                        aria-label='Fecha de fin del rango'
+                        aria-label="Fecha de fin del rango"
                       />
                     </div>
                     {(startDate || endDate) && (
-                      <div className='col-span-full flex items-center gap-2'>
+                      <div className="col-span-full flex items-center gap-2">
                         <Button
-                          variant='ghost'
-                          size='sm'
+                          variant="ghost"
+                          size="sm"
                           onClick={() => {
-                            setStartDate('');
-                            setEndDate('');
+                            setStartDate("");
+                            setEndDate("");
                           }}
-                          className='text-xs'
+                          className="text-xs"
                         >
-                          <X className='w-3 h-3 mr-1' />
+                          <X className="w-3 h-3 mr-1" />
                           Limpiar fechas
                         </Button>
                         {(startDate || endDate) && (
-                          <span className='text-xs text-muted-foreground'>
+                          <span className="text-xs text-muted-foreground">
                             {startDate && endDate
-                              ? `Mostrando eventos del ${new Date(startDate).toLocaleDateString('es-ES')} al ${new Date(endDate).toLocaleDateString('es-ES')}`
+                              ? `Mostrando eventos del ${new Date(startDate).toLocaleDateString("es-ES")} al ${new Date(endDate).toLocaleDateString("es-ES")}`
                               : startDate
-                                ? `Mostrando eventos desde el ${new Date(startDate).toLocaleDateString('es-ES')}`
-                                : `Mostrando eventos hasta el ${new Date(endDate).toLocaleDateString('es-ES')}`}
+                                ? `Mostrando eventos desde el ${new Date(startDate).toLocaleDateString("es-ES")}`
+                                : `Mostrando eventos hasta el ${new Date(endDate).toLocaleDateString("es-ES")}`}
                           </span>
                         )}
                       </div>
@@ -1007,8 +995,8 @@ export default function EventList({
               </div>
 
               {/* Additional filter toggles */}
-              <div className='flex flex-wrap items-center gap-4'>
-                <label className='flex items-center gap-2 text-sm cursor-pointer'>
+              <div className="flex flex-wrap items-center gap-4">
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
                   <Checkbox
                     checked={requiresRegistrationOnly}
                     onCheckedChange={checked =>
@@ -1017,7 +1005,7 @@ export default function EventList({
                   />
                   Solo con registro
                 </label>
-                <label className='flex items-center gap-2 text-sm cursor-pointer'>
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
                   <Checkbox
                     checked={availableOnly}
                     onCheckedChange={checked =>
@@ -1026,7 +1014,7 @@ export default function EventList({
                   />
                   Solo disponibles
                 </label>
-                <label className='flex items-center gap-2 text-sm cursor-pointer'>
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
                   <Checkbox
                     checked={myEventsOnly}
                     onCheckedChange={checked =>
@@ -1035,7 +1023,7 @@ export default function EventList({
                   />
                   Mis eventos
                 </label>
-                <label className='flex items-center gap-2 text-sm cursor-pointer'>
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
                   <Checkbox
                     checked={upcomingOnly}
                     onCheckedChange={checked =>
@@ -1050,13 +1038,13 @@ export default function EventList({
 
           {/* Active filters summary */}
           {activeFiltersCount > 0 && (
-            <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-              <Filter className='w-4 h-4' />
-              {activeFiltersCount} filtro{activeFiltersCount > 1 ? 's' : ''}{' '}
-              activo{activeFiltersCount > 1 ? 's' : ''}
-              {!selectedTypes.includes('all') && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Filter className="w-4 h-4" />
+              {activeFiltersCount} filtro{activeFiltersCount > 1 ? "s" : ""}{" "}
+              activo{activeFiltersCount > 1 ? "s" : ""}
+              {!selectedTypes.includes("all") && (
                 <span>
-                  • Tipos:{' '}
+                  • Tipos:{" "}
                   {selectedTypes
                     .map(
                       type =>
@@ -1064,12 +1052,12 @@ export default function EventList({
                           type as keyof typeof EVENT_TYPE_LABELS
                         ]
                     )
-                    .join(', ')}
+                    .join(", ")}
                 </span>
               )}
-              {timeFilter !== 'all' && (
+              {timeFilter !== "all" && (
                 <span>
-                  • Tiempo:{' '}
+                  • Tiempo:{" "}
                   {TIME_FILTERS.find(f => f.value === timeFilter)?.label}
                 </span>
               )}
@@ -1080,20 +1068,20 @@ export default function EventList({
 
       {/* Results */}
       {filteredAndSortedEvents.length === 0 ? (
-        <div className='text-center py-12'>
-          <div className='w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center'>
-            <Calendar className='w-8 h-8 text-muted-foreground' />
+        <div className="text-center py-12">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+            <Calendar className="w-8 h-8 text-muted-foreground" />
           </div>
-          <h3 className='text-lg font-semibold mb-2'>
+          <h3 className="text-lg font-semibold mb-2">
             No se encontraron eventos
           </h3>
-          <p className='text-muted-foreground mb-4'>
+          <p className="text-muted-foreground mb-4">
             {activeFiltersCount > 0
-              ? 'Intenta ajustar los filtros de búsqueda'
+              ? "Intenta ajustar los filtros de búsqueda"
               : emptyMessage}
           </p>
           {activeFiltersCount > 0 && (
-            <Button variant='outline' onClick={clearAllFilters}>
+            <Button variant="outline" onClick={clearAllFilters}>
               Limpiar filtros
             </Button>
           )}
@@ -1103,16 +1091,16 @@ export default function EventList({
           {/* Events grid/list */}
           <div
             className={
-              viewMode === 'grid'
-                ? `grid grid-cols-1 ${variant === 'compact' ? 'md:grid-cols-2 lg:grid-cols-4' : 'md:grid-cols-2 lg:grid-cols-3'} gap-4`
-                : 'space-y-4'
+              viewMode === "grid"
+                ? `grid grid-cols-1 ${variant === "compact" ? "md:grid-cols-2 lg:grid-cols-4" : "md:grid-cols-2 lg:grid-cols-3"} gap-4`
+                : "space-y-4"
             }
           >
             {paginatedEvents.map(event => (
               <EventCard
                 key={event.event_id}
                 event={event}
-                variant={viewMode === 'list' ? 'compact' : variant}
+                variant={viewMode === "list" ? "compact" : variant}
                 onRegister={onRegister}
                 onUnregister={onUnregister}
                 onView={onView}
@@ -1123,26 +1111,26 @@ export default function EventList({
 
           {/* Pagination */}
           {enablePagination && totalPages > 1 && (
-            <div className='flex items-center justify-between'>
-              <div className='text-sm text-muted-foreground'>
-                Mostrando {(currentPage - 1) * itemsPerPage + 1} -{' '}
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-muted-foreground">
+                Mostrando {(currentPage - 1) * itemsPerPage + 1} -{" "}
                 {Math.min(
                   currentPage * itemsPerPage,
                   filteredAndSortedEvents.length
-                )}{' '}
+                )}{" "}
                 de {filteredAndSortedEvents.length} eventos
               </div>
-              <div className='flex items-center gap-2'>
+              <div className="flex items-center gap-2">
                 <Button
-                  variant='outline'
-                  size='sm'
+                  variant="outline"
+                  size="sm"
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                   disabled={!hasPrevPage}
-                  aria-label='Página anterior'
+                  aria-label="Página anterior"
                 >
-                  <ChevronLeft className='w-4 h-4' />
+                  <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <div className='flex items-center gap-1'>
+                <div className="flex items-center gap-1">
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     let pageNum;
                     if (totalPages <= 5) {
@@ -1159,11 +1147,11 @@ export default function EventList({
                       <Button
                         key={pageNum}
                         variant={
-                          currentPage === pageNum ? 'default' : 'outline'
+                          currentPage === pageNum ? "default" : "outline"
                         }
-                        size='sm'
+                        size="sm"
                         onClick={() => setCurrentPage(pageNum)}
-                        className='w-8 h-8 p-0'
+                        className="w-8 h-8 p-0"
                       >
                         {pageNum}
                       </Button>
@@ -1171,15 +1159,15 @@ export default function EventList({
                   })}
                 </div>
                 <Button
-                  variant='outline'
-                  size='sm'
+                  variant="outline"
+                  size="sm"
                   onClick={() =>
                     setCurrentPage(prev => Math.min(totalPages, prev + 1))
                   }
                   disabled={!hasNextPage}
-                  aria-label='Página siguiente'
+                  aria-label="Página siguiente"
                 >
-                  <ChevronRight className='w-4 h-4' />
+                  <ChevronRight className="w-4 h-4" />
                 </Button>
               </div>
             </div>
@@ -1187,8 +1175,8 @@ export default function EventList({
 
           {/* Results summary */}
           {!enablePagination && (
-            <div className='text-center text-sm text-muted-foreground'>
-              Mostrando {filteredAndSortedEvents.length} de{' '}
+            <div className="text-center text-sm text-muted-foreground">
+              Mostrando {filteredAndSortedEvents.length} de{" "}
               {events?.length || 0} eventos
             </div>
           )}

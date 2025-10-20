@@ -1,6 +1,6 @@
-import { useCallback, useState } from 'react';
-import type { z } from 'zod';
-import { formatZodErrors } from '@/lib/validations/forms';
+import { useCallback, useState } from "react";
+import type { z } from "zod";
+import { formatZodErrors } from "@/lib/validations/forms";
 
 interface UseFormOptions<T> {
   initialValues: T;

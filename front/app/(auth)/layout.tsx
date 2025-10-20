@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import type React from 'react';
-import AuthLayoutWrapper from '@/components/auth/AuthLayoutWrapper';
+import type React from "react";
+import AuthLayoutWrapper from "@/components/auth/AuthLayoutWrapper";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -16,7 +16,7 @@ export default function AuthGroupLayout({ children }: AuthLayoutProps) {
     <AuthLayoutWrapper
       showHeader={true}
       showLoadingState={true}
-      loadingMessage='Verificando autenticación...'
+      loadingMessage="Verificando autenticación..."
     >
       {children}
     </AuthLayoutWrapper>

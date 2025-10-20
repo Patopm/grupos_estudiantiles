@@ -1,9 +1,9 @@
-import { faCalendarAlt, faUser } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type React from 'react';
-import { Card } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
+import { faCalendarAlt, faUser } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type React from "react";
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 interface UserTypeSelectorProps {
   value: string;
@@ -15,71 +15,71 @@ export default function UserTypeSelector({
   onChange,
 }: UserTypeSelectorProps) {
   return (
-    <div className='space-y-3'>
-      <Label className='text-sm font-medium'>I want to join as:</Label>
-      <div className='grid grid-cols-2 gap-3'>
-        <label className='relative cursor-pointer'>
+    <div className="space-y-3">
+      <Label className="text-sm font-medium">I want to join as:</Label>
+      <div className="grid grid-cols-2 gap-3">
+        <label className="relative cursor-pointer">
           <input
-            type='radio'
-            name='userType'
-            value='student'
-            checked={value === 'student'}
+            type="radio"
+            name="userType"
+            value="student"
+            checked={value === "student"}
             onChange={onChange}
-            className='sr-only'
+            className="sr-only"
           />
           <Card
             className={cn(
-              'p-4 border-2 transition-colors hover:bg-accent/50',
-              value === 'student'
-                ? 'border-primary bg-primary/5'
-                : 'border-border hover:border-primary/50'
+              "p-4 border-2 transition-colors hover:bg-accent/50",
+              value === "student"
+                ? "border-primary bg-primary/5"
+                : "border-border hover:border-primary/50"
             )}
           >
-            <div className='text-center space-y-2'>
+            <div className="text-center space-y-2">
               <FontAwesomeIcon
                 icon={faUser}
                 className={cn(
-                  'h-6 w-6',
-                  value === 'student' ? 'text-primary' : 'text-muted-foreground'
+                  "h-6 w-6",
+                  value === "student" ? "text-primary" : "text-muted-foreground"
                 )}
               />
               <div>
-                <div className='text-sm font-medium'>Student</div>
-                <div className='text-xs text-muted-foreground'>Join events</div>
+                <div className="text-sm font-medium">Student</div>
+                <div className="text-xs text-muted-foreground">Join events</div>
               </div>
             </div>
           </Card>
         </label>
-        <label className='relative cursor-pointer'>
+        <label className="relative cursor-pointer">
           <input
-            type='radio'
-            name='userType'
-            value='organizer'
-            checked={value === 'organizer'}
+            type="radio"
+            name="userType"
+            value="organizer"
+            checked={value === "organizer"}
             onChange={onChange}
-            className='sr-only'
+            className="sr-only"
           />
           <Card
             className={cn(
-              'p-4 border-2 transition-colors hover:bg-accent/50',
-              value === 'organizer'
-                ? 'border-primary bg-primary/5'
-                : 'border-border hover:border-primary/50'
+              "p-4 border-2 transition-colors hover:bg-accent/50",
+              value === "organizer"
+                ? "border-primary bg-primary/5"
+                : "border-border hover:border-primary/50"
             )}
           >
-            <div className='text-center space-y-2'>
+            <div className="text-center space-y-2">
               <FontAwesomeIcon
                 icon={faCalendarAlt}
                 className={cn(
-                  'h-6 w-6',
-                  value === 'organizer'
-                    ? 'text-primary'
-                    : 'text-muted-foreground'
+                  "h-6 w-6",
+                  value === "organizer"
+                    ? "text-primary"
+                    : "text-muted-foreground"
                 )}
               />
               <div>
-                <div className='text-sm font-medium'>Organizer</div>
-                <div className='text-xs text-muted-foreground'>
+                <div className="text-sm font-medium">Organizer</div>
+                <div className="text-xs text-muted-foreground">
                   Create events
                 </div>
               </div>

@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
-import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { MyEventsContent } from '@/components/events';
-import { ProtectedRoute } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
-import { type Event, type EventFilters, eventsApi } from '@/lib/api/events';
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import { MyEventsContent } from "@/components/events";
+import { ProtectedRoute } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { type Event, type EventFilters, eventsApi } from "@/lib/api/events";
 
 export default function MyEventsPage() {
   return (
-    <ProtectedRoute allowedRoles={['student']}>
+    <ProtectedRoute allowedRoles={["student"]}>
       <MyEventsPageContent />
     </ProtectedRoute>
   );
@@ -23,7 +23,7 @@ function MyEventsPageContent() {
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState<EventFilters>({ my_events: true });
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   const loadMyEvents = useCallback(async () => {
     try {
@@ -31,16 +31,16 @@ function MyEventsPageContent() {
       const eventsData = await eventsApi.getMyEvents();
       setEvents(eventsData);
     } catch (error) {
-      console.error('Error loading my events:', error);
+      console.error("Error loading my events:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudieron cargar tus eventos',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudieron cargar tus eventos",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [toast]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     loadMyEvents();
@@ -68,17 +68,17 @@ function MyEventsPageContent() {
     try {
       await eventsApi.unregister(eventId);
       toast({
-        title: 'Cancelación Exitosa',
-        description: 'Te has desregistrado del evento',
+        title: "Cancelación Exitosa",
+        description: "Te has desregistrado del evento",
       });
       // Refresh events to update registration status
       loadMyEvents();
     } catch (error) {
-      console.error('Error unregistering from event:', error);
+      console.error("Error unregistering from event:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudo cancelar el registro',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudo cancelar el registro",
+        variant: "destructive",
       });
     }
   };
@@ -88,21 +88,22 @@ function MyEventsPageContent() {
   };
 
   return (
-    <div className='min-h-screen bg-background'>
+    <div className="min-h-screen bg-background">
       <DashboardHeader
-        title='Mis Eventos'
-        description='Gestiona tus eventos registrados y revisa tu historial de asistencia'
+        title="Mis Eventos"
+        description="Gestiona tus eventos registrados y revisa tu historial de asistencia"
         actions={
           <button
-            onClick={() => router.push('/dashboard/student/events')}
-            className='px-4 py-2 text-sm bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors'
+            type="button"
+            onClick={() => router.push("/dashboard/student/events")}
+            className="px-4 py-2 text-sm bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 transition-colors"
           >
             Descubrir Eventos
           </button>
         }
       />
 
-      <div className='max-w-7xl mx-auto p-6'>
+      <div className="max-w-7xl mx-auto p-6">
         <MyEventsContent
           events={events}
           isLoading={isLoading}

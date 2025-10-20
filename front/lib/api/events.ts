@@ -1,4 +1,4 @@
-import { type ApiPaginatedResponse, apiClient } from './client';
+import { type ApiPaginatedResponse, apiClient } from "./client";
 
 /**
  * Events API Client and Data Models
@@ -20,15 +20,15 @@ export interface Event {
   title: string;
   description: string;
   event_type:
-    | 'academic'
-    | 'social'
-    | 'sports'
-    | 'cultural'
-    | 'meeting'
-    | 'workshop'
-    | 'conference'
-    | 'other';
-  status: 'draft' | 'published' | 'cancelled' | 'completed';
+    | "academic"
+    | "social"
+    | "sports"
+    | "cultural"
+    | "meeting"
+    | "workshop"
+    | "conference"
+    | "other";
+  status: "draft" | "published" | "cancelled" | "completed";
   start_datetime: string;
   end_datetime: string;
   location: string;
@@ -57,11 +57,11 @@ export interface Event {
   registration_open?: boolean;
   duration_hours?: number;
   user_attendance_status?:
-    | 'registered'
-    | 'confirmed'
-    | 'attended'
-    | 'no_show'
-    | 'cancelled'
+    | "registered"
+    | "confirmed"
+    | "attended"
+    | "no_show"
+    | "cancelled"
     | null;
   // Computed property for backward compatibility
   is_registered?: boolean;
@@ -80,12 +80,12 @@ export interface EventAttendee {
     is_active_student?: boolean;
   };
   status:
-    | 'registered'
-    | 'confirmed'
-    | 'attended'
-    | 'no_show'
-    | 'cancelled'
-    | 'pending';
+    | "registered"
+    | "confirmed"
+    | "attended"
+    | "no_show"
+    | "cancelled"
+    | "pending";
   registration_date: string;
   notes?: string;
   updated_at: string;
@@ -94,7 +94,7 @@ export interface EventAttendee {
 export interface CreateEventFormData {
   title: string;
   description: string;
-  event_type: Event['event_type'];
+  event_type: Event["event_type"];
   start_datetime: string;
   end_datetime: string;
   location: string;
@@ -106,7 +106,7 @@ export interface CreateEventFormData {
 }
 
 export interface UpdateEventFormData extends Partial<CreateEventFormData> {
-  status?: Event['status'];
+  status?: Event["status"];
 }
 
 // Additional interfaces for enhanced functionality
@@ -123,7 +123,7 @@ export interface EventDetailData extends Event {
 
 export interface RegistrationActivity {
   id: string;
-  action: 'registered' | 'unregistered' | 'confirmed' | 'attended' | 'no_show';
+  action: "registered" | "unregistered" | "confirmed" | "attended" | "no_show";
   date: string;
   user_name: string;
   details?: string;
@@ -146,7 +146,7 @@ export interface PresidentEventStats {
 // Utility types for component props
 export interface EventCardProps {
   event: Event;
-  variant?: 'default' | 'compact' | 'detailed';
+  variant?: "default" | "compact" | "detailed";
   showActions?: boolean;
   onRegister?: (eventId: string) => void;
   onUnregister?: (eventId: string) => void;
@@ -160,7 +160,7 @@ export interface EventListProps {
   showSearch?: boolean;
   showFilters?: boolean;
   showViewToggle?: boolean;
-  variant?: 'default' | 'compact';
+  variant?: "default" | "compact";
   emptyMessage?: string;
   onRegister?: (eventId: string) => void;
   onUnregister?: (eventId: string) => void;
@@ -193,99 +193,99 @@ export interface EventFilters {
 }
 
 // Type definitions for better type safety
-export type EventType = Event['event_type'];
-export type EventStatus = Event['status'];
+export type EventType = Event["event_type"];
+export type EventStatus = Event["status"];
 export type AttendanceStatus =
-  | 'registered'
-  | 'confirmed'
-  | 'attended'
-  | 'no_show'
-  | 'cancelled'
-  | 'pending';
+  | "registered"
+  | "confirmed"
+  | "attended"
+  | "no_show"
+  | "cancelled"
+  | "pending";
 
 // Enums for event types and statuses (using proper TypeScript enums)
 export enum EventTypeEnum {
-  ACADEMIC = 'academic',
-  SOCIAL = 'social',
-  SPORTS = 'sports',
-  CULTURAL = 'cultural',
-  MEETING = 'meeting',
-  WORKSHOP = 'workshop',
-  CONFERENCE = 'conference',
-  OTHER = 'other',
+  ACADEMIC = "academic",
+  SOCIAL = "social",
+  SPORTS = "sports",
+  CULTURAL = "cultural",
+  MEETING = "meeting",
+  WORKSHOP = "workshop",
+  CONFERENCE = "conference",
+  OTHER = "other",
 }
 
 export enum EventStatusEnum {
-  DRAFT = 'draft',
-  PUBLISHED = 'published',
-  CANCELLED = 'cancelled',
-  COMPLETED = 'completed',
+  DRAFT = "draft",
+  PUBLISHED = "published",
+  CANCELLED = "cancelled",
+  COMPLETED = "completed",
 }
 
 export enum AttendanceStatusEnum {
-  REGISTERED = 'registered',
-  CONFIRMED = 'confirmed',
-  ATTENDED = 'attended',
-  NO_SHOW = 'no_show',
-  CANCELLED = 'cancelled',
-  PENDING = 'pending',
+  REGISTERED = "registered",
+  CONFIRMED = "confirmed",
+  ATTENDED = "attended",
+  NO_SHOW = "no_show",
+  CANCELLED = "cancelled",
+  PENDING = "pending",
 }
 
 // Const objects for backward compatibility and easier usage
 export const EVENT_TYPES = {
-  ACADEMIC: 'academic' as const,
-  SOCIAL: 'social' as const,
-  SPORTS: 'sports' as const,
-  CULTURAL: 'cultural' as const,
-  MEETING: 'meeting' as const,
-  WORKSHOP: 'workshop' as const,
-  CONFERENCE: 'conference' as const,
-  OTHER: 'other' as const,
+  ACADEMIC: "academic" as const,
+  SOCIAL: "social" as const,
+  SPORTS: "sports" as const,
+  CULTURAL: "cultural" as const,
+  MEETING: "meeting" as const,
+  WORKSHOP: "workshop" as const,
+  CONFERENCE: "conference" as const,
+  OTHER: "other" as const,
 } as const;
 
 export const EVENT_STATUSES = {
-  DRAFT: 'draft' as const,
-  PUBLISHED: 'published' as const,
-  CANCELLED: 'cancelled' as const,
-  COMPLETED: 'completed' as const,
+  DRAFT: "draft" as const,
+  PUBLISHED: "published" as const,
+  CANCELLED: "cancelled" as const,
+  COMPLETED: "completed" as const,
 } as const;
 
 export const ATTENDANCE_STATUSES = {
-  REGISTERED: 'registered' as const,
-  CONFIRMED: 'confirmed' as const,
-  ATTENDED: 'attended' as const,
-  NO_SHOW: 'no_show' as const,
-  CANCELLED: 'cancelled' as const,
+  REGISTERED: "registered" as const,
+  CONFIRMED: "confirmed" as const,
+  ATTENDED: "attended" as const,
+  NO_SHOW: "no_show" as const,
+  CANCELLED: "cancelled" as const,
 } as const;
 
 // Event type labels for UI display
 export const EVENT_TYPE_LABELS: Record<EventType, string> = {
-  academic: 'Académico',
-  social: 'Social',
-  sports: 'Deportivo',
-  cultural: 'Cultural',
-  meeting: 'Reunión',
-  workshop: 'Taller',
-  conference: 'Conferencia',
-  other: 'Otro',
+  academic: "Académico",
+  social: "Social",
+  sports: "Deportivo",
+  cultural: "Cultural",
+  meeting: "Reunión",
+  workshop: "Taller",
+  conference: "Conferencia",
+  other: "Otro",
 };
 
 // Event status labels for UI display
 export const EVENT_STATUS_LABELS: Record<EventStatus, string> = {
-  draft: 'Borrador',
-  published: 'Publicado',
-  cancelled: 'Cancelado',
-  completed: 'Completado',
+  draft: "Borrador",
+  published: "Publicado",
+  cancelled: "Cancelado",
+  completed: "Completado",
 };
 
 // Attendance status labels for UI display
 export const ATTENDANCE_STATUS_LABELS: Record<AttendanceStatus, string> = {
-  registered: 'Registrado',
-  confirmed: 'Confirmado',
-  attended: 'Asistió',
-  no_show: 'No asistió',
-  cancelled: 'Cancelado',
-  pending: 'Pendiente',
+  registered: "Registrado",
+  confirmed: "Confirmado",
+  attended: "Asistió",
+  no_show: "No asistió",
+  cancelled: "Cancelado",
+  pending: "Pendiente",
 };
 
 /**
@@ -301,13 +301,13 @@ export const eventsApi = {
   getAll: async (filters?: EventFilters): Promise<Event[]> => {
     const params = new URLSearchParams();
 
-    if (filters?.search) params.append('search', filters.search);
-    if (filters?.type) params.append('type', filters.type);
-    if (filters?.status) params.append('status', filters.status);
-    if (filters?.start_date) params.append('start_date', filters.start_date);
-    if (filters?.end_date) params.append('end_date', filters.end_date);
-    if (filters?.group_id) params.append('group_id', filters.group_id);
-    if (filters?.my_events) params.append('my_events', 'true');
+    if (filters?.search) params.append("search", filters.search);
+    if (filters?.type) params.append("type", filters.type);
+    if (filters?.status) params.append("status", filters.status);
+    if (filters?.start_date) params.append("start_date", filters.start_date);
+    if (filters?.end_date) params.append("end_date", filters.end_date);
+    if (filters?.group_id) params.append("group_id", filters.group_id);
+    if (filters?.my_events) params.append("my_events", "true");
 
     const response = await apiClient.get<ApiPaginatedResponse>(
       `/api/events/?${params}`
@@ -338,7 +338,7 @@ export const eventsApi = {
    */
   getMyEvents: async (): Promise<Event[]> => {
     const response = await apiClient.get<ApiPaginatedResponse>(
-      '/api/events/?my_events=true'
+      "/api/events/?my_events=true"
     );
     const events = response.results as Event[];
     return eventsApi.enhanceEventsData(events);
@@ -366,15 +366,17 @@ export const eventsApi = {
     // Add all form fields to FormData
     Object.entries(data).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        if (key === 'target_groups' && Array.isArray(value)) {
+        if (key === "target_groups" && Array.isArray(value)) {
           // Handle array of target group IDs
-          value.forEach(groupId => formData.append('target_groups', groupId));
-        } else if (key === 'image' && value instanceof File) {
+          value.forEach(groupId => {
+            formData.append("target_groups", groupId);
+          });
+        } else if (key === "image" && value instanceof File) {
           // Handle file upload
           formData.append(key, value);
         } else if (
-          key === 'requires_registration' &&
-          typeof value === 'boolean'
+          key === "requires_registration" &&
+          typeof value === "boolean"
         ) {
           // Handle boolean values
           formData.append(key, value.toString());
@@ -384,7 +386,7 @@ export const eventsApi = {
       }
     });
 
-    const event = await apiClient.post<Event>('/api/events/', formData, {
+    const event = await apiClient.post<Event>("/api/events/", formData, {
       headers: {
         // Don't set Content-Type for FormData - let browser set it with boundary
       },
@@ -402,15 +404,17 @@ export const eventsApi = {
     // Add all form fields to FormData
     Object.entries(data).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        if (key === 'target_groups' && Array.isArray(value)) {
+        if (key === "target_groups" && Array.isArray(value)) {
           // Handle array of target group IDs
-          value.forEach(groupId => formData.append('target_groups', groupId));
-        } else if (key === 'image' && value instanceof File) {
+          for (const groupId of value) {
+            formData.append("target_groups", groupId);
+          }
+        } else if (key === "image" && value instanceof File) {
           // Handle file upload
           formData.append(key, value);
         } else if (
-          key === 'requires_registration' &&
-          typeof value === 'boolean'
+          key === "requires_registration" &&
+          typeof value === "boolean"
         ) {
           // Handle boolean values
           formData.append(key, value.toString());
@@ -475,7 +479,7 @@ export const eventsApi = {
   handleAttendanceRequest: async (
     id: string,
     attendanceId: string,
-    action: 'approve' | 'reject'
+    action: "approve" | "reject"
   ): Promise<{ message: string }> => {
     return await apiClient.post(
       `/api/events/${id}/handle_attendance_request/`,
@@ -505,31 +509,31 @@ export const eventsApi = {
     if (!event.requires_registration) {
       return {
         canRegister: false,
-        reason: 'Event does not require registration',
+        reason: "Event does not require registration",
       };
     }
 
     if (event.user_attendance_status) {
       return {
         canRegister: false,
-        reason: 'Already registered for this event',
+        reason: "Already registered for this event",
       };
     }
 
     if (!event.registration_open) {
-      return { canRegister: false, reason: 'Registration is closed' };
+      return { canRegister: false, reason: "Registration is closed" };
     }
 
     if (event.is_full) {
-      return { canRegister: false, reason: 'Event is full' };
+      return { canRegister: false, reason: "Event is full" };
     }
 
     if (event.is_past) {
-      return { canRegister: false, reason: 'Event has already occurred' };
+      return { canRegister: false, reason: "Event has already occurred" };
     }
 
-    if (event.status !== 'published') {
-      return { canRegister: false, reason: 'Event is not published' };
+    if (event.status !== "published") {
+      return { canRegister: false, reason: "Event is not published" };
     }
 
     return { canRegister: true };
@@ -542,21 +546,21 @@ export const eventsApi = {
     const startDate = new Date(event.start_datetime);
     const endDate = new Date(event.end_datetime);
 
-    const date = startDate.toLocaleDateString('es-ES', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    const date = startDate.toLocaleDateString("es-ES", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
 
-    const startTime = startDate.toLocaleTimeString('es-ES', {
-      hour: '2-digit',
-      minute: '2-digit',
+    const startTime = startDate.toLocaleTimeString("es-ES", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
 
-    const endTime = endDate.toLocaleTimeString('es-ES', {
-      hour: '2-digit',
-      minute: '2-digit',
+    const endTime = endDate.toLocaleTimeString("es-ES", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
 
     const time = `${startTime} - ${endTime}`;
@@ -577,7 +581,7 @@ export const eventsApi = {
       ...event,
       is_registered: Boolean(
         event.user_attendance_status &&
-          ['registered', 'confirmed', 'attended'].includes(
+          ["registered", "confirmed", "attended"].includes(
             event.user_attendance_status
           )
       ),

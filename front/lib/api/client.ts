@@ -1,5 +1,5 @@
-import { TokenManager } from '../auth';
-import { generateCorrelationId, RetryManager } from '../errors/handlers';
+import { TokenManager } from "../auth";
+import { generateCorrelationId, RetryManager } from "../errors/handlers";
 
 // Enhanced API Error types
 export interface ApiError {
@@ -26,7 +26,7 @@ export interface ApiPaginatedResponse<T = unknown> {
 
 // HTTP client configuration
 interface RequestConfig {
-  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   headers?: Record<string, string>;
   body?: unknown;
   params?: Record<string, unknown>;
@@ -44,7 +44,7 @@ class ApiClient {
   private defaultTimeout: number = 30000; // 30 seconds
 
   constructor() {
-    this.baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    this.baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
   }
 
   private async request<T = unknown>(
@@ -52,7 +52,7 @@ class ApiClient {
     config: RequestConfig = {}
   ): Promise<T> {
     const {
-      method = 'GET',
+      method = "GET",
       headers = {},
       body,
       params,
@@ -73,20 +73,20 @@ class ApiClient {
 
     // Prepare headers
     const requestHeaders: Record<string, string> = {
-      'X-Correlation-ID': correlationId,
-      'X-Request-ID': generateCorrelationId(),
+      "X-Correlation-ID": correlationId,
+      "X-Request-ID": generateCorrelationId(),
       ...headers,
     };
 
     // Set Content-Type based on body type, unless explicitly overridden
-    if (!('Content-Type' in headers)) {
+    if (!("Content-Type" in headers)) {
       if (body instanceof FormData) {
         // Don't set Content-Type for FormData - let browser set it with boundary
       } else {
-        requestHeaders['Content-Type'] = 'application/json';
+        requestHeaders["Content-Type"] = "application/json";
       }
-    } else if (headers['Content-Type']) {
-      requestHeaders['Content-Type'] = headers['Content-Type'];
+    } else if (headers["Content-Type"]) {
+      requestHeaders["Content-Type"] = headers["Content-Type"];
     }
 
     // Add authentication token if available
@@ -103,7 +103,7 @@ class ApiClient {
     };
 
     // Add body for non-GET requests
-    if (body && method !== 'GET') {
+    if (body && method !== "GET") {
       if (body instanceof FormData) {
         requestOptions.body = body;
       } else {
@@ -117,9 +117,9 @@ class ApiClient {
 
         // Parse response data
         let data: T;
-        const contentType = response.headers.get('content-type');
+        const contentType = response.headers.get("content-type");
 
-        if (contentType && contentType.includes('application/json')) {
+        if (contentType?.includes("application/json")) {
           data = await response.json();
         } else {
           data = (await response.text()) as unknown as T;
@@ -131,7 +131,7 @@ class ApiClient {
             message: this.extractErrorMessage(data),
             status: response.status,
             details:
-              typeof data === 'object' ? (data as Record<string, unknown>) : {},
+              typeof data === "object" ? (data as Record<string, unknown>) : {},
             correlationId,
             retryable: this.isRetryableStatus(response.status),
             retryAfter: this.extractRetryAfter(response),
@@ -149,17 +149,17 @@ class ApiClient {
         // Handle network errors and other exceptions
         const isNetworkError =
           error instanceof Error &&
-          (error.name === 'AbortError' ||
-            error.name === 'TimeoutError' ||
-            error.message.includes('NetworkError') ||
-            error.message.includes('fetch'));
+          (error.name === "AbortError" ||
+            error.name === "TimeoutError" ||
+            error.message.includes("NetworkError") ||
+            error.message.includes("fetch"));
 
         const apiError: ApiError = {
           message: isNetworkError
-            ? 'Error de conexión. Verifica tu conexión a internet.'
+            ? "Error de conexión. Verifica tu conexión a internet."
             : error instanceof Error
               ? error.message
-              : 'Error inesperado',
+              : "Error inesperado",
           status: 0,
           details: { originalError: error },
           correlationId,
@@ -170,9 +170,9 @@ class ApiClient {
     };
 
     // Execute with retry if retryable
-    if (retryable && (method === 'GET' || method === 'POST')) {
+    if (retryable && (method === "GET" || method === "POST")) {
       return RetryManager.executeWithRetry(executeRequest, {
-        maxRetries: method === 'GET' ? 3 : 1, // More retries for GET requests
+        maxRetries: method === "GET" ? 3 : 1, // More retries for GET requests
         baseDelay: 1000,
         maxDelay: 10000,
         backoffMultiplier: 2,
@@ -184,17 +184,17 @@ class ApiClient {
   }
 
   private extractErrorMessage(data: unknown): string {
-    if (typeof data === 'string') {
+    if (typeof data === "string") {
       return data;
     }
 
-    if (typeof data === 'object' && data !== null) {
+    if (typeof data === "object" && data !== null) {
       const errorObj = data as Record<string, unknown>;
 
       // Common error message fields
-      if (typeof errorObj.message === 'string') return errorObj.message;
-      if (typeof errorObj.detail === 'string') return errorObj.detail;
-      if (typeof errorObj.error === 'string') return errorObj.error;
+      if (typeof errorObj.message === "string") return errorObj.message;
+      if (typeof errorObj.detail === "string") return errorObj.detail;
+      if (typeof errorObj.error === "string") return errorObj.error;
 
       // Handle validation errors
       if (Array.isArray(errorObj.non_field_errors)) {
@@ -212,21 +212,21 @@ class ApiClient {
       // Handle rate limiting
       if (
         errorObj.detail &&
-        typeof errorObj.detail === 'string' &&
-        errorObj.detail.includes('rate limit')
+        typeof errorObj.detail === "string" &&
+        errorObj.detail.includes("rate limit")
       ) {
-        return 'Demasiados intentos. Por favor espera antes de intentar de nuevo.';
+        return "Demasiados intentos. Por favor espera antes de intentar de nuevo.";
       }
     }
 
-    return 'Ha ocurrido un error';
+    return "Ha ocurrido un error";
   }
 
   private extractRetryAfter(response: Response): number | undefined {
-    const retryAfter = response.headers.get('Retry-After');
+    const retryAfter = response.headers.get("Retry-After");
     if (retryAfter) {
       const seconds = parseInt(retryAfter, 10);
-      return isNaN(seconds) ? undefined : seconds;
+      return Number.isNaN(seconds) ? undefined : seconds;
     }
     return undefined;
   }
@@ -245,10 +245,10 @@ class ApiClient {
 
   private isApiError(error: unknown): error is ApiError {
     return (
-      typeof error === 'object' &&
+      typeof error === "object" &&
       error !== null &&
-      'message' in error &&
-      'status' in error
+      "message" in error &&
+      "status" in error
     );
   }
 
@@ -259,7 +259,7 @@ class ApiClient {
     options?: Partial<RequestConfig>
   ): Promise<T> {
     return this.request<T>(endpoint, {
-      method: 'GET',
+      method: "GET",
       params,
       ...options,
     });
@@ -271,7 +271,7 @@ class ApiClient {
     options?: Partial<RequestConfig>
   ): Promise<T> {
     return this.request<T>(endpoint, {
-      method: 'POST',
+      method: "POST",
       body,
       ...options,
     });
@@ -283,7 +283,7 @@ class ApiClient {
     options?: Partial<RequestConfig>
   ): Promise<T> {
     return this.request<T>(endpoint, {
-      method: 'PUT',
+      method: "PUT",
       body,
       retryable: false, // PUT requests are not idempotent by default
       ...options,
@@ -296,7 +296,7 @@ class ApiClient {
     options?: Partial<RequestConfig>
   ): Promise<T> {
     return this.request<T>(endpoint, {
-      method: 'PATCH',
+      method: "PATCH",
       body,
       retryable: false, // PATCH requests are not idempotent by default
       ...options,
@@ -308,7 +308,7 @@ class ApiClient {
     options?: Partial<RequestConfig>
   ): Promise<T> {
     return this.request<T>(endpoint, {
-      method: 'DELETE',
+      method: "DELETE",
       retryable: false, // DELETE requests should not be retried
       ...options,
     });
@@ -341,7 +341,7 @@ class ApiClient {
 
   // Health check endpoint
   async healthCheck(): Promise<{ status: string; timestamp: string }> {
-    return this.get('/health/', undefined, {
+    return this.get("/health/", undefined, {
       timeout: 5000,
       retryable: true,
     });

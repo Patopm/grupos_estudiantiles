@@ -3,7 +3,7 @@ import type {
   LoginFormData,
   RegisterFormData,
   ResetPasswordFormData,
-} from './validations/auth';
+} from "./validations/auth";
 
 // Types for authentication responses
 export interface User {
@@ -13,7 +13,7 @@ export interface User {
   first_name: string;
   last_name: string;
   full_name: string;
-  role: 'admin' | 'president' | 'student';
+  role: "admin" | "president" | "student";
   role_display: string;
   student_id: string;
   phone: string;
@@ -57,7 +57,7 @@ export interface RegisterResponse {
 }
 
 // API configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 // Authentication service class
 class AuthService {
@@ -74,9 +74,9 @@ class AuthService {
     credentials: LoginFormData
   ): Promise<AuthResponse | MFARequiredResponse> {
     const response = await fetch(`${this.baseURL}/login/`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         username: credentials.email, // Backend expects username field
@@ -91,7 +91,7 @@ class AuthService {
     if (response.status === 202) {
       return {
         mfa_required: true,
-        message: data.message || 'Se requiere autenticación de dos factores',
+        message: data.message || "Se requiere autenticación de dos factores",
         user_id: data.user_id,
         temp_token: data.temp_token,
       } as MFARequiredResponse;
@@ -101,16 +101,16 @@ class AuthService {
       // Handle different types of errors
       if (response.status === 401) {
         throw new Error(
-          'Credenciales incorrectas. Verifica tu email y contraseña.'
+          "Credenciales incorrectas. Verifica tu email y contraseña."
         );
       } else if (response.status === 400) {
         const errorMessage =
           data.detail ||
           data.non_field_errors?.[0] ||
-          'Datos de inicio de sesión inválidos.';
+          "Datos de inicio de sesión inválidos.";
         throw new Error(errorMessage);
       } else {
-        throw new Error('Error del servidor. Por favor intenta más tarde.');
+        throw new Error("Error del servidor. Por favor intenta más tarde.");
       }
     }
 
@@ -122,9 +122,9 @@ class AuthService {
    */
   async register(userData: RegisterFormData): Promise<RegisterResponse> {
     const response = await fetch(`${this.baseURL}/register/`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         username: userData.email, // Use email as username
@@ -135,7 +135,7 @@ class AuthService {
         phone: userData.phone,
         password: userData.password,
         password_confirm: userData.confirmPassword,
-        role: 'student', // Default role for registration
+        role: "student", // Default role for registration
       }),
     });
 
@@ -173,12 +173,12 @@ class AuthService {
 
         const errorMessage =
           errors.length > 0
-            ? errors.join('. ')
-            : 'Error en los datos proporcionados.';
+            ? errors.join(". ")
+            : "Error en los datos proporcionados.";
 
         throw new Error(errorMessage);
       } else {
-        throw new Error('Error del servidor. Por favor intenta más tarde.');
+        throw new Error("Error del servidor. Por favor intenta más tarde.");
       }
     }
 
@@ -191,9 +191,9 @@ class AuthService {
   async logout(refreshToken: string): Promise<void> {
     try {
       await fetch(`${this.baseURL}/logout/`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           refresh: refreshToken,
@@ -201,7 +201,7 @@ class AuthService {
       });
     } catch (error) {
       // Even if logout fails on server, we'll clear local tokens
-      console.warn('Logout request failed:', error);
+      console.warn("Logout request failed:", error);
     }
   }
 
@@ -212,9 +212,9 @@ class AuthService {
     refreshToken: string
   ): Promise<{ access: string; refresh?: string }> {
     const response = await fetch(`${this.baseURL}/refresh/`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         refresh: refreshToken,
@@ -222,7 +222,7 @@ class AuthService {
     });
 
     if (!response.ok) {
-      throw new Error('Token refresh failed');
+      throw new Error("Token refresh failed");
     }
 
     return response.json();
@@ -235,12 +235,12 @@ class AuthService {
     const response = await fetch(`${this.baseURL}/me/`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
     if (!response.ok) {
-      throw new Error('Failed to get user information');
+      throw new Error("Failed to get user information");
     }
 
     return response.json();
@@ -251,9 +251,9 @@ class AuthService {
    */
   async requestPasswordReset(email: ForgotPasswordFormData): Promise<void> {
     const response = await fetch(`${this.baseURL}/password-reset/`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         email: email.email,
@@ -267,14 +267,14 @@ class AuthService {
         const errorMessage =
           data.email?.[0] ||
           data.detail ||
-          'Error en la solicitud de restablecimiento.';
+          "Error en la solicitud de restablecimiento.";
         throw new Error(errorMessage);
       } else if (response.status === 404) {
         throw new Error(
-          'No se encontró una cuenta con este correo electrónico.'
+          "No se encontró una cuenta con este correo electrónico."
         );
       } else {
-        throw new Error('Error del servidor. Por favor intenta más tarde.');
+        throw new Error("Error del servidor. Por favor intenta más tarde.");
       }
     }
   }
@@ -288,9 +288,9 @@ class AuthService {
     passwordData: ResetPasswordFormData
   ): Promise<void> {
     const response = await fetch(`${this.baseURL}/password-reset-confirm/`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         uid: uid,
@@ -317,11 +317,11 @@ class AuthService {
         }
         if (data.token) {
           errors.push(
-            'El enlace de restablecimiento ha expirado o es inválido.'
+            "El enlace de restablecimiento ha expirado o es inválido."
           );
         }
         if (data.uid) {
-          errors.push('El enlace de restablecimiento es inválido.');
+          errors.push("El enlace de restablecimiento es inválido.");
         }
         if (data.non_field_errors) {
           errors.push(...data.non_field_errors);
@@ -329,12 +329,12 @@ class AuthService {
 
         const errorMessage =
           errors.length > 0
-            ? errors.join('. ')
-            : 'Error en el restablecimiento de contraseña.';
+            ? errors.join(". ")
+            : "Error en el restablecimiento de contraseña.";
 
         throw new Error(errorMessage);
       } else {
-        throw new Error('Error del servidor. Por favor intenta más tarde.');
+        throw new Error("Error del servidor. Por favor intenta más tarde.");
       }
     }
   }
@@ -351,12 +351,12 @@ class AuthService {
     const response = await fetch(`${this.baseURL}/mfa/status/`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
     if (!response.ok) {
-      throw new Error('Failed to get MFA status');
+      throw new Error("Failed to get MFA status");
     }
 
     return response.json();
@@ -373,7 +373,7 @@ class AuthService {
     message: string;
   }> {
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     };
 
     if (accessToken) {
@@ -381,7 +381,7 @@ class AuthService {
     }
 
     const response = await fetch(`${this.baseURL}/mfa/totp/verify/`, {
-      method: 'POST',
+      method: "POST",
       headers,
       body: JSON.stringify({ token }),
     });
@@ -389,7 +389,7 @@ class AuthService {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || 'Token MFA inválido');
+      throw new Error(data.error || "Token MFA inválido");
     }
 
     return data;
@@ -407,7 +407,7 @@ class AuthService {
     remaining_codes?: number;
   }> {
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     };
 
     if (accessToken) {
@@ -415,7 +415,7 @@ class AuthService {
     }
 
     const response = await fetch(`${this.baseURL}/mfa/backup-codes/verify/`, {
-      method: 'POST',
+      method: "POST",
       headers,
       body: JSON.stringify({ code }),
     });
@@ -423,7 +423,7 @@ class AuthService {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || 'Código de respaldo inválido');
+      throw new Error(data.error || "Código de respaldo inválido");
     }
 
     return data;
@@ -432,23 +432,23 @@ class AuthService {
 
 // Token management utilities
 export class TokenManager {
-  private static ACCESS_TOKEN_KEY = 'access_token';
-  private static REFRESH_TOKEN_KEY = 'refresh_token';
-  private static USER_KEY = 'user_data';
+  private static ACCESS_TOKEN_KEY = "access_token";
+  private static REFRESH_TOKEN_KEY = "refresh_token";
+  private static USER_KEY = "user_data";
 
   /**
    * Set cookie with proper security settings
    */
   private static setCookie(name: string, value: string, maxAge?: number): void {
-    if (typeof document !== 'undefined') {
-      const secure = window.location.protocol === 'https:';
-      const sameSite = 'lax';
-      const path = '/';
+    if (typeof document !== "undefined") {
+      const secure = window.location.protocol === "https:";
+      const sameSite = "lax";
+      const path = "/";
 
       let cookieString = `${name}=${encodeURIComponent(value)}; path=${path}; samesite=${sameSite}`;
 
       if (secure) {
-        cookieString += '; secure';
+        cookieString += "; secure";
       }
 
       if (maxAge) {
@@ -463,7 +463,7 @@ export class TokenManager {
    * Remove cookie
    */
   private static removeCookie(name: string): void {
-    if (typeof document !== 'undefined') {
+    if (typeof document !== "undefined") {
       document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
     }
   }
@@ -472,7 +472,7 @@ export class TokenManager {
    * Store authentication tokens and user data
    */
   static setTokens(tokens: AuthResponse): void {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       // Store in localStorage for client-side access
       localStorage.setItem(TokenManager.ACCESS_TOKEN_KEY, tokens.access);
       localStorage.setItem(TokenManager.REFRESH_TOKEN_KEY, tokens.refresh);
@@ -518,7 +518,7 @@ export class TokenManager {
     token: string
   ): { exp: number; iat: number } | null {
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const payload = JSON.parse(atob(token.split(".")[1]));
       return payload;
     } catch {
       return null;
@@ -529,7 +529,7 @@ export class TokenManager {
    * Get access token
    */
   static getAccessToken(): string | null {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       return localStorage.getItem(TokenManager.ACCESS_TOKEN_KEY);
     }
     return null;
@@ -539,7 +539,7 @@ export class TokenManager {
    * Get refresh token
    */
   static getRefreshToken(): string | null {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       return localStorage.getItem(TokenManager.REFRESH_TOKEN_KEY);
     }
     return null;
@@ -549,7 +549,7 @@ export class TokenManager {
    * Get stored user data
    */
   static getUser(): User | null {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const userData = localStorage.getItem(TokenManager.USER_KEY);
       return userData ? JSON.parse(userData) : null;
     }
@@ -560,7 +560,7 @@ export class TokenManager {
    * Update access token (for refresh)
    */
   static updateAccessToken(accessToken: string): void {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       localStorage.setItem(TokenManager.ACCESS_TOKEN_KEY, accessToken);
 
       // Also update cookie
@@ -581,7 +581,7 @@ export class TokenManager {
    * Clear all authentication data
    */
   static clearTokens(): void {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       // Clear localStorage
       localStorage.removeItem(TokenManager.ACCESS_TOKEN_KEY);
       localStorage.removeItem(TokenManager.REFRESH_TOKEN_KEY);
@@ -606,7 +606,7 @@ export class TokenManager {
    */
   static isTokenExpired(token: string): boolean {
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const payload = JSON.parse(atob(token.split(".")[1]));
       const currentTime = Date.now() / 1000;
       return payload.exp < currentTime;
     } catch {

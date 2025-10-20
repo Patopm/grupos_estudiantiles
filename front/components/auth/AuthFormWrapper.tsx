@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import React, { type ReactNode } from 'react';
-import { useAuthError } from '@/hooks/useAuthError';
-import type { AuthError } from '@/lib/errors/types';
-import AuthCard from './AuthCard';
-import AuthErrorBoundary from './AuthErrorBoundary';
-import EnhancedErrorDisplay from './EnhancedErrorDisplay';
+import type { ReactNode } from "react";
+import { useAuthError } from "@/hooks/useAuthError";
+import type { AuthError } from "@/lib/errors/types";
+import AuthCard from "./AuthCard";
+import AuthErrorBoundary from "./AuthErrorBoundary";
+import EnhancedErrorDisplay from "./EnhancedErrorDisplay";
 
 interface AuthFormWrapperProps {
   title: string;
@@ -36,11 +36,10 @@ export default function AuthFormWrapper({
   children,
   isLoading = false,
   loadingMessage,
-  className = '',
+  className = "",
   error,
   onErrorDismiss,
   enableRetry = true,
-  showSecurityMeasures = true,
 }: AuthFormWrapperProps) {
   const {
     error: boundaryError,
@@ -58,23 +57,24 @@ export default function AuthFormWrapper({
     <AuthErrorBoundary
       enableRetry={enableRetry}
       maxRetries={3}
-      showTechnicalDetails={process.env.NODE_ENV === 'development'}
+      showTechnicalDetails={process.env.NODE_ENV === "development"}
       fallback={
-        <div className='max-w-md w-full'>
+        <div className="max-w-md w-full">
           <AuthCard
-            title='Error en el Formulario'
-            subtitle='Ha ocurrido un error al cargar el formulario de autenticación'
+            title="Error en el Formulario"
+            subtitle="Ha ocurrido un error al cargar el formulario de autenticación"
             footerText={footerText}
             footerLinkText={footerLinkText}
             footerLinkHref={footerLinkHref}
           >
-            <div className='text-center space-y-4'>
-              <p className='text-muted-foreground'>
+            <div className="text-center space-y-4">
+              <p className="text-muted-foreground">
                 Por favor recarga la página e intenta de nuevo.
               </p>
               <button
+                type="button"
                 onClick={() => window.location.reload()}
-                className='text-primary hover:text-primary/80 underline'
+                className="text-primary hover:text-primary/80 underline"
               >
                 Recargar página
               </button>
@@ -86,7 +86,7 @@ export default function AuthFormWrapper({
       <div className={className}>
         {/* Display error if present */}
         {displayError && (
-          <div className='mb-6'>
+          <div className="mb-6">
             <EnhancedErrorDisplay
               error={displayError}
               recoveryActions={recoveryActions}

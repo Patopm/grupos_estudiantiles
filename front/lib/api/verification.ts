@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+import { apiClient } from "./client";
 
 // Types for verification API responses
 export interface VerificationStatus {
@@ -44,7 +44,7 @@ export interface PhoneVerificationConfirm {
 
 // Resend verification types
 export interface ResendVerificationRequest {
-  verification_type: 'email' | 'phone';
+  verification_type: "email" | "phone";
   email?: string;
   phone_number?: string;
 }
@@ -63,7 +63,7 @@ export const verificationApi = {
    */
   async getStatus(): Promise<VerificationStatus> {
     return await apiClient.get<VerificationStatus>(
-      '/api/users/verification/status/'
+      "/api/users/verification/status/"
     );
   },
 
@@ -74,7 +74,7 @@ export const verificationApi = {
     data: EmailVerificationRequest = {}
   ): Promise<{ message: string }> {
     return await apiClient.post<{ message: string }>(
-      '/api/users/verification/email/request/',
+      "/api/users/verification/email/request/",
       data
     );
   },
@@ -86,7 +86,7 @@ export const verificationApi = {
     data: EmailVerificationConfirm
   ): Promise<{ message: string }> {
     return await apiClient.post<{ message: string }>(
-      '/api/users/verification/email/confirm/',
+      "/api/users/verification/email/confirm/",
       data
     );
   },
@@ -98,7 +98,7 @@ export const verificationApi = {
     data: PhoneVerificationRequest = {}
   ): Promise<{ message: string }> {
     return await apiClient.post<{ message: string }>(
-      '/api/users/verification/phone/request/',
+      "/api/users/verification/phone/request/",
       data
     );
   },
@@ -110,7 +110,7 @@ export const verificationApi = {
     data: PhoneVerificationConfirm
   ): Promise<{ message: string }> {
     return await apiClient.post<{ message: string }>(
-      '/api/users/verification/phone/confirm/',
+      "/api/users/verification/phone/confirm/",
       data
     );
   },
@@ -122,7 +122,7 @@ export const verificationApi = {
     data: VerificationCheckRequest
   ): Promise<VerificationCheckResponse> {
     return await apiClient.post<VerificationCheckResponse>(
-      '/api/users/verification/check/',
+      "/api/users/verification/check/",
       data
     );
   },
@@ -134,7 +134,7 @@ export const verificationApi = {
     data: ResendVerificationRequest
   ): Promise<{ message: string }> {
     return await apiClient.post<{ message: string }>(
-      '/api/users/verification/resend/',
+      "/api/users/verification/resend/",
       data
     );
   },

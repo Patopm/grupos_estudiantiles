@@ -1,5 +1,5 @@
-import { type ApiError, type ApiPaginatedResponse, apiClient } from './client';
-import { type Event, eventsApi } from './events';
+import { type ApiError, type ApiPaginatedResponse, apiClient } from "./client";
+import { type Event, eventsApi } from "./events";
 
 export interface Group {
   group_id: string;
@@ -14,7 +14,7 @@ export interface Group {
   is_active: boolean;
   created_at: string;
   is_member?: boolean;
-  membership_status?: 'pending' | 'active' | 'inactive';
+  membership_status?: "pending" | "active" | "inactive";
 }
 
 export interface GroupShort {
@@ -44,7 +44,7 @@ export interface GroupStatistics {
 
 export interface MembershipActivity {
   id: string;
-  action: 'joined' | 'left' | 'promoted' | 'demoted';
+  action: "joined" | "left" | "promoted" | "demoted";
   date: string;
   user_name: string;
   details?: string;
@@ -60,32 +60,32 @@ export interface GroupDetailData extends Group {
 // Enhanced error types for group-specific errors
 export interface GroupError extends ApiError {
   type?:
-    | 'GROUP_FULL'
-    | 'ALREADY_MEMBER'
-    | 'PENDING_REQUEST'
-    | 'NOT_FOUND'
-    | 'PERMISSION_DENIED'
-    | 'NETWORK_ERROR'
-    | 'GROUP_INACTIVE'
-    | 'INVALID_DATA';
+    | "GROUP_FULL"
+    | "ALREADY_MEMBER"
+    | "PENDING_REQUEST"
+    | "NOT_FOUND"
+    | "PERMISSION_DENIED"
+    | "NETWORK_ERROR"
+    | "GROUP_INACTIVE"
+    | "INVALID_DATA";
 }
 
 // Additional interfaces for enhanced functionality
 export interface GroupJoinEligibility {
   canJoin: boolean;
   reason?:
-    | 'GROUP_FULL'
-    | 'ALREADY_MEMBER'
-    | 'PENDING_REQUEST'
-    | 'GROUP_INACTIVE'
-    | 'PERMISSION_DENIED';
+    | "GROUP_FULL"
+    | "ALREADY_MEMBER"
+    | "PENDING_REQUEST"
+    | "GROUP_INACTIVE"
+    | "PERMISSION_DENIED";
   message?: string;
 }
 
 export interface GroupFilters {
   search?: string;
   category?: string;
-  status?: 'active' | 'inactive';
+  status?: "active" | "inactive";
   has_space?: boolean;
   my_groups?: boolean;
   available?: boolean;
@@ -94,14 +94,14 @@ export interface GroupFilters {
 }
 
 export interface GroupSortOptions {
-  field: 'name' | 'member_count' | 'created_at' | 'category';
-  direction: 'asc' | 'desc';
+  field: "name" | "member_count" | "created_at" | "category";
+  direction: "asc" | "desc";
 }
 
 export interface GroupMember {
   membership_id: string;
-  role: 'member' | 'president';
-  status: 'pending' | 'active' | 'inactive';
+  role: "member" | "president";
+  status: "pending" | "active" | "inactive";
   joined_at: string;
   user_details: UserShort & {
     is_active_student: boolean;
@@ -113,8 +113,8 @@ export interface GroupRequest {
   group_details: GroupShort;
   joined_at: string;
   membership_id: string;
-  status: 'pending';
-  role: 'member' | 'president';
+  status: "pending";
+  role: "member" | "president";
   user: string;
   user_details: UserShort;
   user_id: string;
@@ -141,7 +141,7 @@ export type UpdateGroupData = Partial<CreateGroupData>;
 export const groupsApi = {
   // Get all groups (public)
   getAll: async (): Promise<Group[]> => {
-    const response = await apiClient.get<ApiPaginatedResponse>('/api/groups/');
+    const response = await apiClient.get<ApiPaginatedResponse>("/api/groups/");
     return response.results as Group[];
   },
 
@@ -159,7 +159,7 @@ export const groupsApi = {
   // Get user's groups
   getMyGroups: async (): Promise<Group[]> => {
     const response = await apiClient.get<ApiPaginatedResponse>(
-      '/api/groups/?my_groups=true'
+      "/api/groups/?my_groups=true"
     );
     return response.results as Group[];
   },
@@ -167,7 +167,7 @@ export const groupsApi = {
   // Get available groups (not member)
   getAvailable: async (): Promise<Group[]> => {
     const response = await apiClient.get<ApiPaginatedResponse>(
-      '/api/groups/?available=true'
+      "/api/groups/?available=true"
     );
     return response.results as Group[];
   },
@@ -175,25 +175,25 @@ export const groupsApi = {
   // Create new group (admin only)
   create: async (data: CreateGroupData, image?: File): Promise<Group> => {
     const formData = new FormData();
-    formData.append('name', data.name);
-    formData.append('description', data.description);
-    formData.append('category', data.category);
-    formData.append('max_members', data.max_members.toString());
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    formData.append("category", data.category);
+    formData.append("max_members", data.max_members.toString());
     if (data.president_id) {
-      formData.append('president_id', data.president_id.toString());
+      formData.append("president_id", data.president_id.toString());
     }
     if (image) {
-      formData.append('image', image);
+      formData.append("image", image);
     }
 
-    const response = await apiClient.post<Group>('/api/groups/', formData);
+    const response = await apiClient.post<Group>("/api/groups/", formData);
     return response;
   },
 
   // Get available presidents (admin only)
   getAvailablePresidents: async (): Promise<AvailablePresident[]> => {
     const response = await apiClient.get<AvailablePresident[]>(
-      '/api/groups/available_presidents/'
+      "/api/groups/available_presidents/"
     );
     return response;
   },
@@ -203,9 +203,9 @@ export const groupsApi = {
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        if (key === 'image' && value instanceof File) {
+        if (key === "image" && value instanceof File) {
           formData.append(key, value);
-        } else if (key !== 'image') {
+        } else if (key !== "image") {
           formData.append(key, String(value));
         }
       }
@@ -240,10 +240,10 @@ export const groupsApi = {
       const response = await apiClient.get<GroupMember[]>(
         `/api/groups/${id}/members/`
       );
-      console.log('response', response);
+      console.log("response", response);
       return response;
     } catch (error) {
-      console.error('Error fetching group members:', error);
+      console.error("Error fetching group members:", error);
       return [];
     }
   },
@@ -256,7 +256,7 @@ export const groupsApi = {
       );
       return Array.isArray(response) ? response : [];
     } catch (error) {
-      console.error('Error fetching group requests:', error);
+      console.error("Error fetching group requests:", error);
       return [];
     }
   },
@@ -304,8 +304,8 @@ export const groupsApi = {
   getDetailedById: async (id: string): Promise<GroupDetailData> => {
     try {
       // Validate group ID
-      if (!id || typeof id !== 'string') {
-        throw new Error('Invalid group ID provided');
+      if (!id || typeof id !== "string") {
+        throw new Error("Invalid group ID provided");
       }
 
       // Fetch group details, members, and events in parallel
@@ -317,12 +317,12 @@ export const groupsApi = {
       ]);
 
       // Extract successful results or provide defaults
-      const groupData = group.status === 'fulfilled' ? group.value : null;
-      const membersData = members.status === 'fulfilled' ? members.value : [];
-      const eventsData = events.status === 'fulfilled' ? events.value : [];
+      const groupData = group.status === "fulfilled" ? group.value : null;
+      const membersData = members.status === "fulfilled" ? members.value : [];
+      const eventsData = events.status === "fulfilled" ? events.value : [];
 
       if (!groupData) {
-        throw new Error('Group not found or inaccessible');
+        throw new Error("Group not found or inaccessible");
       }
 
       // Filter upcoming events
@@ -333,7 +333,7 @@ export const groupsApi = {
       // Calculate comprehensive statistics
       const statistics: GroupStatistics = {
         totalMembers: membersData.length,
-        activeMembers: membersData.filter(m => m.status === 'active').length,
+        activeMembers: membersData.filter(m => m.status === "active").length,
         upcomingEvents: upcomingEvents.length,
         totalEvents: eventsData.length,
         membershipGrowth: 0, // Would need historical data from backend
@@ -359,7 +359,7 @@ export const groupsApi = {
     } catch (error) {
       throw groupsApi.handleGroupError(
         error,
-        'Failed to fetch detailed group information'
+        "Failed to fetch detailed group information"
       );
     }
   },
@@ -371,8 +371,8 @@ export const groupsApi = {
   getStatistics: async (id: string): Promise<GroupStatistics> => {
     try {
       // Validate group ID
-      if (!id || typeof id !== 'string') {
-        throw new Error('Invalid group ID provided');
+      if (!id || typeof id !== "string") {
+        throw new Error("Invalid group ID provided");
       }
 
       // Fetch members and events data to compute statistics
@@ -383,9 +383,9 @@ export const groupsApi = {
       ]);
 
       const members =
-        membersResult.status === 'fulfilled' ? membersResult.value : [];
+        membersResult.status === "fulfilled" ? membersResult.value : [];
       const events =
-        eventsResult.status === 'fulfilled' ? eventsResult.value : [];
+        eventsResult.status === "fulfilled" ? eventsResult.value : [];
 
       const upcomingEvents = events.filter(
         (event: Event) => new Date(event.start_datetime) > new Date()
@@ -401,7 +401,7 @@ export const groupsApi = {
 
       return {
         totalMembers: members.length,
-        activeMembers: members.filter(m => m.status === 'active').length,
+        activeMembers: members.filter(m => m.status === "active").length,
         upcomingEvents: upcomingEvents.length,
         totalEvents: events.length,
         membershipGrowth: 0, // Would need historical data from backend
@@ -410,7 +410,7 @@ export const groupsApi = {
     } catch (error) {
       throw groupsApi.handleGroupError(
         error,
-        'Failed to fetch group statistics'
+        "Failed to fetch group statistics"
       );
     }
   },
@@ -421,11 +421,11 @@ export const groupsApi = {
    */
   handleGroupError: (error: unknown, defaultMessage: string): GroupError => {
     // Handle string errors
-    if (typeof error === 'string') {
+    if (typeof error === "string") {
       return {
         message: error,
         status: 0,
-        type: 'NETWORK_ERROR',
+        type: "NETWORK_ERROR",
         details: { originalError: error },
       };
     }
@@ -435,13 +435,13 @@ export const groupsApi = {
       return {
         message: error.message || defaultMessage,
         status: 0,
-        type: 'NETWORK_ERROR',
+        type: "NETWORK_ERROR",
         details: { originalError: error.message },
       };
     }
 
     // If it's already an ApiError, enhance it with group-specific context
-    if (error && typeof error === 'object' && 'status' in error) {
+    if (error && typeof error === "object" && "status" in error) {
       const apiError = error as ApiError;
       const groupError: GroupError = { ...apiError };
 
@@ -449,61 +449,61 @@ export const groupsApi = {
       switch (apiError.status) {
         case 400:
           if (
-            apiError.message?.includes('full') ||
-            apiError.message?.includes('máximo') ||
-            apiError.message?.includes('capacity')
+            apiError.message?.includes("full") ||
+            apiError.message?.includes("máximo") ||
+            apiError.message?.includes("capacity")
           ) {
-            groupError.type = 'GROUP_FULL';
-            groupError.message = 'El grupo ha alcanzado su capacidad máxima';
+            groupError.type = "GROUP_FULL";
+            groupError.message = "El grupo ha alcanzado su capacidad máxima";
           } else if (
-            apiError.message?.includes('already') ||
-            apiError.message?.includes('ya eres') ||
-            apiError.message?.includes('member')
+            apiError.message?.includes("already") ||
+            apiError.message?.includes("ya eres") ||
+            apiError.message?.includes("member")
           ) {
-            groupError.type = 'ALREADY_MEMBER';
-            groupError.message = 'Ya eres miembro de este grupo';
+            groupError.type = "ALREADY_MEMBER";
+            groupError.message = "Ya eres miembro de este grupo";
           } else if (
-            apiError.message?.includes('pending') ||
-            apiError.message?.includes('pendiente') ||
-            apiError.message?.includes('request')
+            apiError.message?.includes("pending") ||
+            apiError.message?.includes("pendiente") ||
+            apiError.message?.includes("request")
           ) {
-            groupError.type = 'PENDING_REQUEST';
+            groupError.type = "PENDING_REQUEST";
             groupError.message =
-              'Ya tienes una solicitud pendiente para este grupo';
+              "Ya tienes una solicitud pendiente para este grupo";
           }
           break;
         case 401:
-          groupError.type = 'PERMISSION_DENIED';
-          groupError.message = 'Debes iniciar sesión para realizar esta acción';
+          groupError.type = "PERMISSION_DENIED";
+          groupError.message = "Debes iniciar sesión para realizar esta acción";
           break;
         case 403:
-          groupError.type = 'PERMISSION_DENIED';
-          groupError.message = 'No tienes permisos para realizar esta acción';
+          groupError.type = "PERMISSION_DENIED";
+          groupError.message = "No tienes permisos para realizar esta acción";
           break;
         case 404:
-          groupError.type = 'NOT_FOUND';
-          groupError.message = 'El grupo no fue encontrado';
+          groupError.type = "NOT_FOUND";
+          groupError.message = "El grupo no fue encontrado";
           break;
         case 429:
-          groupError.type = 'NETWORK_ERROR';
+          groupError.type = "NETWORK_ERROR";
           groupError.message =
-            'Demasiadas solicitudes. Intenta de nuevo más tarde.';
+            "Demasiadas solicitudes. Intenta de nuevo más tarde.";
           break;
         case 500:
         case 502:
         case 503:
         case 504:
-          groupError.type = 'NETWORK_ERROR';
+          groupError.type = "NETWORK_ERROR";
           groupError.message =
-            'Error del servidor. Intenta de nuevo más tarde.';
+            "Error del servidor. Intenta de nuevo más tarde.";
           break;
         case 0:
-          groupError.type = 'NETWORK_ERROR';
+          groupError.type = "NETWORK_ERROR";
           groupError.message =
-            'Error de conexión. Verifica tu conexión a internet.';
+            "Error de conexión. Verifica tu conexión a internet.";
           break;
         default:
-          groupError.type = 'NETWORK_ERROR';
+          groupError.type = "NETWORK_ERROR";
           groupError.message = apiError.message || defaultMessage;
       }
 
@@ -514,7 +514,7 @@ export const groupsApi = {
     const groupError: GroupError = {
       message: defaultMessage,
       status: 0,
-      type: 'NETWORK_ERROR',
+      type: "NETWORK_ERROR",
       details: { originalError: error },
     };
 
@@ -529,7 +529,7 @@ export const groupsApi = {
     try {
       return await groupsApi.join(id);
     } catch (error) {
-      throw groupsApi.handleGroupError(error, 'Failed to join group');
+      throw groupsApi.handleGroupError(error, "Failed to join group");
     }
   },
 
@@ -541,7 +541,7 @@ export const groupsApi = {
     try {
       return await groupsApi.leave(id);
     } catch (error) {
-      throw groupsApi.handleGroupError(error, 'Failed to leave group');
+      throw groupsApi.handleGroupError(error, "Failed to leave group");
     }
   },
 
@@ -551,11 +551,11 @@ export const groupsApi = {
    */
   canJoinGroup: async (id: string): Promise<GroupJoinEligibility> => {
     try {
-      if (!id || typeof id !== 'string') {
+      if (!id || typeof id !== "string") {
         return {
           canJoin: false,
-          reason: 'PERMISSION_DENIED',
-          message: 'ID de grupo inválido',
+          reason: "PERMISSION_DENIED",
+          message: "ID de grupo inválido",
         };
       }
 
@@ -565,8 +565,8 @@ export const groupsApi = {
       if (!group.is_active) {
         return {
           canJoin: false,
-          reason: 'GROUP_INACTIVE',
-          message: 'El grupo no está activo',
+          reason: "GROUP_INACTIVE",
+          message: "El grupo no está activo",
         };
       }
 
@@ -574,8 +574,8 @@ export const groupsApi = {
       if (group.member_count >= group.max_members) {
         return {
           canJoin: false,
-          reason: 'GROUP_FULL',
-          message: 'El grupo ha alcanzado su capacidad máxima',
+          reason: "GROUP_FULL",
+          message: "El grupo ha alcanzado su capacidad máxima",
         };
       }
 
@@ -583,28 +583,28 @@ export const groupsApi = {
       if (group.is_member) {
         return {
           canJoin: false,
-          reason: 'ALREADY_MEMBER',
-          message: 'Ya eres miembro de este grupo',
+          reason: "ALREADY_MEMBER",
+          message: "Ya eres miembro de este grupo",
         };
       }
 
       // Check if user has pending request
-      if (group.membership_status === 'pending') {
+      if (group.membership_status === "pending") {
         return {
           canJoin: false,
-          reason: 'PENDING_REQUEST',
-          message: 'Ya tienes una solicitud pendiente para este grupo',
+          reason: "PENDING_REQUEST",
+          message: "Ya tienes una solicitud pendiente para este grupo",
         };
       }
 
       return {
         canJoin: true,
-        message: 'Puedes unirte a este grupo',
+        message: "Puedes unirte a este grupo",
       };
     } catch (error) {
       throw groupsApi.handleGroupError(
         error,
-        'Failed to check group join eligibility'
+        "Failed to check group join eligibility"
       );
     }
   },
@@ -620,19 +620,19 @@ export const groupsApi = {
     try {
       const params = new URLSearchParams();
 
-      if (filters?.search) params.append('search', filters.search);
-      if (filters?.category) params.append('category', filters.category);
-      if (filters?.status) params.append('status', filters.status);
-      if (filters?.has_space) params.append('has_space', 'true');
-      if (filters?.my_groups) params.append('my_groups', 'true');
-      if (filters?.available) params.append('available', 'true');
-      if (filters?.pending_only) params.append('pending_only', 'true');
-      if (filters?.active_only) params.append('active_only', 'true');
+      if (filters?.search) params.append("search", filters.search);
+      if (filters?.category) params.append("category", filters.category);
+      if (filters?.status) params.append("status", filters.status);
+      if (filters?.has_space) params.append("has_space", "true");
+      if (filters?.my_groups) params.append("my_groups", "true");
+      if (filters?.available) params.append("available", "true");
+      if (filters?.pending_only) params.append("pending_only", "true");
+      if (filters?.active_only) params.append("active_only", "true");
 
       if (sort?.field)
         params.append(
-          'ordering',
-          sort.direction === 'desc' ? `-${sort.field}` : sort.field
+          "ordering",
+          sort.direction === "desc" ? `-${sort.field}` : sort.field
         );
 
       const response = await apiClient.get<ApiPaginatedResponse>(
@@ -642,7 +642,7 @@ export const groupsApi = {
     } catch (error) {
       throw groupsApi.handleGroupError(
         error,
-        'Failed to fetch filtered groups'
+        "Failed to fetch filtered groups"
       );
     }
   },
@@ -660,7 +660,7 @@ export const groupsApi = {
       }
 
       // Validate all group IDs
-      const validIds = groupIds.filter(id => id && typeof id === 'string');
+      const validIds = groupIds.filter(id => id && typeof id === "string");
       if (validIds.length === 0) {
         return {};
       }
@@ -691,7 +691,7 @@ export const groupsApi = {
     } catch (error) {
       throw groupsApi.handleGroupError(
         error,
-        'Failed to fetch batch group statistics'
+        "Failed to fetch batch group statistics"
       );
     }
   },
@@ -707,55 +707,55 @@ export const groupsApi = {
 
     if (data.name !== undefined) {
       if (!data.name || data.name.trim().length === 0) {
-        errors.push('El nombre del grupo es requerido');
+        errors.push("El nombre del grupo es requerido");
       } else if (data.name.length > 100) {
-        errors.push('El nombre del grupo no puede exceder 100 caracteres');
+        errors.push("El nombre del grupo no puede exceder 100 caracteres");
       }
     }
 
     if (data.description !== undefined) {
       if (!data.description || data.description.trim().length === 0) {
-        errors.push('La descripción del grupo es requerida');
+        errors.push("La descripción del grupo es requerida");
       } else if (data.description.length > 500) {
-        errors.push('La descripción no puede exceder 500 caracteres');
+        errors.push("La descripción no puede exceder 500 caracteres");
       }
     }
 
     if (data.category !== undefined) {
       const validCategories = [
-        'deportivo',
-        'cultural',
-        'académico',
-        'social',
-        'tecnológico',
-        'otro',
+        "deportivo",
+        "cultural",
+        "académico",
+        "social",
+        "tecnológico",
+        "otro",
       ];
       if (
         !data.category ||
         !validCategories.includes(data.category.toLowerCase())
       ) {
-        errors.push('Categoría inválida');
+        errors.push("Categoría inválida");
       }
     }
 
     if (data.max_members !== undefined) {
       if (!data.max_members || data.max_members < 1) {
-        errors.push('El número máximo de miembros debe ser mayor a 0');
+        errors.push("El número máximo de miembros debe ser mayor a 0");
       } else if (data.max_members > 1000) {
-        errors.push('El número máximo de miembros no puede exceder 1000');
+        errors.push("El número máximo de miembros no puede exceder 1000");
       }
     }
 
     if (data.image !== undefined && data.image) {
       const maxSize = 5 * 1024 * 1024; // 5MB
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
       if (data.image.size > maxSize) {
-        errors.push('La imagen no puede exceder 5MB');
+        errors.push("La imagen no puede exceder 5MB");
       }
 
       if (!allowedTypes.includes(data.image.type)) {
-        errors.push('Formato de imagen no válido. Use JPEG, PNG o WebP');
+        errors.push("Formato de imagen no válido. Use JPEG, PNG o WebP");
       }
     }
 

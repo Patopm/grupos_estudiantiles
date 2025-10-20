@@ -3,15 +3,11 @@
  * Requirement 8.6 - Implement progressive security measures display
  */
 
-import { ErrorLogger } from './handlers';
-import {
-  type ProgressiveSecurityState,
-  SecurityError,
-  type SecurityMeasure,
-} from './types';
+import { ErrorLogger } from "./handlers";
+import type { ProgressiveSecurityState, SecurityMeasure } from "./types";
 
 export class ProgressiveSecurityManager {
-  private static readonly STORAGE_KEY = 'auth_security_state';
+  private static readonly STORAGE_KEY = "auth_security_state";
   private static readonly ESCALATION_THRESHOLDS = [3, 5, 10, 15]; // Failed attempts
   private static readonly MEASURE_DURATIONS = [
     5 * 60 * 1000, // 5 minutes
@@ -22,32 +18,32 @@ export class ProgressiveSecurityManager {
 
   private static readonly SECURITY_MEASURES: Omit<
     SecurityMeasure,
-    'active' | 'triggeredAt' | 'expiresAt'
+    "active" | "triggeredAt" | "expiresAt"
   >[] = [
     {
       level: 1,
-      name: 'Verificación adicional',
-      description: 'Se requiere verificación de email para continuar',
+      name: "Verificación adicional",
+      description: "Se requiere verificación de email para continuar",
     },
     {
       level: 2,
-      name: 'Retraso en intentos',
-      description: 'Tiempo de espera entre intentos de inicio de sesión',
+      name: "Retraso en intentos",
+      description: "Tiempo de espera entre intentos de inicio de sesión",
     },
     {
       level: 3,
-      name: 'Verificación de identidad',
-      description: 'Se requiere verificación de teléfono y email',
+      name: "Verificación de identidad",
+      description: "Se requiere verificación de teléfono y email",
     },
     {
       level: 4,
-      name: 'Bloqueo temporal',
-      description: 'Cuenta temporalmente bloqueada por seguridad',
+      name: "Bloqueo temporal",
+      description: "Cuenta temporalmente bloqueada por seguridad",
     },
   ];
 
   static getSecurityState(): ProgressiveSecurityState {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return ProgressiveSecurityManager.getDefaultState();
     }
 
@@ -81,13 +77,13 @@ export class ProgressiveSecurityManager {
       // Clean up expired measures
       return ProgressiveSecurityManager.cleanupExpiredMeasures(state);
     } catch (error) {
-      console.error('Failed to load security state:', error);
+      console.error("Failed to load security state:", error);
       return ProgressiveSecurityManager.getDefaultState();
     }
   }
 
   static updateSecurityState(state: ProgressiveSecurityState): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     try {
       localStorage.setItem(
@@ -95,7 +91,7 @@ export class ProgressiveSecurityManager {
         JSON.stringify(state)
       );
     } catch (error) {
-      console.error('Failed to save security state:', error);
+      console.error("Failed to save security state:", error);
     }
   }
 
@@ -109,7 +105,7 @@ export class ProgressiveSecurityManager {
 
     // Log security event
     ErrorLogger.logSecurityEvent(
-      'authentication_failure',
+      "authentication_failure",
       ProgressiveSecurityManager.getSeverityForFailureCount(newFailureCount),
       {
         failureCount: newFailureCount,
@@ -182,7 +178,7 @@ export class ProgressiveSecurityManager {
     const defaultState = ProgressiveSecurityManager.getDefaultState();
     ProgressiveSecurityManager.updateSecurityState(defaultState);
 
-    ErrorLogger.logSecurityEvent('authentication_success', 'low', {
+    ErrorLogger.logSecurityEvent("authentication_success", "low", {
       previousSecurityLevel:
         ProgressiveSecurityManager.getSecurityState().currentLevel,
     });
@@ -242,7 +238,7 @@ export class ProgressiveSecurityManager {
 
         return {
           allowed: false,
-          reason: 'Debes esperar antes del próximo intento',
+          reason: "Debes esperar antes del próximo intento",
           waitTime,
         };
       }
@@ -270,7 +266,7 @@ export class ProgressiveSecurityManager {
       (state.resetAvailableAt && now < state.resetAvailableAt)
     ) {
       throw new Error(
-        'No se puede restablecer el estado de seguridad en este momento'
+        "No se puede restablecer el estado de seguridad en este momento"
       );
     }
 
@@ -278,9 +274,9 @@ export class ProgressiveSecurityManager {
     const defaultState = ProgressiveSecurityManager.getDefaultState();
     ProgressiveSecurityManager.updateSecurityState(defaultState);
 
-    ErrorLogger.logSecurityEvent('security_state_reset', 'medium', {
+    ErrorLogger.logSecurityEvent("security_state_reset", "medium", {
       previousLevel: state.currentLevel,
-      resetBy: 'user',
+      resetBy: "user",
     });
 
     return defaultState;
@@ -328,18 +324,18 @@ export class ProgressiveSecurityManager {
 
   private static getSeverityForFailureCount(
     count: number
-  ): 'low' | 'medium' | 'high' | 'critical' {
-    if (count >= 15) return 'critical';
-    if (count >= 10) return 'high';
-    if (count >= 5) return 'medium';
-    return 'low';
+  ): "low" | "medium" | "high" | "critical" {
+    if (count >= 15) return "critical";
+    if (count >= 10) return "high";
+    if (count >= 5) return "medium";
+    return "low";
   }
 
   private static getCurrentFailureCount(): number {
-    if (typeof window === 'undefined') return 0;
+    if (typeof window === "undefined") return 0;
 
     try {
-      const count = localStorage.getItem('auth_failure_count');
+      const count = localStorage.getItem("auth_failure_count");
       return count ? parseInt(count, 10) : 0;
     } catch {
       return 0;
@@ -347,33 +343,33 @@ export class ProgressiveSecurityManager {
   }
 
   private static recordFailureAttempt(): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     try {
       const currentCount = ProgressiveSecurityManager.getCurrentFailureCount();
-      localStorage.setItem('auth_failure_count', (currentCount + 1).toString());
-      localStorage.setItem('auth_last_attempt', new Date().toISOString());
+      localStorage.setItem("auth_failure_count", (currentCount + 1).toString());
+      localStorage.setItem("auth_last_attempt", new Date().toISOString());
     } catch (error) {
-      console.error('Failed to record failure attempt:', error);
+      console.error("Failed to record failure attempt:", error);
     }
   }
 
   private static clearFailureCount(): void {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
 
     try {
-      localStorage.removeItem('auth_failure_count');
-      localStorage.removeItem('auth_last_attempt');
+      localStorage.removeItem("auth_failure_count");
+      localStorage.removeItem("auth_last_attempt");
     } catch (error) {
-      console.error('Failed to clear failure count:', error);
+      console.error("Failed to clear failure count:", error);
     }
   }
 
   private static getLastAttemptTime(): Date | null {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === "undefined") return null;
 
     try {
-      const lastAttempt = localStorage.getItem('auth_last_attempt');
+      const lastAttempt = localStorage.getItem("auth_last_attempt");
       return lastAttempt ? new Date(lastAttempt) : null;
     } catch {
       return null;

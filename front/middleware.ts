@@ -1,5 +1,5 @@
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import {
   AUTH_ROUTES,
   getDashboardUrl,
@@ -8,14 +8,14 @@ import {
   isTokenExpired,
   PUBLIC_ROUTES,
   type User,
-} from './lib/middleware-utils';
+} from "./lib/middleware-utils";
 
 /**
  * Get user data from cookies
  */
 function getUserFromCookies(request: NextRequest): User | null {
   try {
-    const userCookie = request.cookies.get('user_data');
+    const userCookie = request.cookies.get("user_data");
     if (!userCookie) return null;
 
     return JSON.parse(decodeURIComponent(userCookie.value));
@@ -28,7 +28,7 @@ function getUserFromCookies(request: NextRequest): User | null {
  * Get access token from cookies
  */
 function getAccessTokenFromCookies(request: NextRequest): string | null {
-  const tokenCookie = request.cookies.get('access_token');
+  const tokenCookie = request.cookies.get("access_token");
   return tokenCookie?.value || null;
 }
 
@@ -37,10 +37,10 @@ export function middleware(request: NextRequest) {
 
   // Skip middleware for API routes, static files, and Next.js internals
   if (
-    pathname.startsWith('/api/') ||
-    pathname.startsWith('/_next/') ||
-    pathname.startsWith('/favicon.ico') ||
-    pathname.includes('.')
+    pathname.startsWith("/api/") ||
+    pathname.startsWith("/_next/") ||
+    pathname.startsWith("/favicon.ico") ||
+    pathname.includes(".")
   ) {
     return NextResponse.next();
   }
@@ -69,12 +69,12 @@ export function middleware(request: NextRequest) {
   }
 
   // Handle root dashboard redirect
-  if (pathname === '/dashboard') {
+  if (pathname === "/dashboard") {
     if (!isAuthenticated) {
-      return NextResponse.redirect(new URL('/login', request.url));
+      return NextResponse.redirect(new URL("/login", request.url));
     }
     // Redirect to role-specific dashboard
-    const dashboardUrl = getDashboardUrl(user!.role);
+    const dashboardUrl = getDashboardUrl(user.role);
     return NextResponse.redirect(new URL(dashboardUrl, request.url));
   }
 
@@ -83,8 +83,8 @@ export function middleware(request: NextRequest) {
     // Check if user is authenticated
     if (!isAuthenticated) {
       // Store the attempted URL for redirect after login
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('redirect', pathname);
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
     }
 
@@ -114,6 +114,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public files (images, etc.)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*|public).*)',
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\..*|public).*)",
   ],
 };

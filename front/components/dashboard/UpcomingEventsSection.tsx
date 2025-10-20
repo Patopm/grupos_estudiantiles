@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Calendar,
@@ -8,16 +8,16 @@ import {
   UserMinus,
   UserPlus,
   Users,
-} from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
-import type { DashboardEvent } from '@/lib/api/dashboard';
-import { EVENT_TYPE_LABELS, eventsApi } from '@/lib/api/events';
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import type { DashboardEvent } from "@/lib/api/dashboard";
+import { EVENT_TYPE_LABELS, eventsApi } from "@/lib/api/events";
 
 interface UpcomingEventsSectionProps {
   events: DashboardEvent[];
@@ -39,16 +39,16 @@ export default function UpcomingEventsSection({
     try {
       await eventsApi.register(eventId);
       toast({
-        title: 'Registro Exitoso',
-        description: 'Te has registrado para el evento correctamente',
+        title: "Registro Exitoso",
+        description: "Te has registrado para el evento correctamente",
       });
       onRefresh?.();
     } catch (error) {
-      console.error('Error registering for event:', error);
+      console.error("Error registering for event:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudo registrar para el evento',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudo registrar para el evento",
+        variant: "destructive",
       });
     } finally {
       setActionLoading(null);
@@ -56,7 +56,7 @@ export default function UpcomingEventsSection({
   };
 
   const handleUnregister = async (eventId: string) => {
-    if (!confirm('¿Estás seguro de que quieres cancelar tu registro?')) {
+    if (!confirm("¿Estás seguro de que quieres cancelar tu registro?")) {
       return;
     }
 
@@ -64,16 +64,16 @@ export default function UpcomingEventsSection({
     try {
       await eventsApi.unregister(eventId);
       toast({
-        title: 'Registro Cancelado',
-        description: 'Has cancelado tu registro para el evento',
+        title: "Registro Cancelado",
+        description: "Has cancelado tu registro para el evento",
       });
       onRefresh?.();
     } catch (error) {
-      console.error('Error unregistering from event:', error);
+      console.error("Error unregistering from event:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudo cancelar el registro',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudo cancelar el registro",
+        variant: "destructive",
       });
     } finally {
       setActionLoading(null);
@@ -87,15 +87,15 @@ export default function UpcomingEventsSection({
   const formatEventDateTime = (event: DashboardEvent) => {
     const startDate = new Date(event.start_datetime);
 
-    const date = startDate.toLocaleDateString('es-ES', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
+    const date = startDate.toLocaleDateString("es-ES", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
     });
 
-    const startTime = startDate.toLocaleTimeString('es-ES', {
-      hour: '2-digit',
-      minute: '2-digit',
+    const startTime = startDate.toLocaleTimeString("es-ES", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
 
     return { date, time: startTime };
@@ -104,18 +104,18 @@ export default function UpcomingEventsSection({
   const getEventTypeColor = (type: string) => {
     const colors: Record<string, string> = {
       academic:
-        'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-      social: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
-      sports: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+        "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+      social: "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200",
+      sports: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
       cultural:
-        'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+        "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
       meeting:
-        'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+        "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
       workshop:
-        'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
+        "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
       conference:
-        'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200',
-      other: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+        "bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200",
+      other: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
     };
     return colors[type] || colors.other;
   };
@@ -124,55 +124,55 @@ export default function UpcomingEventsSection({
     const isRegistered =
       event.is_registered ||
       (event.user_attendance_status &&
-        ['registered', 'confirmed', 'attended'].includes(
+        ["registered", "confirmed", "attended"].includes(
           event.user_attendance_status
         ));
 
-    if (event.status === 'cancelled') {
+    if (event.status === "cancelled") {
       return {
-        status: 'cancelled',
-        label: 'Cancelado',
-        color: 'bg-red-100 text-red-800',
+        status: "cancelled",
+        label: "Cancelado",
+        color: "bg-red-100 text-red-800",
       };
     }
 
     if (event.is_past) {
       return {
-        status: 'completed',
-        label: 'Finalizado',
-        color: 'bg-gray-100 text-gray-800',
+        status: "completed",
+        label: "Finalizado",
+        color: "bg-gray-100 text-gray-800",
       };
     }
 
     if (isRegistered) {
       return {
-        status: 'registered',
-        label: 'Registrado',
-        color: 'bg-green-100 text-green-800',
+        status: "registered",
+        label: "Registrado",
+        color: "bg-green-100 text-green-800",
       };
     }
 
     if (event.is_full) {
       return {
-        status: 'full',
-        label: 'Lleno',
-        color: 'bg-red-100 text-red-800',
+        status: "full",
+        label: "Lleno",
+        color: "bg-red-100 text-red-800",
       };
     }
 
     if (!event.registration_open) {
       return {
-        status: 'closed',
-        label: 'Cerrado',
-        color: 'bg-yellow-100 text-yellow-800',
+        status: "closed",
+        label: "Cerrado",
+        color: "bg-yellow-100 text-yellow-800",
       };
     }
 
     if (event.requires_registration && !isRegistered) {
       return {
-        status: 'available',
-        label: 'Disponible',
-        color: 'bg-blue-100 text-blue-800',
+        status: "available",
+        label: "Disponible",
+        color: "bg-blue-100 text-blue-800",
       };
     }
 
@@ -181,19 +181,19 @@ export default function UpcomingEventsSection({
 
   if (isLoading) {
     return (
-      <Card className='h-full'>
+      <Card className="h-full">
         <CardHeader>
-          <CardTitle className='flex items-center gap-2'>
-            <Calendar className='w-5 h-5' />
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="w-5 h-5" />
             Próximos Eventos
           </CardTitle>
         </CardHeader>
-        <CardContent className='flex-1'>
-          <div className='space-y-4'>
+        <CardContent className="flex-1">
+          <div className="space-y-4">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className='animate-pulse'>
-                <div className='h-4 bg-muted rounded w-3/4 mb-2'></div>
-                <div className='h-3 bg-muted rounded w-1/2'></div>
+              <div key={i} className="animate-pulse">
+                <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-muted rounded w-1/2"></div>
               </div>
             ))}
           </div>
@@ -204,24 +204,24 @@ export default function UpcomingEventsSection({
 
   if (events.length === 0) {
     return (
-      <Card className='h-full'>
+      <Card className="h-full">
         <CardHeader>
-          <CardTitle className='flex items-center gap-2'>
-            <Calendar className='w-5 h-5' />
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="w-5 h-5" />
             Próximos Eventos
           </CardTitle>
         </CardHeader>
-        <CardContent className='flex-1'>
-          <div className='text-center py-8'>
-            <Calendar className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
-            <h3 className='text-lg font-semibold mb-2'>
+        <CardContent className="flex-1">
+          <div className="text-center py-8">
+            <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">
               No hay eventos próximos
             </h3>
-            <p className='text-muted-foreground mb-4'>
+            <p className="text-muted-foreground mb-4">
               No tienes eventos próximos en tus grupos
             </p>
             <Button asChild>
-              <Link href='/dashboard/student/events'>Explorar Eventos</Link>
+              <Link href="/dashboard/student/events">Explorar Eventos</Link>
             </Button>
           </div>
         </CardContent>
@@ -230,42 +230,42 @@ export default function UpcomingEventsSection({
   }
 
   return (
-    <Card className='h-full'>
+    <Card className="h-full">
       <CardHeader>
-        <div className='flex items-center justify-between'>
-          <CardTitle className='flex items-center gap-2'>
-            <Calendar className='w-5 h-5' />
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="w-5 h-5" />
             Próximos Eventos
           </CardTitle>
-          <Button variant='outline' size='sm' asChild>
-            <Link href='/dashboard/student/events'>Ver Todos</Link>
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/dashboard/student/events">Ver Todos</Link>
           </Button>
         </div>
       </CardHeader>
-      <CardContent className='flex-1'>
-        <div className='space-y-4'>
+      <CardContent className="flex-1">
+        <div className="space-y-4">
           {events.slice(0, 3).map(event => {
             const dateTime = formatEventDateTime(event);
             const registrationStatus = getRegistrationStatus(event);
             const isRegistered =
               event.is_registered ||
               (event.user_attendance_status &&
-                ['registered', 'confirmed', 'attended'].includes(
+                ["registered", "confirmed", "attended"].includes(
                   event.user_attendance_status
                 ));
 
             return (
               <div
                 key={event.event_id}
-                className='p-4 border rounded-lg hover:shadow-md transition-shadow'
+                className="p-4 border rounded-lg hover:shadow-md transition-shadow"
               >
-                <div className='flex items-start justify-between gap-3'>
-                  <div className='flex-1 min-w-0'>
-                    <div className='flex items-start gap-2 mb-2'>
-                      <h4 className='font-semibold text-sm truncate flex-1'>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start gap-2 mb-2">
+                      <h4 className="font-semibold text-sm truncate flex-1">
                         {event.title}
                       </h4>
-                      <div className='flex gap-1'>
+                      <div className="flex gap-1">
                         <Badge
                           className={`text-xs ${getEventTypeColor(event.event_type)}`}
                         >
@@ -281,73 +281,70 @@ export default function UpcomingEventsSection({
                       </div>
                     </div>
 
-                    <div className='space-y-1 text-xs text-muted-foreground'>
-                      <div className='flex items-center gap-1'>
-                        <Calendar className='w-3 h-3' />
+                    <div className="space-y-1 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
                         <span>{dateTime.date}</span>
-                        <Clock className='w-3 h-3 ml-2' />
+                        <Clock className="w-3 h-3 ml-2" />
                         <span>{dateTime.time}</span>
                       </div>
                       {event.location && (
-                        <div className='flex items-center gap-1'>
-                          <MapPin className='w-3 h-3' />
-                          <span className='truncate'>{event.location}</span>
+                        <div className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          <span className="truncate">{event.location}</span>
                         </div>
                       )}
-                      <div className='flex items-center gap-1'>
-                        <Users className='w-3 h-3' />
+                      <div className="flex items-center gap-1">
+                        <Users className="w-3 h-3" />
                         <span>
-                          {event.target_groups.map(g => g.name).join(', ')}
+                          {event.target_groups.map(g => g.name).join(", ")}
                         </span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className='flex gap-2 mt-3'>
+                <div className="flex gap-2 mt-3">
                   <Button
-                    variant='outline'
-                    size='sm'
+                    variant="outline"
+                    size="sm"
                     onClick={() => handleViewEvent(event.event_id)}
-                    className='flex items-center gap-1'
+                    className="flex items-center gap-1"
                   >
-                    <Eye className='w-3 h-3' />
+                    <Eye className="w-3 h-3" />
                     Ver
                   </Button>
 
-                  {event.requires_registration && (
-                    <>
-                      {isRegistered ? (
-                        <Button
-                          variant='destructive'
-                          size='sm'
-                          onClick={() => handleUnregister(event.event_id)}
-                          disabled={
-                            actionLoading === event.event_id || event.is_past
-                          }
-                          className='flex items-center gap-1'
-                        >
-                          <UserMinus className='w-3 h-3' />
-                          Cancelar
-                        </Button>
-                      ) : (
-                        <Button
-                          size='sm'
-                          onClick={() => handleRegister(event.event_id)}
-                          disabled={
-                            actionLoading === event.event_id ||
-                            event.is_full ||
-                            !event.registration_open ||
-                            event.is_past
-                          }
-                          className='flex items-center gap-1'
-                        >
-                          <UserPlus className='w-3 h-3' />
-                          Registrarse
-                        </Button>
-                      )}
-                    </>
-                  )}
+                  {event.requires_registration &&
+                    (isRegistered ? (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleUnregister(event.event_id)}
+                        disabled={
+                          actionLoading === event.event_id || event.is_past
+                        }
+                        className="flex items-center gap-1"
+                      >
+                        <UserMinus className="w-3 h-3" />
+                        Cancelar
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        onClick={() => handleRegister(event.event_id)}
+                        disabled={
+                          actionLoading === event.event_id ||
+                          event.is_full ||
+                          !event.registration_open ||
+                          event.is_past
+                        }
+                        className="flex items-center gap-1"
+                      >
+                        <UserPlus className="w-3 h-3" />
+                        Registrarse
+                      </Button>
+                    ))}
                 </div>
               </div>
             );

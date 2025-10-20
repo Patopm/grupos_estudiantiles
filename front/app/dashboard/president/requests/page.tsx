@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   AlertCircle,
@@ -11,16 +11,16 @@ import {
   UserPlus,
   Users,
   XCircle,
-} from 'lucide-react';
-import { useEffect, useState } from 'react';
-import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ProtectedRoute } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
-import { type GroupRequest, groupsApi } from '@/lib/api/groups';
+} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ProtectedRoute } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { type GroupRequest, groupsApi } from "@/lib/api/groups";
 
 interface GroupWithRequests {
   group_id: string;
@@ -31,7 +31,7 @@ interface GroupWithRequests {
 
 export default function PresidentRequestsPage() {
   return (
-    <ProtectedRoute allowedRoles={['president']}>
+    <ProtectedRoute allowedRoles={["president"]}>
       <PresidentRequestsContent />
     </ProtectedRoute>
   );
@@ -46,13 +46,9 @@ function PresidentRequestsContent() {
   const [processingRequest, setProcessingRequest] = useState<string | null>(
     null
   );
-  const [activeTab, setActiveTab] = useState('all');
+  const [activeTab, setActiveTab] = useState("all");
 
-  useEffect(() => {
-    loadRequestsData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const loadRequestsData = async () => {
+  const loadRequestsData = useCallback(async () => {
     try {
       setIsLoading(true);
 
@@ -84,16 +80,20 @@ function PresidentRequestsContent() {
 
       setGroupsWithRequests(groupsWithRequestsData);
     } catch (error) {
-      console.error('Error loading requests data:', error);
+      console.error("Error loading requests data:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudieron cargar las solicitudes',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudieron cargar las solicitudes",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [toast]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    loadRequestsData();
+  }, [loadRequestsData]);
 
   const handleApproveRequest = async (groupId: string, userId: string) => {
     try {
@@ -101,18 +101,18 @@ function PresidentRequestsContent() {
       await groupsApi.approveRequest(groupId, userId);
 
       toast({
-        title: 'Solicitud aprobada',
-        description: 'El usuario ha sido agregado al grupo exitosamente',
+        title: "Solicitud aprobada",
+        description: "El usuario ha sido agregado al grupo exitosamente",
       });
 
       // Reload data
       await loadRequestsData();
     } catch (error) {
-      console.error('Error approving request:', error);
+      console.error("Error approving request:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudo aprobar la solicitud',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudo aprobar la solicitud",
+        variant: "destructive",
       });
     } finally {
       setProcessingRequest(null);
@@ -125,18 +125,18 @@ function PresidentRequestsContent() {
       await groupsApi.rejectRequest(groupId, userId);
 
       toast({
-        title: 'Solicitud rechazada',
-        description: 'La solicitud ha sido rechazada',
+        title: "Solicitud rechazada",
+        description: "La solicitud ha sido rechazada",
       });
 
       // Reload data
       await loadRequestsData();
     } catch (error) {
-      console.error('Error rejecting request:', error);
+      console.error("Error rejecting request:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudo rechazar la solicitud',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudo rechazar la solicitud",
+        variant: "destructive",
       });
     } finally {
       setProcessingRequest(null);
@@ -162,19 +162,19 @@ function PresidentRequestsContent() {
 
   if (isLoading) {
     return (
-      <div className='min-h-screen bg-background'>
+      <div className="min-h-screen bg-background">
         <DashboardHeader
-          title='Solicitudes de Membresía'
-          description='Gestiona las solicitudes de ingreso a tus grupos'
+          title="Solicitudes de Membresía"
+          description="Gestiona las solicitudes de ingreso a tus grupos"
         />
-        <div className='max-w-7xl mx-auto p-6'>
-          <div className='space-y-6'>
+        <div className="max-w-7xl mx-auto p-6">
+          <div className="space-y-6">
             {Array.from({ length: 3 }).map((_, i) => (
               <Card key={i}>
-                <CardContent className='p-6'>
-                  <div className='animate-pulse'>
-                    <div className='h-4 bg-muted rounded w-3/4 mb-4'></div>
-                    <div className='h-8 bg-muted rounded w-1/2'></div>
+                <CardContent className="p-6">
+                  <div className="animate-pulse">
+                    <div className="h-4 bg-muted rounded w-3/4 mb-4"></div>
+                    <div className="h-8 bg-muted rounded w-1/2"></div>
                   </div>
                 </CardContent>
               </Card>
@@ -189,55 +189,55 @@ function PresidentRequestsContent() {
   const allRequests = getAllRequests();
 
   return (
-    <div className='min-h-screen bg-background'>
+    <div className="min-h-screen bg-background">
       <DashboardHeader
-        title='Solicitudes de Membresía'
-        description='Gestiona las solicitudes de ingreso a tus grupos'
+        title="Solicitudes de Membresía"
+        description="Gestiona las solicitudes de ingreso a tus grupos"
       />
 
-      <div className='max-w-7xl mx-auto p-6 space-y-6'>
+      <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Summary Cards */}
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
-            <CardContent className='p-6'>
-              <div className='flex items-center justify-between'>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className='text-sm font-medium text-muted-foreground'>
+                  <p className="text-sm font-medium text-muted-foreground">
                     Total Pendientes
                   </p>
-                  <p className='text-2xl font-bold text-orange-600'>
+                  <p className="text-2xl font-bold text-orange-600">
                     {totalPending}
                   </p>
                 </div>
-                <AlertCircle className='h-8 w-8 text-orange-600' />
+                <AlertCircle className="h-8 w-8 text-orange-600" />
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className='p-6'>
-              <div className='flex items-center justify-between'>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className='text-sm font-medium text-muted-foreground'>
+                  <p className="text-sm font-medium text-muted-foreground">
                     Grupos con Solicitudes
                   </p>
-                  <p className='text-2xl font-bold text-blue-600'>
+                  <p className="text-2xl font-bold text-blue-600">
                     {groupsWithRequests.length}
                   </p>
                 </div>
-                <Users className='h-8 w-8 text-blue-600' />
+                <Users className="h-8 w-8 text-blue-600" />
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className='p-6'>
-              <div className='flex items-center justify-between'>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className='text-sm font-medium text-muted-foreground'>
+                  <p className="text-sm font-medium text-muted-foreground">
                     Solicitudes Recientes
                   </p>
-                  <p className='text-2xl font-bold text-green-600'>
+                  <p className="text-2xl font-bold text-green-600">
                     {
                       allRequests.filter(req => {
                         const requestDate = new Date(req.joined_at);
@@ -248,21 +248,21 @@ function PresidentRequestsContent() {
                     }
                   </p>
                 </div>
-                <Clock className='h-8 w-8 text-green-600' />
+                <Clock className="h-8 w-8 text-green-600" />
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Refresh Button */}
-        <div className='flex justify-end'>
+        <div className="flex justify-end">
           <Button
-            variant='outline'
+            variant="outline"
             onClick={loadRequestsData}
             disabled={isLoading}
           >
             <RefreshCw
-              className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`}
+              className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`}
             />
             Actualizar
           </Button>
@@ -271,16 +271,16 @@ function PresidentRequestsContent() {
         {/* Main Content */}
         {totalPending === 0 ? (
           <Card>
-            <CardContent className='p-12 text-center'>
-              <UserCheck className='w-16 h-16 text-muted-foreground mx-auto mb-4' />
-              <h3 className='text-xl font-semibold mb-2'>
+            <CardContent className="p-12 text-center">
+              <UserCheck className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">
                 No hay solicitudes pendientes
               </h3>
-              <p className='text-muted-foreground mb-6'>
+              <p className="text-muted-foreground mb-6">
                 Todas las solicitudes de membresía han sido procesadas.
               </p>
               <Button onClick={loadRequestsData}>
-                <RefreshCw className='h-4 w-4 mr-2' />
+                <RefreshCw className="h-4 w-4 mr-2" />
                 Verificar Nuevas Solicitudes
               </Button>
             </CardContent>
@@ -289,28 +289,28 @@ function PresidentRequestsContent() {
           <Tabs
             value={activeTab}
             onValueChange={setActiveTab}
-            className='space-y-6'
+            className="space-y-6"
           >
-            <TabsList className='grid w-full grid-cols-2'>
-              <TabsTrigger value='all'>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="all">
                 Todas las Solicitudes ({totalPending})
               </TabsTrigger>
-              <TabsTrigger value='by-group'>
+              <TabsTrigger value="by-group">
                 Por Grupo ({groupsWithRequests.length})
               </TabsTrigger>
             </TabsList>
 
             {/* All Requests Tab */}
-            <TabsContent value='all' className='space-y-4'>
+            <TabsContent value="all" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle className='flex items-center gap-2'>
-                    <UserPlus className='h-5 w-5' />
+                  <CardTitle className="flex items-center gap-2">
+                    <UserPlus className="h-5 w-5" />
                     Todas las Solicitudes Pendientes
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className='space-y-4'>
+                  <div className="space-y-4">
                     {allRequests
                       .sort(
                         (a, b) =>
@@ -320,54 +320,54 @@ function PresidentRequestsContent() {
                       .map(request => (
                         <div
                           key={`${request.group_id}-${request.user}`}
-                          className='flex flex-col p-4 border rounded-lg hover:bg-muted/50 transition-colors gap-4'
+                          className="flex flex-col p-4 border rounded-lg hover:bg-muted/50 transition-colors gap-4"
                         >
-                          <div className='flex items-start gap-4'>
-                            <div className='w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0'>
-                              <User className='w-6 h-6 text-primary' />
+                          <div className="flex items-start gap-4">
+                            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                              <User className="w-6 h-6 text-primary" />
                             </div>
-                            <div className='flex-1 min-w-0'>
-                              <h4 className='font-medium text-lg mb-2'>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-medium text-lg mb-2">
                                 {request.user_details.full_name}
                               </h4>
-                              <div className='space-y-2 text-sm text-muted-foreground'>
-                                <div className='flex items-center gap-2'>
-                                  <Mail className='w-4 h-4 flex-shrink-0' />
-                                  <span className='break-all'>
+                              <div className="space-y-2 text-sm text-muted-foreground">
+                                <div className="flex items-center gap-2">
+                                  <Mail className="w-4 h-4 flex-shrink-0" />
+                                  <span className="break-all">
                                     {request.user_details.email}
                                   </span>
                                 </div>
-                                <div className='flex items-center gap-2'>
-                                  <Users className='w-4 h-4 flex-shrink-0' />
-                                  <span className='break-words'>
+                                <div className="flex items-center gap-2">
+                                  <Users className="w-4 h-4 flex-shrink-0" />
+                                  <span className="break-words">
                                     {request.group_name}
                                   </span>
                                 </div>
-                                <div className='flex items-center gap-2'>
-                                  <Clock className='w-4 h-4 flex-shrink-0' />
+                                <div className="flex items-center gap-2">
+                                  <Clock className="w-4 h-4 flex-shrink-0" />
                                   <span>
                                     {new Date(
                                       request.joined_at
-                                    ).toLocaleDateString('es-ES')}
+                                    ).toLocaleDateString("es-ES")}
                                   </span>
                                 </div>
                               </div>
                             </div>
                           </div>
 
-                          <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-border/50'>
+                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-border/50">
                             <Badge
-                              variant='outline'
-                              className='text-xs self-start'
+                              variant="outline"
+                              className="text-xs self-start"
                             >
-                              <Clock className='w-3 h-3 mr-1' />
+                              <Clock className="w-3 h-3 mr-1" />
                               Pendiente
                             </Badge>
 
-                            <div className='flex gap-2 w-full sm:w-auto'>
+                            <div className="flex gap-2 w-full sm:w-auto">
                               <Button
-                                size='sm'
-                                variant='outline'
+                                size="sm"
+                                variant="outline"
                                 onClick={() =>
                                   handleApproveRequest(
                                     request.group_id,
@@ -378,14 +378,14 @@ function PresidentRequestsContent() {
                                   processingRequest ===
                                   `${request.group_id}-${request.user}`
                                 }
-                                className='flex-1 sm:flex-none text-green-500 border-green-500 hover:bg-green-500 hover:text-white'
+                                className="flex-1 sm:flex-none text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
                               >
-                                <CheckCircle className='w-4 h-4 mr-1' />
+                                <CheckCircle className="w-4 h-4 mr-1" />
                                 Aprobar
                               </Button>
                               <Button
-                                size='sm'
-                                variant='outline'
+                                size="sm"
+                                variant="outline"
                                 onClick={() =>
                                   handleRejectRequest(
                                     request.group_id,
@@ -396,9 +396,9 @@ function PresidentRequestsContent() {
                                   processingRequest ===
                                   `${request.group_id}-${request.user}`
                                 }
-                                className='flex-1 sm:flex-none text-red-500 border-red-500 hover:bg-red-500 hover:text-white'
+                                className="flex-1 sm:flex-none text-red-500 border-red-500 hover:bg-red-500 hover:text-white"
                               >
-                                <XCircle className='w-4 h-4 mr-1' />
+                                <XCircle className="w-4 h-4 mr-1" />
                                 Rechazar
                               </Button>
                             </div>
@@ -411,68 +411,68 @@ function PresidentRequestsContent() {
             </TabsContent>
 
             {/* By Group Tab */}
-            <TabsContent value='by-group' className='space-y-6'>
+            <TabsContent value="by-group" className="space-y-6">
               {groupsWithRequests.map(group => (
                 <Card key={group.group_id}>
                   <CardHeader>
-                    <CardTitle className='flex items-center justify-between'>
-                      <div className='flex items-center gap-2'>
-                        <Users className='h-5 w-5' />
+                    <CardTitle className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-5 w-5" />
                         {group.name}
                       </div>
-                      <Badge variant='secondary'>
+                      <Badge variant="secondary">
                         {group.total_requests} solicitud
-                        {group.total_requests !== 1 ? 'es' : ''}
+                        {group.total_requests !== 1 ? "es" : ""}
                       </Badge>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className='space-y-4'>
+                    <div className="space-y-4">
                       {group.pending_requests.map(request => (
                         <div
                           key={request.user}
-                          className='flex flex-col p-4 border rounded-lg hover:bg-muted/50 transition-colors gap-4'
+                          className="flex flex-col p-4 border rounded-lg hover:bg-muted/50 transition-colors gap-4"
                         >
-                          <div className='flex items-start gap-4'>
-                            <div className='w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0'>
-                              <User className='w-5 h-5 text-primary' />
+                          <div className="flex items-start gap-4">
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                              <User className="w-5 h-5 text-primary" />
                             </div>
-                            <div className='flex-1 min-w-0'>
-                              <h4 className='font-medium text-lg mb-2'>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-medium text-lg mb-2">
                                 {request.user_details.full_name}
                               </h4>
-                              <div className='space-y-2 text-sm text-muted-foreground'>
-                                <div className='flex items-center gap-2'>
-                                  <Mail className='w-4 h-4 flex-shrink-0' />
-                                  <span className='break-all'>
+                              <div className="space-y-2 text-sm text-muted-foreground">
+                                <div className="flex items-center gap-2">
+                                  <Mail className="w-4 h-4 flex-shrink-0" />
+                                  <span className="break-all">
                                     {request.user_details.email}
                                   </span>
                                 </div>
-                                <div className='flex items-center gap-2'>
-                                  <Clock className='w-4 h-4 flex-shrink-0' />
+                                <div className="flex items-center gap-2">
+                                  <Clock className="w-4 h-4 flex-shrink-0" />
                                   <span>
                                     {new Date(
                                       request.joined_at
-                                    ).toLocaleDateString('es-ES')}
+                                    ).toLocaleDateString("es-ES")}
                                   </span>
                                 </div>
                               </div>
                             </div>
                           </div>
 
-                          <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-border/50'>
+                          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-border/50">
                             <Badge
-                              variant='outline'
-                              className='text-xs self-start'
+                              variant="outline"
+                              className="text-xs self-start"
                             >
-                              <Clock className='w-3 h-3 mr-1' />
+                              <Clock className="w-3 h-3 mr-1" />
                               Pendiente
                             </Badge>
 
-                            <div className='flex gap-2 w-full sm:w-auto'>
+                            <div className="flex gap-2 w-full sm:w-auto">
                               <Button
-                                size='sm'
-                                variant='outline'
+                                size="sm"
+                                variant="outline"
                                 onClick={() =>
                                   handleApproveRequest(
                                     group.group_id,
@@ -483,14 +483,14 @@ function PresidentRequestsContent() {
                                   processingRequest ===
                                   `${group.group_id}-${request.user}`
                                 }
-                                className='flex-1 sm:flex-none text-green-500 border-green-500 hover:bg-green-500 hover:text-white'
+                                className="flex-1 sm:flex-none text-green-500 border-green-500 hover:bg-green-500 hover:text-white"
                               >
-                                <CheckCircle className='w-4 h-4 mr-1' />
+                                <CheckCircle className="w-4 h-4 mr-1" />
                                 Aprobar
                               </Button>
                               <Button
-                                size='sm'
-                                variant='outline'
+                                size="sm"
+                                variant="outline"
                                 onClick={() =>
                                   handleRejectRequest(
                                     group.group_id,
@@ -501,9 +501,9 @@ function PresidentRequestsContent() {
                                   processingRequest ===
                                   `${group.group_id}-${request.user}`
                                 }
-                                className='flex-1 sm:flex-none text-red-500 border-red-500 hover:bg-red-500 hover:text-white'
+                                className="flex-1 sm:flex-none text-red-500 border-red-500 hover:bg-red-500 hover:text-white"
                               >
-                                <XCircle className='w-4 h-4 mr-1' />
+                                <XCircle className="w-4 h-4 mr-1" />
                                 Rechazar
                               </Button>
                             </div>

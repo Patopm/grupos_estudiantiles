@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Calendar,
@@ -8,27 +8,27 @@ import {
   Settings,
   Shield,
   Users,
-} from 'lucide-react';
-import { useEffect, useState } from 'react';
-import DashboardHeader from '@/components/dashboard/DashboardHeader';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { ProtectedRoute } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { ProtectedRoute } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AdminSettingsPage() {
   return (
-    <ProtectedRoute allowedRoles={['admin']}>
+    <ProtectedRoute allowedRoles={["admin"]}>
       <AdminSettingsContent />
     </ProtectedRoute>
   );
@@ -39,8 +39,8 @@ function AdminSettingsContent() {
 
   const [settings, setSettings] = useState({
     // System Settings
-    siteName: 'Sistema de Grupos Estudiantiles',
-    siteDescription: 'Plataforma para gestión de grupos estudiantiles',
+    siteName: "Sistema de Grupos Estudiantiles",
+    siteDescription: "Plataforma para gestión de grupos estudiantiles",
     maintenanceMode: false,
     registrationEnabled: true,
     emailNotifications: true,
@@ -62,26 +62,22 @@ function AdminSettingsContent() {
     passwordMinLength: 8,
 
     // Email Settings
-    smtpHost: '',
+    smtpHost: "",
     smtpPort: 587,
-    smtpUsername: '',
-    smtpPassword: '',
-    fromEmail: 'noreply@example.com',
+    smtpUsername: "",
+    smtpPassword: "",
+    fromEmail: "noreply@example.com",
 
     // Backup Settings
     autoBackup: true,
-    backupFrequency: 'daily',
+    backupFrequency: "daily",
     backupRetention: 30,
   });
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    loadSettings();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     try {
       setIsLoading(true);
       // TODO: Implement actual settings API call
@@ -91,16 +87,20 @@ function AdminSettingsContent() {
       // Mock loading delay
       await new Promise(resolve => setTimeout(resolve, 1000));
     } catch (error) {
-      console.error('Error loading settings:', error);
+      console.error("Error loading settings:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudieron cargar la configuración',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudieron cargar la configuración",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [toast]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    loadSettings();
+  }, [loadSettings]);
 
   const handleSaveSettings = async () => {
     try {
@@ -112,15 +112,15 @@ function AdminSettingsContent() {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       toast({
-        title: 'Éxito',
-        description: 'Configuración guardada correctamente',
+        title: "Éxito",
+        description: "Configuración guardada correctamente",
       });
     } catch (error) {
-      console.error('Error saving settings:', error);
+      console.error("Error saving settings:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudo guardar la configuración',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudo guardar la configuración",
+        variant: "destructive",
       });
     } finally {
       setIsSaving(false);
@@ -130,8 +130,8 @@ function AdminSettingsContent() {
   const handleResetSettings = () => {
     // TODO: Implement reset to defaults
     toast({
-      title: 'Configuración restablecida',
-      description: 'Se han restablecido los valores por defecto',
+      title: "Configuración restablecida",
+      description: "Se han restablecido los valores por defecto",
     });
   };
 
@@ -144,16 +144,16 @@ function AdminSettingsContent() {
 
   if (isLoading) {
     return (
-      <div className='min-h-screen bg-background'>
+      <div className="min-h-screen bg-background">
         <DashboardHeader
-          title='Configuración del Sistema'
-          description='Administrar configuración del sistema'
+          title="Configuración del Sistema"
+          description="Administrar configuración del sistema"
         />
-        <div className='max-w-4xl mx-auto p-6'>
-          <div className='animate-pulse space-y-6'>
-            <div className='h-64 bg-muted rounded-lg'></div>
-            <div className='h-64 bg-muted rounded-lg'></div>
-            <div className='h-64 bg-muted rounded-lg'></div>
+        <div className="max-w-4xl mx-auto p-6">
+          <div className="animate-pulse space-y-6">
+            <div className="h-64 bg-muted rounded-lg"></div>
+            <div className="h-64 bg-muted rounded-lg"></div>
+            <div className="h-64 bg-muted rounded-lg"></div>
           </div>
         </div>
       </div>
@@ -161,92 +161,92 @@ function AdminSettingsContent() {
   }
 
   return (
-    <div className='min-h-screen bg-background'>
+    <div className="min-h-screen bg-background">
       <DashboardHeader
-        title='Configuración del Sistema'
-        description='Administrar configuración del sistema'
+        title="Configuración del Sistema"
+        description="Administrar configuración del sistema"
       />
 
-      <div className='max-w-4xl mx-auto p-6 space-y-6'>
+      <div className="max-w-4xl mx-auto p-6 space-y-6">
         {/* System Settings */}
         <Card>
           <CardHeader>
-            <CardTitle className='flex items-center gap-2'>
-              <Settings className='w-5 h-5' />
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="w-5 h-5" />
               Configuración General
             </CardTitle>
           </CardHeader>
-          <CardContent className='space-y-6'>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              <div className='space-y-2'>
-                <Label htmlFor='siteName'>Nombre del Sitio</Label>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="siteName">Nombre del Sitio</Label>
                 <Input
-                  id='siteName'
+                  id="siteName"
                   value={settings.siteName}
-                  onChange={e => updateSetting('siteName', e.target.value)}
+                  onChange={e => updateSetting("siteName", e.target.value)}
                 />
               </div>
-              <div className='space-y-2'>
-                <Label htmlFor='siteDescription'>Descripción del Sitio</Label>
+              <div className="space-y-2">
+                <Label htmlFor="siteDescription">Descripción del Sitio</Label>
                 <Input
-                  id='siteDescription'
+                  id="siteDescription"
                   value={settings.siteDescription}
                   onChange={e =>
-                    updateSetting('siteDescription', e.target.value)
+                    updateSetting("siteDescription", e.target.value)
                   }
                 />
               </div>
             </div>
 
-            <div className='space-y-4'>
-              <div className='flex items-center justify-between'>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
                 <div>
-                  <Label htmlFor='maintenanceMode'>Modo de Mantenimiento</Label>
-                  <p className='text-sm text-muted-foreground'>
+                  <Label htmlFor="maintenanceMode">Modo de Mantenimiento</Label>
+                  <p className="text-sm text-muted-foreground">
                     Desactiva el acceso público al sitio
                   </p>
                 </div>
                 <Switch
-                  id='maintenanceMode'
+                  id="maintenanceMode"
                   checked={settings.maintenanceMode}
                   onCheckedChange={checked =>
-                    updateSetting('maintenanceMode', checked)
+                    updateSetting("maintenanceMode", checked)
                   }
                 />
               </div>
 
-              <div className='flex items-center justify-between'>
+              <div className="flex items-center justify-between">
                 <div>
-                  <Label htmlFor='registrationEnabled'>
+                  <Label htmlFor="registrationEnabled">
                     Registro Habilitado
                   </Label>
-                  <p className='text-sm text-muted-foreground'>
+                  <p className="text-sm text-muted-foreground">
                     Permite el registro de nuevos usuarios
                   </p>
                 </div>
                 <Switch
-                  id='registrationEnabled'
+                  id="registrationEnabled"
                   checked={settings.registrationEnabled}
                   onCheckedChange={checked =>
-                    updateSetting('registrationEnabled', checked)
+                    updateSetting("registrationEnabled", checked)
                   }
                 />
               </div>
 
-              <div className='flex items-center justify-between'>
+              <div className="flex items-center justify-between">
                 <div>
-                  <Label htmlFor='emailNotifications'>
+                  <Label htmlFor="emailNotifications">
                     Notificaciones por Email
                   </Label>
-                  <p className='text-sm text-muted-foreground'>
+                  <p className="text-sm text-muted-foreground">
                     Envía notificaciones por correo electrónico
                   </p>
                 </div>
                 <Switch
-                  id='emailNotifications'
+                  id="emailNotifications"
                   checked={settings.emailNotifications}
                   onCheckedChange={checked =>
-                    updateSetting('emailNotifications', checked)
+                    updateSetting("emailNotifications", checked)
                   }
                 />
               </div>
@@ -257,74 +257,74 @@ function AdminSettingsContent() {
         {/* User Settings */}
         <Card>
           <CardHeader>
-            <CardTitle className='flex items-center gap-2'>
-              <Users className='w-5 h-5' />
+            <CardTitle className="flex items-center gap-2">
+              <Users className="w-5 h-5" />
               Configuración de Usuarios
             </CardTitle>
           </CardHeader>
-          <CardContent className='space-y-6'>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              <div className='space-y-2'>
-                <Label htmlFor='maxUsersPerGroup'>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="maxUsersPerGroup">
                   Máximo Usuarios por Grupo
                 </Label>
                 <Input
-                  id='maxUsersPerGroup'
-                  type='number'
+                  id="maxUsersPerGroup"
+                  type="number"
                   value={settings.maxUsersPerGroup}
                   onChange={e =>
-                    updateSetting('maxUsersPerGroup', Number(e.target.value))
+                    updateSetting("maxUsersPerGroup", Number(e.target.value))
                   }
                 />
               </div>
-              <div className='space-y-2'>
-                <Label htmlFor='passwordMinLength'>
+              <div className="space-y-2">
+                <Label htmlFor="passwordMinLength">
                   Longitud Mínima de Contraseña
                 </Label>
                 <Input
-                  id='passwordMinLength'
-                  type='number'
+                  id="passwordMinLength"
+                  type="number"
                   value={settings.passwordMinLength}
                   onChange={e =>
-                    updateSetting('passwordMinLength', Number(e.target.value))
+                    updateSetting("passwordMinLength", Number(e.target.value))
                   }
                 />
               </div>
             </div>
 
-            <div className='space-y-4'>
-              <div className='flex items-center justify-between'>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
                 <div>
-                  <Label htmlFor='requireEmailVerification'>
+                  <Label htmlFor="requireEmailVerification">
                     Verificación de Email Requerida
                   </Label>
-                  <p className='text-sm text-muted-foreground'>
+                  <p className="text-sm text-muted-foreground">
                     Los usuarios deben verificar su email para activar la cuenta
                   </p>
                 </div>
                 <Switch
-                  id='requireEmailVerification'
+                  id="requireEmailVerification"
                   checked={settings.requireEmailVerification}
                   onCheckedChange={checked =>
-                    updateSetting('requireEmailVerification', checked)
+                    updateSetting("requireEmailVerification", checked)
                   }
                 />
               </div>
 
-              <div className='flex items-center justify-between'>
+              <div className="flex items-center justify-between">
                 <div>
-                  <Label htmlFor='allowSelfRegistration'>
+                  <Label htmlFor="allowSelfRegistration">
                     Registro Automático
                   </Label>
-                  <p className='text-sm text-muted-foreground'>
+                  <p className="text-sm text-muted-foreground">
                     Permite que los usuarios se registren sin aprobación
                   </p>
                 </div>
                 <Switch
-                  id='allowSelfRegistration'
+                  id="allowSelfRegistration"
                   checked={settings.allowSelfRegistration}
                   onCheckedChange={checked =>
-                    updateSetting('allowSelfRegistration', checked)
+                    updateSetting("allowSelfRegistration", checked)
                   }
                 />
               </div>
@@ -335,74 +335,74 @@ function AdminSettingsContent() {
         {/* Event Settings */}
         <Card>
           <CardHeader>
-            <CardTitle className='flex items-center gap-2'>
-              <Calendar className='w-5 h-5' />
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="w-5 h-5" />
               Configuración de Eventos
             </CardTitle>
           </CardHeader>
-          <CardContent className='space-y-6'>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              <div className='space-y-2'>
-                <Label htmlFor='maxEventsPerGroup'>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="maxEventsPerGroup">
                   Máximo Eventos por Grupo
                 </Label>
                 <Input
-                  id='maxEventsPerGroup'
-                  type='number'
+                  id="maxEventsPerGroup"
+                  type="number"
                   value={settings.maxEventsPerGroup}
                   onChange={e =>
-                    updateSetting('maxEventsPerGroup', Number(e.target.value))
+                    updateSetting("maxEventsPerGroup", Number(e.target.value))
                   }
                 />
               </div>
-              <div className='space-y-2'>
-                <Label htmlFor='sessionTimeout'>
+              <div className="space-y-2">
+                <Label htmlFor="sessionTimeout">
                   Tiempo de Sesión (minutos)
                 </Label>
                 <Input
-                  id='sessionTimeout'
-                  type='number'
+                  id="sessionTimeout"
+                  type="number"
                   value={settings.sessionTimeout}
                   onChange={e =>
-                    updateSetting('sessionTimeout', Number(e.target.value))
+                    updateSetting("sessionTimeout", Number(e.target.value))
                   }
                 />
               </div>
             </div>
 
-            <div className='space-y-4'>
-              <div className='flex items-center justify-between'>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
                 <div>
-                  <Label htmlFor='eventRegistrationRequired'>
+                  <Label htmlFor="eventRegistrationRequired">
                     Registro Requerido para Eventos
                   </Label>
-                  <p className='text-sm text-muted-foreground'>
+                  <p className="text-sm text-muted-foreground">
                     Los usuarios deben registrarse para asistir a eventos
                   </p>
                 </div>
                 <Switch
-                  id='eventRegistrationRequired'
+                  id="eventRegistrationRequired"
                   checked={settings.eventRegistrationRequired}
                   onCheckedChange={checked =>
-                    updateSetting('eventRegistrationRequired', checked)
+                    updateSetting("eventRegistrationRequired", checked)
                   }
                 />
               </div>
 
-              <div className='flex items-center justify-between'>
+              <div className="flex items-center justify-between">
                 <div>
-                  <Label htmlFor='allowEventCancellation'>
+                  <Label htmlFor="allowEventCancellation">
                     Permitir Cancelación de Eventos
                   </Label>
-                  <p className='text-sm text-muted-foreground'>
+                  <p className="text-sm text-muted-foreground">
                     Los organizadores pueden cancelar eventos
                   </p>
                 </div>
                 <Switch
-                  id='allowEventCancellation'
+                  id="allowEventCancellation"
                   checked={settings.allowEventCancellation}
                   onCheckedChange={checked =>
-                    updateSetting('allowEventCancellation', checked)
+                    updateSetting("allowEventCancellation", checked)
                   }
                 />
               </div>
@@ -413,90 +413,90 @@ function AdminSettingsContent() {
         {/* Security Settings */}
         <Card>
           <CardHeader>
-            <CardTitle className='flex items-center gap-2'>
-              <Shield className='w-5 h-5' />
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="w-5 h-5" />
               Configuración de Seguridad
             </CardTitle>
           </CardHeader>
-          <CardContent className='space-y-6'>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              <div className='space-y-2'>
-                <Label htmlFor='maxLoginAttempts'>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="maxLoginAttempts">
                   Máximo Intentos de Login
                 </Label>
                 <Input
-                  id='maxLoginAttempts'
-                  type='number'
+                  id="maxLoginAttempts"
+                  type="number"
                   value={settings.maxLoginAttempts}
                   onChange={e =>
-                    updateSetting('maxLoginAttempts', Number(e.target.value))
+                    updateSetting("maxLoginAttempts", Number(e.target.value))
                   }
                 />
               </div>
-              <div className='space-y-2'>
-                <Label htmlFor='backupRetention'>
+              <div className="space-y-2">
+                <Label htmlFor="backupRetention">
                   Retención de Backups (días)
                 </Label>
                 <Input
-                  id='backupRetention'
-                  type='number'
+                  id="backupRetention"
+                  type="number"
                   value={settings.backupRetention}
                   onChange={e =>
-                    updateSetting('backupRetention', Number(e.target.value))
+                    updateSetting("backupRetention", Number(e.target.value))
                   }
                 />
               </div>
             </div>
 
-            <div className='space-y-4'>
-              <div className='flex items-center justify-between'>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
                 <div>
-                  <Label htmlFor='enableTwoFactor'>
+                  <Label htmlFor="enableTwoFactor">
                     Autenticación de Dos Factores
                   </Label>
-                  <p className='text-sm text-muted-foreground'>
+                  <p className="text-sm text-muted-foreground">
                     Requiere verificación adicional para el login
                   </p>
                 </div>
                 <Switch
-                  id='enableTwoFactor'
+                  id="enableTwoFactor"
                   checked={settings.enableTwoFactor}
                   onCheckedChange={checked =>
-                    updateSetting('enableTwoFactor', checked)
+                    updateSetting("enableTwoFactor", checked)
                   }
                 />
               </div>
 
-              <div className='flex items-center justify-between'>
+              <div className="flex items-center justify-between">
                 <div>
-                  <Label htmlFor='autoBackup'>Backup Automático</Label>
-                  <p className='text-sm text-muted-foreground'>
+                  <Label htmlFor="autoBackup">Backup Automático</Label>
+                  <p className="text-sm text-muted-foreground">
                     Realiza backups automáticos de la base de datos
                   </p>
                 </div>
                 <Switch
-                  id='autoBackup'
+                  id="autoBackup"
                   checked={settings.autoBackup}
                   onCheckedChange={checked =>
-                    updateSetting('autoBackup', checked)
+                    updateSetting("autoBackup", checked)
                   }
                 />
               </div>
             </div>
 
-            <div className='space-y-2'>
-              <Label htmlFor='backupFrequency'>Frecuencia de Backup</Label>
+            <div className="space-y-2">
+              <Label htmlFor="backupFrequency">Frecuencia de Backup</Label>
               <Select
                 value={settings.backupFrequency}
-                onValueChange={value => updateSetting('backupFrequency', value)}
+                onValueChange={value => updateSetting("backupFrequency", value)}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value='daily'>Diario</SelectItem>
-                  <SelectItem value='weekly'>Semanal</SelectItem>
-                  <SelectItem value='monthly'>Mensual</SelectItem>
+                  <SelectItem value="daily">Diario</SelectItem>
+                  <SelectItem value="weekly">Semanal</SelectItem>
+                  <SelectItem value="monthly">Mensual</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -506,80 +506,80 @@ function AdminSettingsContent() {
         {/* Email Settings */}
         <Card>
           <CardHeader>
-            <CardTitle className='flex items-center gap-2'>
-              <Mail className='w-5 h-5' />
+            <CardTitle className="flex items-center gap-2">
+              <Mail className="w-5 h-5" />
               Configuración de Email
             </CardTitle>
           </CardHeader>
-          <CardContent className='space-y-6'>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              <div className='space-y-2'>
-                <Label htmlFor='smtpHost'>Servidor SMTP</Label>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="smtpHost">Servidor SMTP</Label>
                 <Input
-                  id='smtpHost'
+                  id="smtpHost"
                   value={settings.smtpHost}
-                  onChange={e => updateSetting('smtpHost', e.target.value)}
-                  placeholder='smtp.gmail.com'
+                  onChange={e => updateSetting("smtpHost", e.target.value)}
+                  placeholder="smtp.gmail.com"
                 />
               </div>
-              <div className='space-y-2'>
-                <Label htmlFor='smtpPort'>Puerto SMTP</Label>
+              <div className="space-y-2">
+                <Label htmlFor="smtpPort">Puerto SMTP</Label>
                 <Input
-                  id='smtpPort'
-                  type='number'
+                  id="smtpPort"
+                  type="number"
                   value={settings.smtpPort}
                   onChange={e =>
-                    updateSetting('smtpPort', Number(e.target.value))
+                    updateSetting("smtpPort", Number(e.target.value))
                   }
                 />
               </div>
             </div>
 
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              <div className='space-y-2'>
-                <Label htmlFor='smtpUsername'>Usuario SMTP</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="smtpUsername">Usuario SMTP</Label>
                 <Input
-                  id='smtpUsername'
+                  id="smtpUsername"
                   value={settings.smtpUsername}
-                  onChange={e => updateSetting('smtpUsername', e.target.value)}
+                  onChange={e => updateSetting("smtpUsername", e.target.value)}
                 />
               </div>
-              <div className='space-y-2'>
-                <Label htmlFor='smtpPassword'>Contraseña SMTP</Label>
+              <div className="space-y-2">
+                <Label htmlFor="smtpPassword">Contraseña SMTP</Label>
                 <Input
-                  id='smtpPassword'
-                  type='password'
+                  id="smtpPassword"
+                  type="password"
                   value={settings.smtpPassword}
-                  onChange={e => updateSetting('smtpPassword', e.target.value)}
+                  onChange={e => updateSetting("smtpPassword", e.target.value)}
                 />
               </div>
             </div>
 
-            <div className='space-y-2'>
-              <Label htmlFor='fromEmail'>Email Remitente</Label>
+            <div className="space-y-2">
+              <Label htmlFor="fromEmail">Email Remitente</Label>
               <Input
-                id='fromEmail'
-                type='email'
+                id="fromEmail"
+                type="email"
                 value={settings.fromEmail}
-                onChange={e => updateSetting('fromEmail', e.target.value)}
+                onChange={e => updateSetting("fromEmail", e.target.value)}
               />
             </div>
           </CardContent>
         </Card>
 
         {/* Action Buttons */}
-        <div className='flex gap-4 justify-end'>
+        <div className="flex gap-4 justify-end">
           <Button
-            variant='outline'
+            variant="outline"
             onClick={handleResetSettings}
             disabled={isSaving}
           >
-            <RefreshCw className='w-4 h-4 mr-2' />
+            <RefreshCw className="w-4 h-4 mr-2" />
             Restablecer
           </Button>
           <Button onClick={handleSaveSettings} disabled={isSaving}>
-            <Save className='w-4 h-4 mr-2' />
-            {isSaving ? 'Guardando...' : 'Guardar Configuración'}
+            <Save className="w-4 h-4 mr-2" />
+            {isSaving ? "Guardando..." : "Guardar Configuración"}
           </Button>
         </div>
       </div>

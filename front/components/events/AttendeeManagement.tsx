@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   AlertCircle,
@@ -13,11 +13,11 @@ import {
   Users,
   UserX,
   XCircle,
-} from 'lucide-react';
-import { useMemo, useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+} from "lucide-react";
+import { useMemo, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -25,15 +25,15 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -41,9 +41,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { useToast } from '@/hooks/use-toast';
-import { ATTENDANCE_STATUS_LABELS, type EventAttendee } from '@/lib/api/events';
+} from "@/components/ui/table";
+import { useToast } from "@/hooks/use-toast";
+import { ATTENDANCE_STATUS_LABELS, type EventAttendee } from "@/lib/api/events";
 
 interface AttendeeManagementProps {
   eventId: string;
@@ -53,30 +53,30 @@ interface AttendeeManagementProps {
 
 const ATTENDANCE_STATUSES = [
   {
-    value: 'registered',
-    label: 'Registrado',
-    color: 'bg-blue-100 text-blue-800',
+    value: "registered",
+    label: "Registrado",
+    color: "bg-blue-100 text-blue-800",
   },
   {
-    value: 'confirmed',
-    label: 'Confirmado',
-    color: 'bg-green-100 text-green-800',
+    value: "confirmed",
+    label: "Confirmado",
+    color: "bg-green-100 text-green-800",
   },
   {
-    value: 'attended',
-    label: 'Asistió',
-    color: 'bg-emerald-100 text-emerald-800',
+    value: "attended",
+    label: "Asistió",
+    color: "bg-emerald-100 text-emerald-800",
   },
-  { value: 'no_show', label: 'No asistió', color: 'bg-red-100 text-red-800' },
+  { value: "no_show", label: "No asistió", color: "bg-red-100 text-red-800" },
   {
-    value: 'cancelled',
-    label: 'Cancelado',
-    color: 'bg-gray-100 text-gray-800',
+    value: "cancelled",
+    label: "Cancelado",
+    color: "bg-gray-100 text-gray-800",
   },
 ];
 
 const STATUS_FILTERS = [
-  { value: 'all', label: 'Todos' },
+  { value: "all", label: "Todos" },
   ...ATTENDANCE_STATUSES,
 ];
 
@@ -86,12 +86,12 @@ export default function AttendeeManagement({
   onAttendeeUpdate,
 }: AttendeeManagementProps) {
   const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [selectedAttendee, setSelectedAttendee] =
     useState<EventAttendee | null>(null);
   const [showStatusDialog, setShowStatusDialog] = useState(false);
-  const [newStatus, setNewStatus] = useState<string>('');
+  const [newStatus, setNewStatus] = useState<string>("");
   const [isUpdating, setIsUpdating] = useState(false);
 
   const filteredAttendees = useMemo(() => {
@@ -108,7 +108,7 @@ export default function AttendeeManagement({
           .includes(searchTerm.toLowerCase());
 
       const matchesStatus =
-        statusFilter === 'all' || attendee.status === statusFilter;
+        statusFilter === "all" || attendee.status === statusFilter;
 
       return matchesSearch && matchesStatus;
     });
@@ -132,13 +132,13 @@ export default function AttendeeManagement({
       await onAttendeeUpdate(selectedAttendee.attendance_id, newStatus);
       setShowStatusDialog(false);
       setSelectedAttendee(null);
-      setNewStatus('');
+      setNewStatus("");
     } catch (error) {
-      console.error('Error updating attendee status:', error);
+      console.error("Error updating attendee status:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudo actualizar el estado del asistente',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudo actualizar el estado del asistente",
+        variant: "destructive",
       });
     } finally {
       setIsUpdating(false);
@@ -154,31 +154,31 @@ export default function AttendeeManagement({
   const exportAttendees = () => {
     const csvContent = [
       [
-        'Nombre',
-        'Email',
-        'ID Estudiante',
-        'Teléfono',
-        'Estado',
-        'Fecha Registro',
+        "Nombre",
+        "Email",
+        "ID Estudiante",
+        "Teléfono",
+        "Estado",
+        "Fecha Registro",
       ],
       ...filteredAttendees.map(attendee => [
         attendee.user_details.full_name,
         attendee.user_details.email,
         attendee.user_details.student_id,
-        attendee.user_details.phone || '',
+        attendee.user_details.phone || "",
         ATTENDANCE_STATUS_LABELS[attendee.status],
-        new Date(attendee.registration_date).toLocaleDateString('es-ES'),
+        new Date(attendee.registration_date).toLocaleDateString("es-ES"),
       ]),
     ]
-      .map(row => row.join(','))
-      .join('\n');
+      .map(row => row.join(","))
+      .join("\n");
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `asistentes-evento-${eventId}.csv`);
-    link.style.visibility = 'hidden';
+    link.setAttribute("href", url);
+    link.setAttribute("download", `asistentes-evento-${eventId}.csv`);
+    link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -186,51 +186,51 @@ export default function AttendeeManagement({
 
   const sendNotification = () => {
     toast({
-      title: 'Función en desarrollo',
+      title: "Función en desarrollo",
       description:
-        'La funcionalidad de notificaciones estará disponible próximamente',
+        "La funcionalidad de notificaciones estará disponible próximamente",
     });
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'registered':
-        return <Clock className='h-4 w-4' />;
-      case 'confirmed':
-        return <CheckCircle className='h-4 w-4' />;
-      case 'attended':
-        return <UserCheck className='h-4 w-4' />;
-      case 'no_show':
-        return <XCircle className='h-4 w-4' />;
-      case 'cancelled':
-        return <UserX className='h-4 w-4' />;
+      case "registered":
+        return <Clock className="h-4 w-4" />;
+      case "confirmed":
+        return <CheckCircle className="h-4 w-4" />;
+      case "attended":
+        return <UserCheck className="h-4 w-4" />;
+      case "no_show":
+        return <XCircle className="h-4 w-4" />;
+      case "cancelled":
+        return <UserX className="h-4 w-4" />;
       default:
-        return <AlertCircle className='h-4 w-4' />;
+        return <AlertCircle className="h-4 w-4" />;
     }
   };
 
   const getStatusColor = (status: string) => {
     const statusConfig = ATTENDANCE_STATUSES.find(s => s.value === status);
-    return statusConfig?.color || 'bg-gray-100 text-gray-800';
+    return statusConfig?.color || "bg-gray-100 text-gray-800";
   };
 
   return (
-    <div className='space-y-6'>
+    <div className="space-y-6">
       {/* Header */}
       <Card>
         <CardHeader>
-          <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
-            <CardTitle className='flex items-center gap-2'>
-              <Users className='h-5 w-5' />
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
               Gestión de Asistentes ({attendees.length})
             </CardTitle>
-            <div className='flex gap-2'>
-              <Button variant='outline' onClick={exportAttendees}>
-                <Download className='h-4 w-4 mr-2' />
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={exportAttendees}>
+                <Download className="h-4 w-4 mr-2" />
                 Exportar
               </Button>
-              <Button variant='outline' onClick={sendNotification}>
-                <Mail className='h-4 w-4 mr-2' />
+              <Button variant="outline" onClick={sendNotification}>
+                <Mail className="h-4 w-4 mr-2" />
                 Notificar
               </Button>
             </div>
@@ -238,16 +238,16 @@ export default function AttendeeManagement({
         </CardHeader>
         <CardContent>
           {/* Status Summary */}
-          <div className='grid grid-cols-2 md:grid-cols-5 gap-4 mb-6'>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
             {ATTENDANCE_STATUSES.map(status => (
-              <div key={status.value} className='text-center'>
+              <div key={status.value} className="text-center">
                 <div
                   className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${status.color}`}
                 >
                   {getStatusIcon(status.value)}
                   {status.label}
                 </div>
-                <div className='text-2xl font-bold mt-1'>
+                <div className="text-2xl font-bold mt-1">
                   {statusCounts[status.value] || 0}
                 </div>
               </div>
@@ -255,21 +255,21 @@ export default function AttendeeManagement({
           </div>
 
           {/* Filters */}
-          <div className='flex flex-col sm:flex-row gap-4'>
-            <div className='flex-1'>
-              <div className='relative'>
-                <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder='Buscar por nombre, email o ID...'
+                  placeholder="Buscar por nombre, email o ID..."
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
-                  className='pl-10'
+                  className="pl-10"
                 />
               </div>
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className='w-full sm:w-48'>
-                <SelectValue placeholder='Filtrar por estado' />
+              <SelectTrigger className="w-full sm:w-48">
+                <SelectValue placeholder="Filtrar por estado" />
               </SelectTrigger>
               <SelectContent>
                 {STATUS_FILTERS.map(filter => (
@@ -285,8 +285,8 @@ export default function AttendeeManagement({
 
       {/* Attendees Table */}
       <Card>
-        <CardContent className='p-0'>
-          <div className='overflow-x-auto'>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -302,11 +302,11 @@ export default function AttendeeManagement({
                   <TableRow>
                     <TableCell
                       colSpan={5}
-                      className='text-center py-8 text-muted-foreground'
+                      className="text-center py-8 text-muted-foreground"
                     >
-                      {searchTerm || statusFilter !== 'all'
-                        ? 'No se encontraron asistentes con los filtros aplicados'
-                        : 'No hay asistentes registrados para este evento'}
+                      {searchTerm || statusFilter !== "all"
+                        ? "No se encontraron asistentes con los filtros aplicados"
+                        : "No hay asistentes registrados para este evento"}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -314,21 +314,21 @@ export default function AttendeeManagement({
                     <TableRow key={attendee.attendance_id}>
                       <TableCell>
                         <div>
-                          <div className='font-medium'>
+                          <div className="font-medium">
                             {attendee.user_details.full_name}
                           </div>
-                          <div className='text-sm text-muted-foreground'>
+                          <div className="text-sm text-muted-foreground">
                             ID: {attendee.user_details.student_id}
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div>
-                          <div className='text-sm'>
+                          <div className="text-sm">
                             {attendee.user_details.email}
                           </div>
                           {attendee.user_details.phone && (
-                            <div className='text-sm text-muted-foreground'>
+                            <div className="text-sm text-muted-foreground">
                               {attendee.user_details.phone}
                             </div>
                           )}
@@ -338,34 +338,34 @@ export default function AttendeeManagement({
                         <Badge
                           className={`${getStatusColor(attendee.status)} border-0`}
                         >
-                          <div className='flex items-center gap-1'>
+                          <div className="flex items-center gap-1">
                             {getStatusIcon(attendee.status)}
                             {ATTENDANCE_STATUS_LABELS[attendee.status]}
                           </div>
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className='text-sm'>
+                        <div className="text-sm">
                           {new Date(
                             attendee.registration_date
-                          ).toLocaleDateString('es-ES')}
+                          ).toLocaleDateString("es-ES")}
                         </div>
-                        <div className='text-xs text-muted-foreground'>
+                        <div className="text-xs text-muted-foreground">
                           {new Date(
                             attendee.registration_date
-                          ).toLocaleTimeString('es-ES', {
-                            hour: '2-digit',
-                            minute: '2-digit',
+                          ).toLocaleTimeString("es-ES", {
+                            hour: "2-digit",
+                            minute: "2-digit",
                           })}
                         </div>
                       </TableCell>
                       <TableCell>
                         <Button
-                          variant='outline'
-                          size='sm'
+                          variant="outline"
+                          size="sm"
                           onClick={() => openStatusDialog(attendee)}
                         >
-                          <MoreHorizontal className='h-4 w-4' />
+                          <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -387,17 +387,17 @@ export default function AttendeeManagement({
             </DialogDescription>
           </DialogHeader>
 
-          <div className='space-y-4'>
-            <div className='space-y-2'>
-              <label className='text-sm font-medium'>Nuevo Estado</label>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Nuevo Estado</label>
               <Select value={newStatus} onValueChange={setNewStatus}>
                 <SelectTrigger>
-                  <SelectValue placeholder='Selecciona un estado' />
+                  <SelectValue placeholder="Selecciona un estado" />
                 </SelectTrigger>
                 <SelectContent>
                   {ATTENDANCE_STATUSES.map(status => (
                     <SelectItem key={status.value} value={status.value}>
-                      <div className='flex items-center gap-2'>
+                      <div className="flex items-center gap-2">
                         {getStatusIcon(status.value)}
                         {status.label}
                       </div>
@@ -408,9 +408,9 @@ export default function AttendeeManagement({
             </div>
 
             {selectedAttendee?.notes && (
-              <div className='space-y-2'>
-                <label className='text-sm font-medium'>Notas</label>
-                <div className='p-3 bg-muted rounded-lg text-sm'>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Notas</label>
+                <div className="p-3 bg-muted rounded-lg text-sm">
                   {selectedAttendee.notes}
                 </div>
               </div>
@@ -419,7 +419,7 @@ export default function AttendeeManagement({
 
           <DialogFooter>
             <Button
-              variant='outline'
+              variant="outline"
               onClick={() => setShowStatusDialog(false)}
               disabled={isUpdating}
             >
@@ -429,7 +429,7 @@ export default function AttendeeManagement({
               onClick={handleStatusUpdate}
               disabled={isUpdating || !newStatus}
             >
-              {isUpdating && <Loader2 className='h-4 w-4 mr-2 animate-spin' />}
+              {isUpdating && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               Actualizar Estado
             </Button>
           </DialogFooter>

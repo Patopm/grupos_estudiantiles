@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Calendar,
@@ -11,23 +11,23 @@ import {
   RefreshCw,
   Search,
   X,
-} from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+} from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useDebounce } from '@/hooks/useDebounce';
-import type { Event, EventFilters } from '@/lib/api/events';
-import EventCard from './EventCard';
-import MyEventsCalendar from './MyEventsCalendar';
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useDebounce } from "@/hooks/useDebounce";
+import type { Event, EventFilters } from "@/lib/api/events";
+import EventCard from "./EventCard";
+import MyEventsCalendar from "./MyEventsCalendar";
 
 interface MyEventsContentProps {
   events: Event[];
@@ -42,30 +42,30 @@ interface MyEventsContentProps {
 }
 
 const EVENT_STATUSES = [
-  { value: 'all', label: 'Todos' },
-  { value: 'upcoming', label: 'Próximos' },
-  { value: 'past', label: 'Pasados' },
-  { value: 'attended', label: 'Asistidos' },
-  { value: 'no_show', label: 'No asistidos' },
-  { value: 'cancelled', label: 'Cancelados' },
+  { value: "all", label: "Todos" },
+  { value: "upcoming", label: "Próximos" },
+  { value: "past", label: "Pasados" },
+  { value: "attended", label: "Asistidos" },
+  { value: "no_show", label: "No asistidos" },
+  { value: "cancelled", label: "Cancelados" },
 ];
 
 const SORT_OPTIONS = [
-  { value: 'date_asc', label: 'Fecha: Próximos primero', icon: Calendar },
-  { value: 'date_desc', label: 'Fecha: Lejanos primero', icon: Calendar },
-  { value: 'title', label: 'Título A-Z', icon: null },
-  { value: 'title_desc', label: 'Título Z-A', icon: null },
-  { value: 'status', label: 'Por estado', icon: CheckCircle },
+  { value: "date_asc", label: "Fecha: Próximos primero", icon: Calendar },
+  { value: "date_desc", label: "Fecha: Lejanos primero", icon: Calendar },
+  { value: "title", label: "Título A-Z", icon: null },
+  { value: "title_desc", label: "Título Z-A", icon: null },
+  { value: "status", label: "Por estado", icon: CheckCircle },
 ];
 
 const TIME_FILTERS = [
-  { value: 'all', label: 'Todos los tiempos' },
-  { value: 'today', label: 'Hoy' },
-  { value: 'tomorrow', label: 'Mañana' },
-  { value: 'this_week', label: 'Esta semana' },
-  { value: 'next_week', label: 'Próxima semana' },
-  { value: 'this_month', label: 'Este mes' },
-  { value: 'next_month', label: 'Próximo mes' },
+  { value: "all", label: "Todos los tiempos" },
+  { value: "today", label: "Hoy" },
+  { value: "tomorrow", label: "Mañana" },
+  { value: "this_week", label: "Esta semana" },
+  { value: "next_week", label: "Próxima semana" },
+  { value: "this_month", label: "Este mes" },
+  { value: "next_month", label: "Próximo mes" },
 ];
 
 export default function MyEventsContent({
@@ -79,13 +79,13 @@ export default function MyEventsContent({
   onRefresh,
 }: MyEventsContentProps) {
   // Search and filter state
-  const [searchTerm, setSearchTerm] = useState(searchQuery ?? '');
-  const [selectedStatus, setSelectedStatus] = useState('all');
-  const [timeFilter, setTimeFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('date_asc');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [searchTerm, setSearchTerm] = useState(searchQuery ?? "");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [timeFilter, setTimeFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("date_asc");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFiltersPanel, setShowFiltersPanel] = useState(false);
-  const [activeTab, setActiveTab] = useState('list');
+  const [activeTab, setActiveTab] = useState("list");
 
   // Debounce search term
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
@@ -104,33 +104,33 @@ export default function MyEventsContent({
       );
 
       switch (filter) {
-        case 'today':
+        case "today":
           return eventDay.getTime() === today.getTime();
-        case 'tomorrow': {
+        case "tomorrow": {
           const tomorrow = new Date(today);
           tomorrow.setDate(tomorrow.getDate() + 1);
           return eventDay.getTime() === tomorrow.getTime();
         }
-        case 'this_week': {
+        case "this_week": {
           const startOfWeek = new Date(today);
           startOfWeek.setDate(today.getDate() - today.getDay());
           const endOfWeek = new Date(startOfWeek);
           endOfWeek.setDate(startOfWeek.getDate() + 6);
           return eventDay >= startOfWeek && eventDay <= endOfWeek;
         }
-        case 'next_week': {
+        case "next_week": {
           const nextWeekStart = new Date(today);
           nextWeekStart.setDate(today.getDate() + (7 - today.getDay()));
           const nextWeekEnd = new Date(nextWeekStart);
           nextWeekEnd.setDate(nextWeekStart.getDate() + 6);
           return eventDay >= nextWeekStart && eventDay <= nextWeekEnd;
         }
-        case 'this_month':
+        case "this_month":
           return (
             eventDateTime.getMonth() === now.getMonth() &&
             eventDateTime.getFullYear() === now.getFullYear()
           );
-        case 'next_month': {
+        case "next_month": {
           const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
           return (
             eventDateTime.getMonth() === nextMonth.getMonth() &&
@@ -165,7 +165,7 @@ export default function MyEventsContent({
     }
 
     // Filter by status
-    if (selectedStatus !== 'all') {
+    if (selectedStatus !== "all") {
       const now = new Date();
       filtered = filtered.filter(event => {
         const eventDate = new Date(event.start_datetime);
@@ -173,16 +173,16 @@ export default function MyEventsContent({
         const isUpcoming = eventDate > now;
 
         switch (selectedStatus) {
-          case 'upcoming':
+          case "upcoming":
             return isUpcoming;
-          case 'past':
+          case "past":
             return isPast;
-          case 'attended':
-            return event.user_attendance_status === 'attended';
-          case 'no_show':
-            return event.user_attendance_status === 'no_show';
-          case 'cancelled':
-            return event.user_attendance_status === 'cancelled';
+          case "attended":
+            return event.user_attendance_status === "attended";
+          case "no_show":
+            return event.user_attendance_status === "no_show";
+          case "cancelled":
+            return event.user_attendance_status === "cancelled";
           default:
             return true;
         }
@@ -190,7 +190,7 @@ export default function MyEventsContent({
     }
 
     // Filter by time range
-    if (timeFilter !== 'all') {
+    if (timeFilter !== "all") {
       filtered = filtered.filter(event =>
         isDateInTimeFilter(event.start_datetime, timeFilter)
       );
@@ -199,21 +199,21 @@ export default function MyEventsContent({
     // Sort events
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'date_asc':
+        case "date_asc":
           return (
             new Date(a.start_datetime).getTime() -
             new Date(b.start_datetime).getTime()
           );
-        case 'date_desc':
+        case "date_desc":
           return (
             new Date(b.start_datetime).getTime() -
             new Date(a.start_datetime).getTime()
           );
-        case 'title':
+        case "title":
           return a.title.localeCompare(b.title);
-        case 'title_desc':
+        case "title_desc":
           return b.title.localeCompare(a.title);
-        case 'status': {
+        case "status": {
           // Sort by attendance status
           const statusOrder = {
             registered: 0,
@@ -222,8 +222,8 @@ export default function MyEventsContent({
             no_show: 3,
             cancelled: 4,
           };
-          const aStatus = a.user_attendance_status || 'registered';
-          const bStatus = b.user_attendance_status || 'registered';
+          const aStatus = a.user_attendance_status || "registered";
+          const bStatus = b.user_attendance_status || "registered";
           return statusOrder[aStatus] - statusOrder[bStatus];
         }
         default:
@@ -263,7 +263,7 @@ export default function MyEventsContent({
   const attendedEvents = useMemo(
     () =>
       filteredAndSortedEvents.filter(
-        event => event.user_attendance_status === 'attended'
+        event => event.user_attendance_status === "attended"
       ),
     [filteredAndSortedEvents]
   );
@@ -284,29 +284,29 @@ export default function MyEventsContent({
       onFilterChange({});
     }
     if (onSearch) {
-      onSearch('');
+      onSearch("");
     }
-    setSearchTerm('');
-    setSelectedStatus('all');
-    setTimeFilter('all');
-    setSortBy('date_asc');
+    setSearchTerm("");
+    setSelectedStatus("all");
+    setTimeFilter("all");
+    setSortBy("date_asc");
   }, [onFilterChange, onSearch]);
 
   const activeFiltersCount = useMemo(() => {
     let count = 0;
     if (debouncedSearchTerm.trim()) count++;
-    if (selectedStatus !== 'all') count++;
-    if (timeFilter !== 'all') count++;
+    if (selectedStatus !== "all") count++;
+    if (timeFilter !== "all") count++;
     return count;
   }, [debouncedSearchTerm, selectedStatus, timeFilter]);
 
   if (isLoading) {
     return (
-      <div className='space-y-4'>
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className='animate-pulse'>
-              <div className='bg-muted rounded-lg h-64'></div>
+            <div key={i} className="animate-pulse">
+              <div className="bg-muted rounded-lg h-64"></div>
             </div>
           ))}
         </div>
@@ -315,102 +315,102 @@ export default function MyEventsContent({
   }
 
   return (
-    <div className='space-y-6'>
+    <div className="space-y-6">
       {/* Header with stats and actions */}
-      <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
-        <div className='flex items-center gap-3'>
-          <h2 className='text-2xl font-bold'>Mis Eventos</h2>
-          <div className='flex items-center gap-2'>
-            <Badge variant='secondary' className='text-sm'>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <h2 className="text-2xl font-bold">Mis Eventos</h2>
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary" className="text-sm">
               {upcomingEvents.length} próximos
             </Badge>
-            <Badge variant='outline' className='text-sm'>
+            <Badge variant="outline" className="text-sm">
               {attendedEvents.length} asistidos
             </Badge>
           </div>
         </div>
 
-        <div className='flex items-center gap-2'>
+        <div className="flex items-center gap-2">
           {onRefresh && (
             <Button
-              variant='outline'
-              size='sm'
+              variant="outline"
+              size="sm"
               onClick={onRefresh}
               disabled={isLoading}
-              aria-label='Actualizar eventos'
+              aria-label="Actualizar eventos"
             >
               <RefreshCw
-                className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`}
+                className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
               />
             </Button>
           )}
 
-          <div className='flex items-center gap-1 border rounded-md p-1'>
+          <div className="flex items-center gap-1 border rounded-md p-1">
             <Button
-              variant={viewMode === 'grid' ? 'default' : 'ghost'}
-              size='sm'
-              onClick={() => setViewMode('grid')}
-              aria-label='Vista de cuadrícula'
-              className='h-8 w-8 p-0'
+              variant={viewMode === "grid" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("grid")}
+              aria-label="Vista de cuadrícula"
+              className="h-8 w-8 p-0"
             >
-              <Grid className='w-4 h-4' />
+              <Grid className="w-4 h-4" />
             </Button>
             <Button
-              variant={viewMode === 'list' ? 'default' : 'ghost'}
-              size='sm'
-              onClick={() => setViewMode('list')}
-              aria-label='Vista de lista'
-              className='h-8 w-8 p-0'
+              variant={viewMode === "list" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("list")}
+              aria-label="Vista de lista"
+              className="h-8 w-8 p-0"
             >
-              <List className='w-4 h-4' />
+              <List className="w-4 h-4" />
             </Button>
           </div>
         </div>
       </div>
 
       {/* Search and filters */}
-      <div className='space-y-4'>
+      <div className="space-y-4">
         {/* Search bar */}
-        <div className='relative'>
-          <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4' />
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
           <Input
-            placeholder='Buscar en mis eventos...'
+            placeholder="Buscar en mis eventos..."
             value={searchQuery ?? searchTerm}
             onChange={e => handleSearch(e.target.value)}
-            className='pl-10'
-            aria-label='Buscar eventos'
+            className="pl-10"
+            aria-label="Buscar eventos"
           />
         </div>
 
         {/* Filters row */}
-        <div className='flex flex-col sm:flex-row gap-4 items-start sm:items-center'>
-          <div className='flex items-center gap-2 sm:hidden'>
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <div className="flex items-center gap-2 sm:hidden">
             <Button
-              variant='outline'
-              size='sm'
+              variant="outline"
+              size="sm"
               onClick={() => setShowFiltersPanel(!showFiltersPanel)}
-              className='flex items-center gap-2'
+              className="flex items-center gap-2"
             >
-              <Filter className='w-4 h-4' />
+              <Filter className="w-4 h-4" />
               Filtros
               {activeFiltersCount > 0 && (
-                <Badge variant='secondary' className='ml-1'>
+                <Badge variant="secondary" className="ml-1">
                   {activeFiltersCount}
                 </Badge>
               )}
               <ChevronDown
-                className={`w-4 h-4 transition-transform ${showFiltersPanel ? 'rotate-180' : ''}`}
+                className={`w-4 h-4 transition-transform ${showFiltersPanel ? "rotate-180" : ""}`}
               />
             </Button>
           </div>
 
           <div
-            className={`flex flex-wrap gap-2 ${showFiltersPanel ? 'block' : 'hidden sm:flex'}`}
+            className={`flex flex-wrap gap-2 ${showFiltersPanel ? "block" : "hidden sm:flex"}`}
           >
             {/* Status filter */}
             <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-              <SelectTrigger className='w-[160px]'>
-                <SelectValue placeholder='Estado' />
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Estado" />
               </SelectTrigger>
               <SelectContent>
                 {EVENT_STATUSES.map(status => (
@@ -423,8 +423,8 @@ export default function MyEventsContent({
 
             {/* Time filter */}
             <Select value={timeFilter} onValueChange={setTimeFilter}>
-              <SelectTrigger className='w-[160px]'>
-                <SelectValue placeholder='Cuándo' />
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="Cuándo" />
               </SelectTrigger>
               <SelectContent>
                 {TIME_FILTERS.map(filter => (
@@ -437,14 +437,14 @@ export default function MyEventsContent({
 
             {/* Sort dropdown */}
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className='w-[200px]'>
-                <SelectValue placeholder='Ordenar por' />
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Ordenar por" />
               </SelectTrigger>
               <SelectContent>
                 {SORT_OPTIONS.map(option => (
                   <SelectItem key={option.value} value={option.value}>
-                    <div className='flex items-center gap-2'>
-                      {option.icon && <option.icon className='w-4 h-4' />}
+                    <div className="flex items-center gap-2">
+                      {option.icon && <option.icon className="w-4 h-4" />}
                       {option.label}
                     </div>
                   </SelectItem>
@@ -455,12 +455,12 @@ export default function MyEventsContent({
             {/* Clear filters */}
             {activeFiltersCount > 0 && (
               <Button
-                variant='ghost'
-                size='sm'
+                variant="ghost"
+                size="sm"
                 onClick={clearAllFilters}
-                className='flex items-center gap-1'
+                className="flex items-center gap-1"
               >
-                <X className='w-4 h-4' />
+                <X className="w-4 h-4" />
                 Limpiar
               </Button>
             )}
@@ -472,58 +472,58 @@ export default function MyEventsContent({
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}
-        className='space-y-4'
+        className="space-y-4"
       >
-        <TabsList className='grid w-full grid-cols-4'>
-          <TabsTrigger value='list' className='flex items-center gap-2'>
-            <List className='w-4 h-4' />
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="list" className="flex items-center gap-2">
+            <List className="w-4 h-4" />
             Lista
           </TabsTrigger>
-          <TabsTrigger value='calendar' className='flex items-center gap-2'>
-            <Calendar className='w-4 h-4' />
+          <TabsTrigger value="calendar" className="flex items-center gap-2">
+            <Calendar className="w-4 h-4" />
             Calendario
           </TabsTrigger>
-          <TabsTrigger value='upcoming' className='flex items-center gap-2'>
-            <Clock className='w-4 h-4' />
+          <TabsTrigger value="upcoming" className="flex items-center gap-2">
+            <Clock className="w-4 h-4" />
             Próximos ({upcomingEvents.length})
           </TabsTrigger>
-          <TabsTrigger value='history' className='flex items-center gap-2'>
-            <CheckCircle className='w-4 h-4' />
+          <TabsTrigger value="history" className="flex items-center gap-2">
+            <CheckCircle className="w-4 h-4" />
             Historial ({pastEvents.length})
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value='list' className='space-y-4'>
+        <TabsContent value="list" className="space-y-4">
           <EventListView
             events={filteredAndSortedEvents}
             viewMode={viewMode}
             onUnregister={onUnregister}
             onView={onView}
-            emptyMessage='No tienes eventos registrados'
+            emptyMessage="No tienes eventos registrados"
           />
         </TabsContent>
 
-        <TabsContent value='calendar' className='space-y-4'>
+        <TabsContent value="calendar" className="space-y-4">
           <MyEventsCalendar events={filteredAndSortedEvents} onView={onView} />
         </TabsContent>
 
-        <TabsContent value='upcoming' className='space-y-4'>
+        <TabsContent value="upcoming" className="space-y-4">
           <EventListView
             events={upcomingEvents}
             viewMode={viewMode}
             onUnregister={onUnregister}
             onView={onView}
-            emptyMessage='No tienes eventos próximos'
+            emptyMessage="No tienes eventos próximos"
           />
         </TabsContent>
 
-        <TabsContent value='history' className='space-y-4'>
+        <TabsContent value="history" className="space-y-4">
           <EventListView
             events={pastEvents}
             viewMode={viewMode}
             onUnregister={onUnregister}
             onView={onView}
-            emptyMessage='No tienes eventos pasados'
+            emptyMessage="No tienes eventos pasados"
             showAttendanceStatus={true}
           />
         </TabsContent>
@@ -534,7 +534,7 @@ export default function MyEventsContent({
 
 interface EventListViewProps {
   events: Event[];
-  viewMode: 'grid' | 'list';
+  viewMode: "grid" | "list";
   onUnregister?: (eventId: string) => void;
   onView?: (eventId: string) => void;
   emptyMessage: string;
@@ -551,14 +551,14 @@ function EventListView({
 }: EventListViewProps) {
   if (events.length === 0) {
     return (
-      <div className='text-center py-12'>
-        <div className='w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center'>
-          <Calendar className='w-8 h-8 text-muted-foreground' />
+      <div className="text-center py-12">
+        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+          <Calendar className="w-8 h-8 text-muted-foreground" />
         </div>
-        <h3 className='text-lg font-semibold mb-2'>
+        <h3 className="text-lg font-semibold mb-2">
           No se encontraron eventos
         </h3>
-        <p className='text-muted-foreground'>{emptyMessage}</p>
+        <p className="text-muted-foreground">{emptyMessage}</p>
       </div>
     );
   }
@@ -566,16 +566,16 @@ function EventListView({
   return (
     <div
       className={
-        viewMode === 'grid'
-          ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
-          : 'space-y-4'
+        viewMode === "grid"
+          ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          : "space-y-4"
       }
     >
       {events.map(event => (
         <EventCard
           key={event.event_id}
           event={event}
-          variant={viewMode === 'list' ? 'compact' : 'default'}
+          variant={viewMode === "list" ? "compact" : "default"}
           onUnregister={onUnregister}
           onView={onView}
           showAttendanceStatus={showAttendanceStatus}

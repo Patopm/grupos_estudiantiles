@@ -1,4 +1,4 @@
-import { type ApiPaginatedResponse, apiClient } from './client';
+import { type ApiPaginatedResponse, apiClient } from "./client";
 
 export interface User {
   id: string;
@@ -7,7 +7,7 @@ export interface User {
   email: string;
   student_id?: string;
   phone?: string;
-  role: 'student' | 'president' | 'admin';
+  role: "student" | "president" | "admin";
   is_active: boolean;
   is_verified: boolean;
   date_joined: string;
@@ -22,7 +22,7 @@ export interface CreateUserData {
   email: string;
   student_id?: string;
   phone?: string;
-  role: 'student' | 'president' | 'admin';
+  role: "student" | "president" | "admin";
   password: string;
 }
 
@@ -32,14 +32,14 @@ export interface UpdateUserData {
   email?: string;
   student_id?: string;
   phone?: string;
-  role?: 'student' | 'president' | 'admin';
+  role?: "student" | "president" | "admin";
   is_active?: boolean;
 }
 
 export const usersApi = {
   // Get all users (admin only)
   getAllUsers: async (): Promise<ApiPaginatedResponse<User>> => {
-    return await apiClient.get<ApiPaginatedResponse<User>>('/api/users/');
+    return await apiClient.get<ApiPaginatedResponse<User>>("/api/users/");
   },
 
   // Get user by ID
@@ -49,7 +49,7 @@ export const usersApi = {
 
   // Create new user (admin only)
   createUser: async (userData: CreateUserData): Promise<User> => {
-    return await apiClient.post<User>('/api/users/', userData);
+    return await apiClient.post<User>("/api/users/", userData);
   },
 
   // Update user (admin only)
@@ -71,12 +71,12 @@ export const usersApi = {
 
   // Get user profile
   getProfile: async (): Promise<User> => {
-    return await apiClient.get<User>('/api/users/profile/');
+    return await apiClient.get<User>("/api/users/profile/");
   },
 
   // Update user profile
   updateProfile: async (userData: Partial<UpdateUserData>): Promise<User> => {
-    return await apiClient.patch<User>('/api/users/profile/', userData);
+    return await apiClient.patch<User>("/api/users/profile/", userData);
   },
 
   // Change password
@@ -84,7 +84,7 @@ export const usersApi = {
     oldPassword: string,
     newPassword: string
   ): Promise<void> => {
-    return await apiClient.post('/api/users/change-password/', {
+    return await apiClient.post("/api/users/change-password/", {
       old_password: oldPassword,
       new_password: newPassword,
     });
@@ -112,7 +112,7 @@ export const usersApi = {
   // Update user role
   updateUserRole: async (
     id: string,
-    role: 'student' | 'president' | 'admin'
+    role: "student" | "president" | "admin"
   ): Promise<User> => {
     return await apiClient.put(`/api/users/${id}/role/`, { role });
   },

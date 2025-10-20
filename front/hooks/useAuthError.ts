@@ -3,21 +3,21 @@
  * Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6
  */
 
-import { useCallback, useEffect, useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import type { ApiError } from '@/lib/api/client';
+import { useCallback, useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import type { ApiError } from "@/lib/api/client";
 import {
   AuthErrorFactory,
   ErrorLogger,
   ErrorRecoveryFactory,
   RetryManager,
-} from '@/lib/errors/handlers';
-import { ProgressiveSecurityManager } from '@/lib/errors/security';
+} from "@/lib/errors/handlers";
+import { ProgressiveSecurityManager } from "@/lib/errors/security";
 import type {
   AuthError,
   ErrorRecoveryAction,
   RetryConfig,
-} from '@/lib/errors/types';
+} from "@/lib/errors/types";
 
 interface UseAuthErrorOptions {
   enableRetry?: boolean;
@@ -75,30 +75,30 @@ export function useAuthError(
       // Convert different error types to AuthError
       if (
         rawError instanceof Error &&
-        'type' in rawError &&
-        'retryable' in rawError &&
-        'timestamp' in rawError
+        "type" in rawError &&
+        "retryable" in rawError &&
+        "timestamp" in rawError
       ) {
         // Already an AuthError
         authError = rawError as AuthError;
       } else if (
         rawError &&
-        typeof rawError === 'object' &&
-        'status' in rawError
+        typeof rawError === "object" &&
+        "status" in rawError
       ) {
         // API Error
         authError = AuthErrorFactory.fromApiError(rawError as ApiError);
       } else if (rawError instanceof Error) {
         // Generic Error
         if (
-          rawError.message.includes('NetworkError') ||
-          rawError.message.includes('fetch')
+          rawError.message.includes("NetworkError") ||
+          rawError.message.includes("fetch")
         ) {
           authError = AuthErrorFactory.createNetworkError(rawError);
         } else {
           authError = {
-            type: 'server',
-            message: rawError.message || 'Ha ocurrido un error inesperado.',
+            type: "server",
+            message: rawError.message || "Ha ocurrido un error inesperado.",
             retryable: false,
             timestamp: new Date(),
             correlationId: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -107,8 +107,8 @@ export function useAuthError(
       } else {
         // Unknown error
         authError = {
-          type: 'server',
-          message: 'Ha ocurrido un error inesperado.',
+          type: "server",
+          message: "Ha ocurrido un error inesperado.",
           retryable: false,
           timestamp: new Date(),
           correlationId: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -116,7 +116,7 @@ export function useAuthError(
       }
 
       // Record security events for authentication failures
-      if (authError.type === 'authentication') {
+      if (authError.type === "authentication") {
         ProgressiveSecurityManager.recordFailedAttempt();
       }
 
@@ -185,9 +185,9 @@ export function useAuthError(
         const securityCheck = ProgressiveSecurityManager.canAttemptAuth();
         if (!securityCheck.allowed) {
           const securityError = AuthErrorFactory.createSecurityError(
-            'multiple_failures',
-            'medium',
-            ['Espera antes de intentar de nuevo', 'Verifica tu identidad']
+            "multiple_failures",
+            "medium",
+            ["Espera antes de intentar de nuevo", "Verifica tu identidad"]
           );
 
           if (securityCheck.waitTime) {
@@ -201,7 +201,7 @@ export function useAuthError(
         const result = await operation();
 
         // Success - record successful auth if this was an auth operation
-        if (context === 'authentication') {
+        if (context === "authentication") {
           ProgressiveSecurityManager.recordSuccessfulAuth();
         }
 
@@ -232,46 +232,46 @@ export function useAuthError(
 
     // Specific actions based on error type
     switch (error.type) {
-      case 'network':
+      case "network":
         actions.push(ErrorRecoveryFactory.createRefreshAction());
         break;
 
-      case 'authentication':
+      case "authentication":
         actions.push(
-          ErrorRecoveryFactory.createRedirectAction('/login', 'Iniciar sesión')
+          ErrorRecoveryFactory.createRedirectAction("/login", "Iniciar sesión")
         );
         break;
 
-      case 'authorization':
+      case "authorization":
         actions.push(
-          ErrorRecoveryFactory.createLogoutAction(logout, 'Cerrar sesión')
+          ErrorRecoveryFactory.createLogoutAction(logout, "Cerrar sesión")
         );
         break;
 
-      case 'rate_limit':
+      case "rate_limit":
         // No additional actions - user must wait
         break;
 
-      case 'mfa_required':
+      case "mfa_required":
         actions.push(
-          ErrorRecoveryFactory.createRedirectAction('/login', 'Completar MFA')
+          ErrorRecoveryFactory.createRedirectAction("/login", "Completar MFA")
         );
         break;
 
-      case 'verification_required':
+      case "verification_required":
         actions.push(
           ErrorRecoveryFactory.createRedirectAction(
-            '/verify-email',
-            'Verificar cuenta'
+            "/verify-email",
+            "Verificar cuenta"
           )
         );
         break;
 
-      case 'security_violation':
+      case "security_violation":
         actions.push(
           ErrorRecoveryFactory.createLogoutAction(
             logout,
-            'Cerrar sesión por seguridad'
+            "Cerrar sesión por seguridad"
           )
         );
         break;

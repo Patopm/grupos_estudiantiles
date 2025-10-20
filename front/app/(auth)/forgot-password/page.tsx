@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import AuthButton from '@/components/auth/AuthButton';
-import AuthCard from '@/components/auth/AuthCard';
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import AuthButton from "@/components/auth/AuthButton";
+import AuthCard from "@/components/auth/AuthCard";
 import {
   AuthErrorMessage,
   AuthSuccessMessage,
-} from '@/components/auth/AuthFormError';
-import FormInput from '@/components/forms/FormInput';
-import { useAuth } from '@/contexts/AuthContext';
+} from "@/components/auth/AuthFormError";
+import FormInput from "@/components/forms/FormInput";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   type ForgotPasswordFormData,
   validateForgotPassword,
-} from '@/lib/validations/auth';
+} from "@/lib/validations/auth";
 
 export default function ForgotPasswordPage() {
   const { requestPasswordReset } = useAuth();
   const router = useRouter();
 
   const [formData, setFormData] = useState<ForgotPasswordFormData>({
-    email: '',
+    email: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -45,11 +45,11 @@ export default function ForgotPasswordPage() {
       await requestPasswordReset(validationResult.data);
       setIsSuccess(true);
     } catch (error) {
-      console.error('Password reset request error:', error);
+      console.error("Password reset request error:", error);
       const errorMessage =
         error instanceof Error
           ? error.message
-          : 'Hubo un problema al procesar tu solicitud. Por favor intenta de nuevo.';
+          : "Hubo un problema al procesar tu solicitud. Por favor intenta de nuevo.";
 
       setErrors({
         general: errorMessage,
@@ -70,7 +70,7 @@ export default function ForgotPasswordPage() {
     if (errors[name]) {
       setErrors({
         ...errors,
-        [name]: '',
+        [name]: "",
       });
     }
   };
@@ -92,35 +92,35 @@ export default function ForgotPasswordPage() {
   };
 
   const handleBackToLogin = () => {
-    router.push('/login');
+    router.push("/login");
   };
 
   if (isSuccess) {
     return (
       <AuthCard
-        title='Correo enviado'
-        subtitle='Revisa tu bandeja de entrada'
-        footerText='¿Recordaste tu contraseña?'
-        footerLinkText='Volver al inicio de sesión'
-        footerLinkHref='/login'
+        title="Correo enviado"
+        subtitle="Revisa tu bandeja de entrada"
+        footerText="¿Recordaste tu contraseña?"
+        footerLinkText="Volver al inicio de sesión"
+        footerLinkHref="/login"
       >
-        <div className='space-y-6'>
+        <div className="space-y-6">
           <AuthSuccessMessage
             message={`Hemos enviado un enlace de restablecimiento de contraseña a ${formData.email}. Revisa tu bandeja de entrada y sigue las instrucciones para crear una nueva contraseña.`}
           />
 
-          <div className='text-center space-y-4'>
-            <p className='text-sm text-muted-foreground'>
+          <div className="text-center space-y-4">
+            <p className="text-sm text-muted-foreground">
               Si no recibes el correo en los próximos minutos, revisa tu carpeta
               de spam o correo no deseado.
             </p>
 
             <AuthButton
               isLoading={false}
-              loadingText=''
-              type='button'
+              loadingText=""
+              type="button"
               onClick={handleBackToLogin}
-              variant='outline'
+              variant="outline"
             >
               Volver al inicio de sesión
             </AuthButton>
@@ -132,40 +132,40 @@ export default function ForgotPasswordPage() {
 
   return (
     <AuthCard
-      title='¿Olvidaste tu contraseña?'
-      subtitle='Ingresa tu correo electrónico y te enviaremos un enlace para restablecerla'
-      footerText='¿Recordaste tu contraseña?'
-      footerLinkText='Volver al inicio de sesión'
-      footerLinkHref='/login'
+      title="¿Olvidaste tu contraseña?"
+      subtitle="Ingresa tu correo electrónico y te enviaremos un enlace para restablecerla"
+      footerText="¿Recordaste tu contraseña?"
+      footerLinkText="Volver al inicio de sesión"
+      footerLinkHref="/login"
     >
-      <form className='space-y-6' onSubmit={handleSubmit} noValidate>
+      <form className="space-y-6" onSubmit={handleSubmit} noValidate>
         {errors.general && <AuthErrorMessage message={errors.general} />}
 
         <FormInput
-          id='email'
-          name='email'
-          type='email'
-          label='Correo Electrónico'
-          placeholder='Ingresa tu email institucional'
+          id={"email"}
+          name="email"
+          type="email"
+          label="Correo Electrónico"
+          placeholder="Ingresa tu email institucional"
           value={formData.email}
           error={errors.email}
           onChange={handleChange}
           onBlur={handleBlur}
-          autoComplete='email'
+          autoComplete="email"
           autoFocus
         />
 
-        <div className='space-y-4'>
-          <AuthButton isLoading={isLoading} loadingText='Enviando enlace...'>
+        <div className="space-y-4">
+          <AuthButton isLoading={isLoading} loadingText="Enviando enlace...">
             Enviar enlace de restablecimiento
           </AuthButton>
 
           <AuthButton
             isLoading={isLoading}
-            loadingText=''
-            type='button'
+            loadingText=""
+            type="button"
             onClick={handleBackToLogin}
-            variant='outline'
+            variant="outline"
             disabled={isLoading}
           >
             Cancelar
@@ -173,13 +173,13 @@ export default function ForgotPasswordPage() {
         </div>
       </form>
 
-      <div className='mt-6'>
-        <div className='relative'>
-          <div className='absolute inset-0 flex items-center'>
-            <div className='w-full border-t border-muted-foreground/20' />
+      <div className="mt-6">
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-muted-foreground/20" />
           </div>
-          <div className='relative flex justify-center text-sm'>
-            <span className='bg-background px-2 text-muted-foreground'>
+          <div className="relative flex justify-center text-sm">
+            <span className="bg-background px-2 text-muted-foreground">
               Restablecimiento seguro para cuentas de Tecmilenio
             </span>
           </div>

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import React, { type ReactNode } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import AuthErrorBoundary from './AuthErrorBoundary';
-import AuthLoadingState from './AuthLoadingState';
+import Link from "next/link";
+import type { ReactNode } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import AuthErrorBoundary from "./AuthErrorBoundary";
+import AuthLoadingState from "./AuthLoadingState";
 
 interface AuthLayoutWrapperProps {
   children: ReactNode;
@@ -23,8 +23,8 @@ export default function AuthLayoutWrapper({
   children,
   showHeader = true,
   showLoadingState = true,
-  loadingMessage = 'Verificando autenticación...',
-  className = '',
+  loadingMessage = "Verificando autenticación...",
+  className = "",
 }: AuthLayoutWrapperProps) {
   const { isLoading } = useAuth();
 
@@ -33,18 +33,18 @@ export default function AuthLayoutWrapper({
       <div
         className={`min-h-screen bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center px-4 py-8 ${className}`}
       >
-        <div className='max-w-md w-full space-y-8'>
+        <div className="max-w-md w-full space-y-8">
           {/* Header */}
           {showHeader && (
-            <div className='text-center'>
+            <div className="text-center">
               <Link
-                href='/'
-                className='text-3xl font-bold text-primary hover:text-primary/80 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md'
-                aria-label='Ir a página principal de Grupos Estudiantiles'
+                href="/"
+                className="text-3xl font-bold text-primary hover:text-primary/80 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md"
+                aria-label="Ir a página principal de Grupos Estudiantiles"
               >
                 Grupos Estudiantiles
               </Link>
-              <p className='text-sm text-muted-foreground mt-2'>
+              <p className="text-sm text-muted-foreground mt-2">
                 Universidad Tecmilenio
               </p>
             </div>
@@ -68,7 +68,7 @@ export default function AuthLayoutWrapper({
 export function SimpleAuthLayoutWrapper({
   children,
   showHeader = true,
-  className = '',
+  className = "",
 }: {
   children: ReactNode;
   showHeader?: boolean;
@@ -79,17 +79,17 @@ export function SimpleAuthLayoutWrapper({
       <div
         className={`min-h-screen bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center px-4 py-8 ${className}`}
       >
-        <div className='max-w-md w-full space-y-8'>
+        <div className="max-w-md w-full space-y-8">
           {showHeader && (
-            <div className='text-center'>
+            <div className="text-center">
               <Link
-                href='/'
-                className='text-3xl font-bold text-primary hover:text-primary/80 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md'
-                aria-label='Ir a página principal de Grupos Estudiantiles'
+                href="/"
+                className="text-3xl font-bold text-primary hover:text-primary/80 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md"
+                aria-label="Ir a página principal de Grupos Estudiantiles"
               >
                 Grupos Estudiantiles
               </Link>
-              <p className='text-sm text-muted-foreground mt-2'>
+              <p className="text-sm text-muted-foreground mt-2">
                 Universidad Tecmilenio
               </p>
             </div>

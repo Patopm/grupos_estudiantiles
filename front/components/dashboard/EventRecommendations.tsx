@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   Calendar,
@@ -8,16 +8,16 @@ import {
   Sparkles,
   UserPlus,
   Users,
-} from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
-import type { DashboardEvent } from '@/lib/api/dashboard';
-import { EVENT_TYPE_LABELS, eventsApi } from '@/lib/api/events';
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import type { DashboardEvent } from "@/lib/api/dashboard";
+import { EVENT_TYPE_LABELS, eventsApi } from "@/lib/api/events";
 
 interface EventRecommendationsProps {
   events: Array<DashboardEvent & { recommendation_reason: string }>;
@@ -39,16 +39,16 @@ export default function EventRecommendations({
     try {
       await eventsApi.register(eventId);
       toast({
-        title: 'Registro Exitoso',
-        description: 'Te has registrado para el evento recomendado',
+        title: "Registro Exitoso",
+        description: "Te has registrado para el evento recomendado",
       });
       onRefresh?.();
     } catch (error) {
-      console.error('Error registering for event:', error);
+      console.error("Error registering for event:", error);
       toast({
-        title: 'Error',
-        description: 'No se pudo registrar para el evento',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudo registrar para el evento",
+        variant: "destructive",
       });
     } finally {
       setActionLoading(null);
@@ -61,17 +61,16 @@ export default function EventRecommendations({
 
   const formatEventDateTime = (event: DashboardEvent) => {
     const startDate = new Date(event.start_datetime);
-    const endDate = new Date(event.end_datetime);
 
-    const date = startDate.toLocaleDateString('es-ES', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
+    const date = startDate.toLocaleDateString("es-ES", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
     });
 
-    const startTime = startDate.toLocaleTimeString('es-ES', {
-      hour: '2-digit',
-      minute: '2-digit',
+    const startTime = startDate.toLocaleTimeString("es-ES", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
 
     return { date, time: startTime };
@@ -80,18 +79,18 @@ export default function EventRecommendations({
   const getEventTypeColor = (type: string) => {
     const colors: Record<string, string> = {
       academic:
-        'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-      social: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
-      sports: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+        "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+      social: "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200",
+      sports: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
       cultural:
-        'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+        "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
       meeting:
-        'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+        "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
       workshop:
-        'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
+        "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
       conference:
-        'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200',
-      other: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+        "bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200",
+      other: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
     };
     return colors[type] || colors.other;
   };
@@ -101,10 +100,10 @@ export default function EventRecommendations({
   ) => {
     // This would typically come from the backend, but we'll provide fallbacks
     const reasons = [
-      'Basado en tus grupos',
-      'Eventos populares',
-      'Similar a tus intereses',
-      'Recomendado para ti',
+      "Basado en tus grupos",
+      "Eventos populares",
+      "Similar a tus intereses",
+      "Recomendado para ti",
     ];
     return (
       event.recommendation_reason ||
@@ -116,17 +115,17 @@ export default function EventRecommendations({
     return (
       <Card>
         <CardHeader>
-          <CardTitle className='flex items-center gap-2'>
-            <Sparkles className='w-5 h-5' />
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5" />
             Eventos Recomendados
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className='space-y-4'>
+          <div className="space-y-4">
             {Array.from({ length: 2 }).map((_, i) => (
-              <div key={i} className='animate-pulse'>
-                <div className='h-4 bg-muted rounded w-3/4 mb-2'></div>
-                <div className='h-3 bg-muted rounded w-1/2'></div>
+              <div key={i} className="animate-pulse">
+                <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-muted rounded w-1/2"></div>
               </div>
             ))}
           </div>
@@ -137,20 +136,20 @@ export default function EventRecommendations({
 
   if (events.length === 0) {
     return (
-      <Card className='h-full'>
+      <Card className="h-full">
         <CardHeader>
-          <CardTitle className='flex items-center gap-2'>
-            <Sparkles className='w-5 h-5' />
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5" />
             Eventos Recomendados
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className='text-center py-8'>
-            <Sparkles className='w-12 h-12 text-muted-foreground mx-auto mb-4' />
-            <h3 className='text-lg font-semibold mb-2'>
+          <div className="text-center py-8">
+            <Sparkles className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">
               No hay recomendaciones
             </h3>
-            <p className='text-muted-foreground text-sm'>
+            <p className="text-muted-foreground text-sm">
               Únete a más grupos para recibir recomendaciones personalizadas
             </p>
           </div>
@@ -162,92 +161,92 @@ export default function EventRecommendations({
   return (
     <Card>
       <CardHeader>
-        <div className='flex items-center justify-between'>
-          <CardTitle className='flex items-center gap-2'>
-            <Sparkles className='w-5 h-5' />
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5" />
             Eventos Recomendados
           </CardTitle>
           <Button asChild>
-            <Link href='/dashboard/student/events'>Explorar Más</Link>
+            <Link href="/dashboard/student/events">Explorar Más</Link>
           </Button>
         </div>
       </CardHeader>
       <CardContent>
-        <div className='space-y-4'>
+        <div className="space-y-4">
           {events.slice(0, 2).map(event => {
             const dateTime = formatEventDateTime(event);
             const isRegistered =
               event.is_registered ||
               (event.user_attendance_status &&
-                ['registered', 'confirmed', 'attended'].includes(
+                ["registered", "confirmed", "attended"].includes(
                   event.user_attendance_status
                 ));
 
             return (
               <div
                 key={event.event_id}
-                className='p-4 border rounded-lg hover:shadow-md transition-shadow bg-gradient-to-r from-primary/5 to-transparent'
+                className="p-4 border rounded-lg hover:shadow-md transition-shadow bg-gradient-to-r from-primary/5 to-transparent"
               >
-                <div className='flex items-start justify-between gap-3'>
-                  <div className='flex-1 min-w-0'>
-                    <div className='flex items-start gap-2 mb-2'>
-                      <h4 className='font-semibold text-sm truncate flex-1'>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start gap-2 mb-2">
+                      <h4 className="font-semibold text-sm truncate flex-1">
                         {event.title}
                       </h4>
-                      <div className='flex gap-1'>
+                      <div className="flex gap-1">
                         <Badge
                           className={`text-xs ${getEventTypeColor(event.event_type)}`}
                         >
                           {EVENT_TYPE_LABELS[event.event_type]}
                         </Badge>
-                        <Badge variant='secondary' className='text-xs'>
-                          <Sparkles className='w-3 h-3 mr-1' />
+                        <Badge variant="secondary" className="text-xs">
+                          <Sparkles className="w-3 h-3 mr-1" />
                           Recomendado
                         </Badge>
                       </div>
                     </div>
 
-                    <div className='space-y-1 text-xs text-muted-foreground mb-2'>
-                      <div className='flex items-center gap-1'>
-                        <Calendar className='w-3 h-3' />
+                    <div className="space-y-1 text-xs text-muted-foreground mb-2">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
                         <span>{dateTime.date}</span>
-                        <Clock className='w-3 h-3 ml-2' />
+                        <Clock className="w-3 h-3 ml-2" />
                         <span>{dateTime.time}</span>
                       </div>
                       {event.location && (
-                        <div className='flex items-center gap-1'>
-                          <MapPin className='w-3 h-3' />
-                          <span className='truncate'>{event.location}</span>
+                        <div className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          <span className="truncate">{event.location}</span>
                         </div>
                       )}
-                      <div className='flex items-center gap-1'>
-                        <Users className='w-3 h-3' />
+                      <div className="flex items-center gap-1">
+                        <Users className="w-3 h-3" />
                         <span>
-                          {event.target_groups.map(g => g.name).join(', ')}
+                          {event.target_groups.map(g => g.name).join(", ")}
                         </span>
                       </div>
                     </div>
 
-                    <div className='text-xs text-primary font-medium'>
+                    <div className="text-xs text-primary font-medium">
                       💡 {getRecommendationReason(event)}
                     </div>
                   </div>
                 </div>
 
-                <div className='flex gap-2 mt-3'>
+                <div className="flex gap-2 mt-3">
                   <Button
-                    variant='outline'
-                    size='sm'
+                    variant="outline"
+                    size="sm"
                     onClick={() => handleViewEvent(event.event_id)}
-                    className='flex items-center gap-1'
+                    className="flex items-center gap-1"
                   >
-                    <Eye className='w-3 h-3' />
+                    <Eye className="w-3 h-3" />
                     Ver
                   </Button>
 
                   {event.requires_registration && !isRegistered && (
                     <Button
-                      size='sm'
+                      size="sm"
                       onClick={() => handleRegister(event.event_id)}
                       disabled={
                         actionLoading === event.event_id ||
@@ -255,9 +254,9 @@ export default function EventRecommendations({
                         !event.registration_open ||
                         event.is_past
                       }
-                      className='flex items-center gap-1'
+                      className="flex items-center gap-1"
                     >
-                      <UserPlus className='w-3 h-3' />
+                      <UserPlus className="w-3 h-3" />
                       Registrarse
                     </Button>
                   )}

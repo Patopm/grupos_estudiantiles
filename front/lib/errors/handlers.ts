@@ -3,20 +3,19 @@
  * Requirement 8.1, 8.2, 8.3, 8.4, 8.5, 8.6
  */
 
-import type { ApiError } from '../api/client';
-import {
-  type AuthError,
-  AuthErrorType,
-  type ErrorContext,
-  type ErrorRecoveryAction,
-  type MFAError,
-  type NetworkError,
-  type RateLimitError,
-  type RetryConfig,
-  type SecurityError,
-  type ValidationError,
-  type VerificationError,
-} from './types';
+import type { ApiError } from "../api/client";
+import type {
+  AuthError,
+  ErrorContext,
+  ErrorRecoveryAction,
+  MFAError,
+  NetworkError,
+  RateLimitError,
+  RetryConfig,
+  SecurityError,
+  ValidationError,
+  VerificationError,
+} from "./types";
 
 // Generate correlation ID for error tracking
 export function generateCorrelationId(): string {
@@ -30,8 +29,8 @@ export class AuthErrorFactory {
     context?: Partial<ErrorContext>
   ): NetworkError {
     return {
-      type: 'network',
-      message: 'Error de conexión. Verifica tu conexión a internet.',
+      type: "network",
+      message: "Error de conexión. Verifica tu conexión a internet.",
       retryable: true,
       timestamp: new Date(),
       correlationId: generateCorrelationId(),
@@ -49,9 +48,9 @@ export class AuthErrorFactory {
     const resetTime = new Date(Date.now() + retryAfter * 1000);
 
     return {
-      type: 'rate_limit',
+      type: "rate_limit",
       message: `Demasiados intentos. Intenta de nuevo en ${Math.ceil(retryAfter / 60)} minutos.`,
-      code: 'RATE_LIMIT_EXCEEDED',
+      code: "RATE_LIMIT_EXCEEDED",
       retryable: true,
       retryAfter,
       remainingAttempts,
@@ -62,21 +61,21 @@ export class AuthErrorFactory {
   }
 
   static createMFAError(
-    subType: 'required' | 'invalid',
-    mfaType?: 'totp' | 'backup_code' | 'sms',
+    subType: "required" | "invalid",
+    mfaType?: "totp" | "backup_code" | "sms",
     attemptsRemaining?: number,
     backupCodesRemaining?: number
   ): MFAError {
     const messages = {
-      required: 'Se requiere autenticación de dos factores.',
-      invalid: 'Código de autenticación inválido. Verifica e intenta de nuevo.',
+      required: "Se requiere autenticación de dos factores.",
+      invalid: "Código de autenticación inválido. Verifica e intenta de nuevo.",
     };
 
     return {
-      type: subType === 'required' ? 'mfa_required' : 'mfa_invalid',
+      type: subType === "required" ? "mfa_required" : "mfa_invalid",
       message: messages[subType],
-      code: subType === 'required' ? 'MFA_REQUIRED' : 'MFA_INVALID',
-      retryable: subType === 'invalid',
+      code: subType === "required" ? "MFA_REQUIRED" : "MFA_INVALID",
+      retryable: subType === "invalid",
       mfaType,
       attemptsRemaining,
       backupCodesRemaining,
@@ -86,27 +85,27 @@ export class AuthErrorFactory {
   }
 
   static createVerificationError(
-    subType: 'required' | 'invalid',
-    verificationType?: 'email' | 'phone',
+    subType: "required" | "invalid",
+    verificationType?: "email" | "phone",
     canResend?: boolean,
     resendAvailableAt?: Date
   ): VerificationError {
     const messages = {
-      required: `Verificación de ${verificationType === 'email' ? 'correo electrónico' : 'teléfono'} requerida.`,
+      required: `Verificación de ${verificationType === "email" ? "correo electrónico" : "teléfono"} requerida.`,
       invalid: `Código de verificación inválido. Verifica e intenta de nuevo.`,
     };
 
     return {
       type:
-        subType === 'required'
-          ? 'verification_required'
-          : 'verification_invalid',
+        subType === "required"
+          ? "verification_required"
+          : "verification_invalid",
       message: messages[subType],
       code:
-        subType === 'required'
-          ? 'VERIFICATION_REQUIRED'
-          : 'VERIFICATION_INVALID',
-      retryable: subType === 'invalid',
+        subType === "required"
+          ? "VERIFICATION_REQUIRED"
+          : "VERIFICATION_INVALID",
+      retryable: subType === "invalid",
       verificationType,
       canResend,
       resendAvailableAt,
@@ -121,9 +120,9 @@ export class AuthErrorFactory {
     field?: string
   ): ValidationError {
     return {
-      type: 'validation',
+      type: "validation",
       message,
-      code: 'VALIDATION_ERROR',
+      code: "VALIDATION_ERROR",
       field,
       retryable: false,
       fieldErrors,
@@ -134,22 +133,22 @@ export class AuthErrorFactory {
 
   static createSecurityError(
     violationType:
-      | 'suspicious_activity'
-      | 'multiple_failures'
-      | 'location_change',
-    securityLevel: 'low' | 'medium' | 'high' | 'critical' = 'medium',
+      | "suspicious_activity"
+      | "multiple_failures"
+      | "location_change",
+    securityLevel: "low" | "medium" | "high" | "critical" = "medium",
     recommendedActions?: string[]
   ): SecurityError {
     const messages = {
-      suspicious_activity: 'Se detectó actividad sospechosa en tu cuenta.',
-      multiple_failures: 'Múltiples intentos fallidos detectados.',
-      location_change: 'Inicio de sesión desde una nueva ubicación detectado.',
+      suspicious_activity: "Se detectó actividad sospechosa en tu cuenta.",
+      multiple_failures: "Múltiples intentos fallidos detectados.",
+      location_change: "Inicio de sesión desde una nueva ubicación detectado.",
     };
 
     return {
-      type: 'security_violation',
+      type: "security_violation",
       message: messages[violationType],
-      code: 'SECURITY_VIOLATION',
+      code: "SECURITY_VIOLATION",
       retryable: false,
       violationType,
       securityLevel,
@@ -159,10 +158,7 @@ export class AuthErrorFactory {
     };
   }
 
-  static fromApiError(
-    apiError: ApiError,
-    context?: Partial<ErrorContext>
-  ): AuthError {
+  static fromApiError(apiError: ApiError): AuthError {
     const correlationId = generateCorrelationId();
 
     // Rate limiting
@@ -174,10 +170,10 @@ export class AuthErrorFactory {
     // Authentication errors
     if (apiError.status === 401) {
       return {
-        type: 'authentication',
+        type: "authentication",
         message:
-          'Credenciales incorrectas. Verifica tus datos e intenta de nuevo.',
-        code: 'AUTHENTICATION_FAILED',
+          "Credenciales incorrectas. Verifica tus datos e intenta de nuevo.",
+        code: "AUTHENTICATION_FAILED",
         retryable: true,
         timestamp: new Date(),
         correlationId,
@@ -188,9 +184,9 @@ export class AuthErrorFactory {
     // Authorization errors
     if (apiError.status === 403) {
       return {
-        type: 'authorization',
-        message: 'No tienes permisos para realizar esta acción.',
-        code: 'AUTHORIZATION_FAILED',
+        type: "authorization",
+        message: "No tienes permisos para realizar esta acción.",
+        code: "AUTHORIZATION_FAILED",
         retryable: false,
         timestamp: new Date(),
         correlationId,
@@ -209,9 +205,9 @@ export class AuthErrorFactory {
     // Server errors
     if (apiError.status >= 500) {
       return {
-        type: 'server',
-        message: 'Error del servidor. Por favor intenta más tarde.',
-        code: 'SERVER_ERROR',
+        type: "server",
+        message: "Error del servidor. Por favor intenta más tarde.",
+        code: "SERVER_ERROR",
         retryable: true,
         timestamp: new Date(),
         correlationId,
@@ -221,8 +217,8 @@ export class AuthErrorFactory {
 
     // Default error
     return {
-      type: 'server',
-      message: apiError.message || 'Ha ocurrido un error inesperado.',
+      type: "server",
+      message: apiError.message || "Ha ocurrido un error inesperado.",
       retryable: false,
       timestamp: new Date(),
       correlationId,
@@ -262,7 +258,7 @@ export class RetryManager {
         // Check if error is retryable
         if (
           error instanceof Error &&
-          'retryable' in error &&
+          "retryable" in error &&
           !error.retryable
         ) {
           break;
@@ -300,10 +296,10 @@ export class RetryManager {
 export class ErrorRecoveryFactory {
   static createRetryAction(
     operation: () => Promise<void>,
-    label: string = 'Reintentar'
+    label: string = "Reintentar"
   ): ErrorRecoveryAction {
     return {
-      type: 'retry',
+      type: "retry",
       label,
       action: operation,
       primary: true,
@@ -311,10 +307,10 @@ export class ErrorRecoveryFactory {
   }
 
   static createRefreshAction(
-    label: string = 'Recargar página'
+    label: string = "Recargar página"
   ): ErrorRecoveryAction {
     return {
-      type: 'refresh',
+      type: "refresh",
       label,
       action: () => window.location.reload(),
     };
@@ -322,7 +318,7 @@ export class ErrorRecoveryFactory {
 
   static createRedirectAction(url: string, label: string): ErrorRecoveryAction {
     return {
-      type: 'redirect',
+      type: "redirect",
       label,
       action: () => {
         window.location.href = url;
@@ -332,10 +328,10 @@ export class ErrorRecoveryFactory {
 
   static createLogoutAction(
     logoutFn: () => Promise<void>,
-    label: string = 'Cerrar sesión'
+    label: string = "Cerrar sesión"
   ): ErrorRecoveryAction {
     return {
-      type: 'logout',
+      type: "logout",
       label,
       action: logoutFn,
     };
@@ -343,16 +339,16 @@ export class ErrorRecoveryFactory {
 
   static createSupportAction(
     correlationId?: string,
-    label: string = 'Contactar soporte'
+    label: string = "Contactar soporte"
   ): ErrorRecoveryAction {
     return {
-      type: 'contact_support',
+      type: "contact_support",
       label,
       action: () => {
-        const subject = encodeURIComponent('Error en autenticación');
+        const subject = encodeURIComponent("Error en autenticación");
         const body = encodeURIComponent(
           `Hola,\n\nHe experimentado un error en el sistema de autenticación.\n\n` +
-            `ID de correlación: ${correlationId || 'N/A'}\n` +
+            `ID de correlación: ${correlationId || "N/A"}\n` +
             `Fecha: ${new Date().toISOString()}\n\n` +
             `Por favor, ayúdame a resolver este problema.\n\nGracias.`
         );
@@ -376,12 +372,12 @@ export class ErrorLogger {
     };
 
     // Log to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Auth Error:', logData);
+    if (process.env.NODE_ENV === "development") {
+      console.error("Auth Error:", logData);
     }
 
     // In production, send to error tracking service
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === "production") {
       // Example: Send to error tracking service
       // errorTrackingService.captureError(logData);
     }
@@ -389,11 +385,11 @@ export class ErrorLogger {
 
   static logSecurityEvent(
     event: string,
-    severity: 'low' | 'medium' | 'high' | 'critical',
+    severity: "low" | "medium" | "high" | "critical",
     details?: Record<string, unknown>
   ): void {
     const logData = {
-      type: 'security_event',
+      type: "security_event",
       event,
       severity,
       details,
@@ -402,10 +398,10 @@ export class ErrorLogger {
       url: window.location.href,
     };
 
-    console.warn('Security Event:', logData);
+    console.warn("Security Event:", logData);
 
     // In production, send to security monitoring service
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === "production") {
       // securityService.logEvent(logData);
     }
   }

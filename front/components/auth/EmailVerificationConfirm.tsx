@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { CheckCircle, Loader2, Mail, XCircle } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
+import { CheckCircle, Loader2, Mail, XCircle } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface EmailVerificationConfirmProps {
   token?: string;
@@ -27,21 +27,12 @@ export default function EmailVerificationConfirm({
   const searchParams = useSearchParams();
 
   // Get token from props or URL params
-  const token = propToken || searchParams.get('token');
+  const token = propToken || searchParams.get("token");
 
-  useEffect(() => {
-    if (token) {
-      handleVerification();
-    } else {
-      setError('Token de verificación no encontrado');
-      onError?.('Token de verificación no encontrado');
-    }
-  }, [token, onError]);
-
-  const handleVerification = async () => {
+  const handleVerification = useCallback(async () => {
     if (!token) {
-      setError('Token de verificación requerido');
-      onError?.('Token de verificación requerido');
+      setError("Token de verificación requerido");
+      onError?.("Token de verificación requerido");
       return;
     }
 
@@ -51,16 +42,16 @@ export default function EmailVerificationConfirm({
     try {
       await confirmEmailVerification({ token });
       setIsSuccess(true);
-      toast.success('Email verificado exitosamente');
+      toast.success("Email verificado exitosamente");
 
       // Refresh user data to get updated verification status
       await refreshUser();
 
       onSuccess?.();
     } catch (error) {
-      console.error('Email verification error:', error);
+      console.error("Email verification error:", error);
       const errorMessage =
-        error instanceof Error ? error.message : 'Error verificando el email';
+        error instanceof Error ? error.message : "Error verificando el email";
 
       setError(errorMessage);
       toast.error(errorMessage);
@@ -68,7 +59,16 @@ export default function EmailVerificationConfirm({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [confirmEmailVerification, refreshUser, onSuccess, onError, token]);
+
+  useEffect(() => {
+    if (token) {
+      handleVerification();
+    } else {
+      setError("Token de verificación no encontrado");
+      onError?.("Token de verificación no encontrado");
+    }
+  }, [token, onError, handleVerification]);
 
   const handleRetry = () => {
     if (token) {
@@ -77,25 +77,25 @@ export default function EmailVerificationConfirm({
   };
 
   const handleGoToDashboard = () => {
-    router.push('/dashboard/student'); // Default redirect, will be handled by auth context
+    router.push("/dashboard/student"); // Default redirect, will be handled by auth context
   };
 
   const handleGoToLogin = () => {
-    router.push('/login');
+    router.push("/login");
   };
 
   if (isLoading) {
     return (
-      <Card className='max-w-md mx-auto p-6'>
-        <div className='text-center space-y-4'>
-          <div className='flex justify-center'>
-            <Loader2 className='h-12 w-12 text-primary animate-spin' />
+      <Card className="max-w-md mx-auto p-6">
+        <div className="text-center space-y-4">
+          <div className="flex justify-center">
+            <Loader2 className="h-12 w-12 text-primary animate-spin" />
           </div>
           <div>
-            <h3 className='text-lg font-semibold text-foreground'>
+            <h3 className="text-lg font-semibold text-foreground">
               Verificando Email
             </h3>
-            <p className='text-sm text-muted-foreground'>
+            <p className="text-sm text-muted-foreground">
               Por favor espera mientras verificamos tu email...
             </p>
           </div>
@@ -106,22 +106,22 @@ export default function EmailVerificationConfirm({
 
   if (isSuccess) {
     return (
-      <Card className='max-w-md mx-auto p-6'>
-        <div className='text-center space-y-4'>
-          <div className='flex justify-center'>
-            <CheckCircle className='h-12 w-12 text-green-500' />
+      <Card className="max-w-md mx-auto p-6">
+        <div className="text-center space-y-4">
+          <div className="flex justify-center">
+            <CheckCircle className="h-12 w-12 text-green-500" />
           </div>
           <div>
-            <h3 className='text-lg font-semibold text-foreground'>
+            <h3 className="text-lg font-semibold text-foreground">
               Email Verificado
             </h3>
-            <p className='text-sm text-muted-foreground'>
+            <p className="text-sm text-muted-foreground">
               Tu email ha sido verificado exitosamente. Ahora puedes acceder a
               todas las funciones de la plataforma.
             </p>
           </div>
-          <div className='flex gap-3'>
-            <Button onClick={handleGoToDashboard} className='flex-1'>
+          <div className="flex gap-3">
+            <Button onClick={handleGoToDashboard} className="flex-1">
               Ir al Dashboard
             </Button>
           </div>
@@ -132,33 +132,33 @@ export default function EmailVerificationConfirm({
 
   if (error) {
     return (
-      <Card className='max-w-md mx-auto p-6'>
-        <div className='text-center space-y-4'>
-          <div className='flex justify-center'>
-            <XCircle className='h-12 w-12 text-red-500' />
+      <Card className="max-w-md mx-auto p-6">
+        <div className="text-center space-y-4">
+          <div className="flex justify-center">
+            <XCircle className="h-12 w-12 text-red-500" />
           </div>
           <div>
-            <h3 className='text-lg font-semibold text-foreground'>
+            <h3 className="text-lg font-semibold text-foreground">
               Error de Verificación
             </h3>
-            <p className='text-sm text-muted-foreground'>{error}</p>
-            {error.includes('expirado') && (
-              <p className='text-xs text-muted-foreground mt-2'>
+            <p className="text-sm text-muted-foreground">{error}</p>
+            {error.includes("expirado") && (
+              <p className="text-xs text-muted-foreground mt-2">
                 Los enlaces de verificación expiran después de 24 horas. Puedes
                 solicitar un nuevo enlace desde tu perfil.
               </p>
             )}
           </div>
-          <div className='flex gap-3'>
+          <div className="flex gap-3">
             <Button
               onClick={handleGoToLogin}
-              variant='outline'
-              className='flex-1'
+              variant="outline"
+              className="flex-1"
             >
               Ir al Login
             </Button>
             {token && (
-              <Button onClick={handleRetry} className='flex-1'>
+              <Button onClick={handleRetry} className="flex-1">
                 Reintentar
               </Button>
             )}
@@ -170,16 +170,16 @@ export default function EmailVerificationConfirm({
 
   // Fallback - should not reach here
   return (
-    <Card className='max-w-md mx-auto p-6'>
-      <div className='text-center space-y-4'>
-        <div className='flex justify-center'>
-          <Mail className='h-12 w-12 text-muted-foreground' />
+    <Card className="max-w-md mx-auto p-6">
+      <div className="text-center space-y-4">
+        <div className="flex justify-center">
+          <Mail className="h-12 w-12 text-muted-foreground" />
         </div>
         <div>
-          <h3 className='text-lg font-semibold text-foreground'>
+          <h3 className="text-lg font-semibold text-foreground">
             Verificación de Email
           </h3>
-          <p className='text-sm text-muted-foreground'>
+          <p className="text-sm text-muted-foreground">
             Preparando verificación...
           </p>
         </div>

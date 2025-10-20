@@ -1,21 +1,21 @@
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type React from 'react';
-import { Button } from '@/components/ui/button';
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type React from "react";
+import { Button } from "@/components/ui/button";
 
 interface AuthButtonProps {
   isLoading: boolean;
   loadingText: string;
   children: React.ReactNode;
-  type?: 'button' | 'submit' | 'reset';
+  type?: "button" | "submit" | "reset";
   onClick?: () => void;
   variant?:
-    | 'default'
-    | 'destructive'
-    | 'outline'
-    | 'secondary'
-    | 'ghost'
-    | 'link';
+    | "default"
+    | "destructive"
+    | "outline"
+    | "secondary"
+    | "ghost"
+    | "link";
   className?: string;
   disabled?: boolean;
 }
@@ -24,10 +24,10 @@ export default function AuthButton({
   isLoading,
   loadingText,
   children,
-  type = 'submit',
+  type = "submit",
   onClick,
-  variant = 'default',
-  className = '',
+  variant = "default",
+  className = "",
   disabled = false,
 }: AuthButtonProps) {
   const isDisabled = isLoading || disabled;
@@ -38,19 +38,19 @@ export default function AuthButton({
       disabled={isDisabled}
       onClick={onClick}
       className={`w-full ${className}`}
-      size='lg'
+      size="lg"
       variant={variant}
       aria-busy={isLoading}
       aria-disabled={isDisabled}
     >
       {isLoading ? (
-        <div className='flex items-center gap-2'>
+        <div className="flex items-center gap-2">
           <FontAwesomeIcon
             icon={faSpinner}
-            className='animate-spin w-4 h-4'
-            aria-hidden='true'
+            className="animate-spin w-4 h-4"
+            aria-hidden="true"
           />
-          <span aria-live='polite'>{loadingText}</span>
+          <span aria-live="polite">{loadingText}</span>
         </div>
       ) : (
         children

@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import React, {
+import { useRouter, useSearchParams } from "next/navigation";
+import {
   createContext,
   type ReactNode,
   Suspense,
   useContext,
   useEffect,
   useState,
-} from 'react';
+} from "react";
 import {
   type EmailVerificationConfirm,
   type EmailVerificationRequest,
@@ -17,20 +17,20 @@ import {
   type ResendVerificationRequest,
   type VerificationStatus,
   verificationApi,
-} from '@/lib/api/verification';
+} from "@/lib/api/verification";
 import {
   type AuthResponse,
   authService,
   type MFARequiredResponse,
   TokenManager,
   type User,
-} from '@/lib/auth';
+} from "@/lib/auth";
 import type {
   ForgotPasswordFormData,
   LoginFormData,
   RegisterFormData,
   ResetPasswordFormData,
-} from '@/lib/validations/auth';
+} from "@/lib/validations/auth";
 
 interface AuthContextType {
   user: User | null;
@@ -112,7 +112,7 @@ function AuthProviderContent({ children }: AuthProviderProps) {
               setUser(storedUser);
             } catch (error) {
               // Refresh failed, clear tokens and redirect to login
-              console.error('Token refresh failed:', error);
+              console.error("Token refresh failed:", error);
               TokenManager.clearTokens();
               setUser(null);
             }
@@ -124,12 +124,12 @@ function AuthProviderContent({ children }: AuthProviderProps) {
               const status = await verificationApi.getStatus();
               setVerificationStatus(status);
             } catch (error) {
-              console.error('Failed to load verification status:', error);
+              console.error("Failed to load verification status:", error);
             }
           }
         }
       } catch (error) {
-        console.error('Auth initialization failed:', error);
+        console.error("Auth initialization failed:", error);
         TokenManager.clearTokens();
         setUser(null);
       } finally {
@@ -141,53 +141,44 @@ function AuthProviderContent({ children }: AuthProviderProps) {
   }, []);
 
   const login = async (credentials: LoginFormData): Promise<void> => {
-    try {
-      const response = await authService.login(credentials);
+    const response = await authService.login(credentials);
 
-      // Check if MFA is required
-      if ('mfa_required' in response && response.mfa_required) {
-        const mfaResponse = response as MFARequiredResponse;
-        setMfaRequired(true);
-        setMfaUserId(mfaResponse.user_id);
-        setPendingCredentials(credentials); // Store credentials for MFA retry
-        return; // Don't redirect, stay on login page for MFA input
-      }
-
-      // Normal login flow - store tokens and user data
-      const authResponse = response as AuthResponse;
-      TokenManager.setTokens(authResponse);
-      setUser(authResponse.user);
-      setMfaRequired(false);
-      setMfaUserId(null);
-      setPendingCredentials(null);
-
-      // Check for redirect URL from middleware
-      const redirectUrl = searchParams.get('redirect');
-
-      if (redirectUrl) {
-        // Validate that the redirect URL is safe (internal to our app)
-        if (redirectUrl.startsWith('/') && !redirectUrl.startsWith('//')) {
-          router.push(redirectUrl);
-          return;
-        }
-      }
-
-      // Default redirect based on user role
-      redirectToDashboard(authResponse.user.role);
-    } catch (error) {
-      throw error; // Re-throw to be handled by the component
+    // Check if MFA is required
+    if ("mfa_required" in response && response.mfa_required) {
+      const mfaResponse = response as MFARequiredResponse;
+      setMfaRequired(true);
+      setMfaUserId(mfaResponse.user_id);
+      setPendingCredentials(credentials); // Store credentials for MFA retry
+      return; // Don't redirect, stay on login page for MFA input
     }
+
+    // Normal login flow - store tokens and user data
+    const authResponse = response as AuthResponse;
+    TokenManager.setTokens(authResponse);
+    setUser(authResponse.user);
+    setMfaRequired(false);
+    setMfaUserId(null);
+    setPendingCredentials(null);
+
+    // Check for redirect URL from middleware
+    const redirectUrl = searchParams.get("redirect");
+
+    if (redirectUrl) {
+      // Validate that the redirect URL is safe (internal to our app)
+      if (redirectUrl.startsWith("/") && !redirectUrl.startsWith("//")) {
+        router.push(redirectUrl);
+        return;
+      }
+    }
+
+    // Default redirect based on user role
+    redirectToDashboard(authResponse.user.role);
   };
 
   const register = async (userData: RegisterFormData): Promise<void> => {
-    try {
-      await authService.register(userData);
-
-      // After successful registration, redirect to login
-      router.push('/login?message=registration-success');
-    } catch (error) {
-      throw error; // Re-throw to be handled by the component
-    }
+    await authService.register(userData);
+    // After successful registration, redirect to login
+    router.push("/login?message=registration-success");
   };
 
   const logout = async (): Promise<void> => {
@@ -198,12 +189,12 @@ function AuthProviderContent({ children }: AuthProviderProps) {
         await authService.logout(refreshToken);
       }
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     } finally {
       // Clear local storage and state regardless of API call success
       TokenManager.clearTokens();
       setUser(null);
-      router.push('/login');
+      router.push("/login");
     }
   };
 
@@ -217,13 +208,13 @@ function AuthProviderContent({ children }: AuthProviderProps) {
         // Update stored user data
         const currentTokens = {
           access: accessToken,
-          refresh: TokenManager.getRefreshToken() || '',
+          refresh: TokenManager.getRefreshToken() || "",
           user: updatedUser,
         };
         TokenManager.setTokens(currentTokens);
       }
     } catch (error) {
-      console.error('Failed to refresh user data:', error);
+      console.error("Failed to refresh user data:", error);
       // If user refresh fails, logout
       await logout();
     }
@@ -232,11 +223,7 @@ function AuthProviderContent({ children }: AuthProviderProps) {
   const requestPasswordReset = async (
     email: ForgotPasswordFormData
   ): Promise<void> => {
-    try {
-      await authService.requestPasswordReset(email);
-    } catch (error) {
-      throw error; // Re-throw to be handled by the component
-    }
+    await authService.requestPasswordReset(email);
   };
 
   const resetPassword = async (
@@ -244,99 +231,87 @@ function AuthProviderContent({ children }: AuthProviderProps) {
     uid: string,
     passwordData: ResetPasswordFormData
   ): Promise<void> => {
-    try {
-      await authService.resetPassword(token, uid, passwordData);
-    } catch (error) {
-      throw error; // Re-throw to be handled by the component
-    }
+    await authService.resetPassword(token, uid, passwordData);
   };
 
   const verifyMFA = async (token: string): Promise<void> => {
     if (!mfaUserId || !pendingCredentials) {
-      throw new Error('No hay sesión MFA activa');
+      throw new Error("No hay sesión MFA activa");
     }
 
-    try {
-      // Retry login with MFA token
-      const credentialsWithMFA: LoginFormData = {
-        ...pendingCredentials,
-        mfaToken: token,
-      };
+    // Retry login with MFA token
+    const credentialsWithMFA: LoginFormData = {
+      ...pendingCredentials,
+      mfaToken: token,
+    };
 
-      const response = await authService.login(credentialsWithMFA);
+    const response = await authService.login(credentialsWithMFA);
 
-      if ('mfa_required' in response && response.mfa_required) {
-        throw new Error('Token MFA inválido');
-      }
-
-      // Successful MFA verification
-      const authResponse = response as AuthResponse;
-      TokenManager.setTokens(authResponse);
-      setUser(authResponse.user);
-      setMfaRequired(false);
-      setMfaUserId(null);
-      setPendingCredentials(null);
-
-      // Check for redirect URL from middleware
-      const redirectUrl = searchParams.get('redirect');
-
-      if (redirectUrl) {
-        // Validate that the redirect URL is safe (internal to our app)
-        if (redirectUrl.startsWith('/') && !redirectUrl.startsWith('//')) {
-          router.push(redirectUrl);
-          return;
-        }
-      }
-
-      // Default redirect based on user role
-      redirectToDashboard(authResponse.user.role);
-    } catch (error) {
-      throw error; // Re-throw to be handled by the component
+    if ("mfa_required" in response && response.mfa_required) {
+      throw new Error("Token MFA inválido");
     }
+
+    // Successful MFA verification
+    const authResponse = response as AuthResponse;
+    TokenManager.setTokens(authResponse);
+    setUser(authResponse.user);
+    setMfaRequired(false);
+    setMfaUserId(null);
+    setPendingCredentials(null);
+
+    // Check for redirect URL from middleware
+    const redirectUrl = searchParams.get("redirect");
+
+    if (redirectUrl) {
+      // Validate that the redirect URL is safe (internal to our app)
+      if (redirectUrl.startsWith("/") && !redirectUrl.startsWith("//")) {
+        router.push(redirectUrl);
+        return;
+      }
+    }
+
+    // Default redirect based on user role
+    redirectToDashboard(authResponse.user.role);
   };
 
   const verifyBackupCode = async (code: string): Promise<void> => {
     if (!mfaUserId || !pendingCredentials) {
-      throw new Error('No hay sesión MFA activa');
+      throw new Error("No hay sesión MFA activa");
     }
 
-    try {
-      // Retry login with backup code
-      const credentialsWithBackupCode: LoginFormData = {
-        ...pendingCredentials,
-        mfaToken: code,
-      };
+    // Retry login with backup code
+    const credentialsWithBackupCode: LoginFormData = {
+      ...pendingCredentials,
+      mfaToken: code,
+    };
 
-      const response = await authService.login(credentialsWithBackupCode);
+    const response = await authService.login(credentialsWithBackupCode);
 
-      if ('mfa_required' in response && response.mfa_required) {
-        throw new Error('Código de respaldo inválido');
-      }
-
-      // Successful backup code verification
-      const authResponse = response as AuthResponse;
-      TokenManager.setTokens(authResponse);
-      setUser(authResponse.user);
-      setMfaRequired(false);
-      setMfaUserId(null);
-      setPendingCredentials(null);
-
-      // Check for redirect URL from middleware
-      const redirectUrl = searchParams.get('redirect');
-
-      if (redirectUrl) {
-        // Validate that the redirect URL is safe (internal to our app)
-        if (redirectUrl.startsWith('/') && !redirectUrl.startsWith('//')) {
-          router.push(redirectUrl);
-          return;
-        }
-      }
-
-      // Default redirect based on user role
-      redirectToDashboard(authResponse.user.role);
-    } catch (error) {
-      throw error; // Re-throw to be handled by the component
+    if ("mfa_required" in response && response.mfa_required) {
+      throw new Error("Código de respaldo inválido");
     }
+
+    // Successful backup code verification
+    const authResponse = response as AuthResponse;
+    TokenManager.setTokens(authResponse);
+    setUser(authResponse.user);
+    setMfaRequired(false);
+    setMfaUserId(null);
+    setPendingCredentials(null);
+
+    // Check for redirect URL from middleware
+    const redirectUrl = searchParams.get("redirect");
+
+    if (redirectUrl) {
+      // Validate that the redirect URL is safe (internal to our app)
+      if (redirectUrl.startsWith("/") && !redirectUrl.startsWith("//")) {
+        router.push(redirectUrl);
+        return;
+      }
+    }
+
+    // Default redirect based on user role
+    redirectToDashboard(authResponse.user.role);
   };
 
   const clearMFAState = (): void => {
@@ -347,87 +322,62 @@ function AuthProviderContent({ children }: AuthProviderProps) {
 
   // Verification methods
   const getVerificationStatus = async (): Promise<VerificationStatus> => {
-    try {
-      const status = await verificationApi.getStatus();
-      setVerificationStatus(status);
-      return status;
-    } catch (error) {
-      throw error;
-    }
+    const status = await verificationApi.getStatus();
+    setVerificationStatus(status);
+    return status;
   };
 
   const requestEmailVerification = async (
     data: EmailVerificationRequest = {}
   ): Promise<void> => {
-    try {
-      await verificationApi.requestEmailVerification(data);
-      // Refresh verification status after request
-      await getVerificationStatus();
-    } catch (error) {
-      throw error;
-    }
+    await verificationApi.requestEmailVerification(data);
+    // Refresh verification status after request
+    await getVerificationStatus();
   };
 
   const confirmEmailVerification = async (
     data: EmailVerificationConfirm
   ): Promise<void> => {
-    try {
-      await verificationApi.confirmEmailVerification(data);
-      // Refresh verification status and user data after confirmation
-      await Promise.all([getVerificationStatus(), refreshUser()]);
-    } catch (error) {
-      throw error;
-    }
+    await verificationApi.confirmEmailVerification(data);
+    // Refresh verification status and user data after confirmation
+    await Promise.all([getVerificationStatus(), refreshUser()]);
   };
 
   const requestPhoneVerification = async (
     data: PhoneVerificationRequest = {}
   ): Promise<void> => {
-    try {
-      await verificationApi.requestPhoneVerification(data);
-      // Refresh verification status after request
-      await getVerificationStatus();
-    } catch (error) {
-      throw error;
-    }
+    await verificationApi.requestPhoneVerification(data);
+    // Refresh verification status after request
+    await getVerificationStatus();
   };
 
   const confirmPhoneVerification = async (
     data: PhoneVerificationConfirm
   ): Promise<void> => {
-    try {
-      await verificationApi.confirmPhoneVerification(data);
-      // Refresh verification status and user data after confirmation
-      await Promise.all([getVerificationStatus(), refreshUser()]);
-    } catch (error) {
-      throw error;
-    }
+    await verificationApi.confirmPhoneVerification(data);
+    // Refresh verification status and user data after confirmation
+    await Promise.all([getVerificationStatus(), refreshUser()]);
   };
 
   const resendVerification = async (
     data: ResendVerificationRequest
   ): Promise<void> => {
-    try {
-      await verificationApi.resendVerification(data);
-      // Refresh verification status after resend
-      await getVerificationStatus();
-    } catch (error) {
-      throw error;
-    }
+    await verificationApi.resendVerification(data);
+    // Refresh verification status after resend
+    await getVerificationStatus();
   };
 
   const redirectToDashboard = (role: string): void => {
     // Redirect based on user role as specified in requirements
     switch (role) {
-      case 'admin':
-        router.push('/dashboard/admin');
+      case "admin":
+        router.push("/dashboard/admin");
         break;
-      case 'president':
-        router.push('/dashboard/president');
+      case "president":
+        router.push("/dashboard/president");
         break;
-      case 'student':
       default:
-        router.push('/dashboard/student');
+        router.push("/dashboard/student");
         break;
     }
   };
@@ -470,7 +420,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }
@@ -478,14 +428,14 @@ export function useAuth(): AuthContextType {
 // Higher-order component for protecting routes
 interface ProtectedRouteProps {
   children: ReactNode;
-  allowedRoles?: ('admin' | 'president' | 'student')[];
+  allowedRoles?: ("admin" | "president" | "student")[];
   fallbackPath?: string;
 }
 
 export function ProtectedRoute({
   children,
   allowedRoles,
-  fallbackPath = '/login',
+  fallbackPath = "/login",
 }: ProtectedRouteProps) {
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
@@ -500,15 +450,14 @@ export function ProtectedRoute({
       if (allowedRoles && user && !allowedRoles.includes(user.role)) {
         // User doesn't have required role, redirect to their dashboard
         switch (user.role) {
-          case 'admin':
-            router.push('/dashboard/admin');
+          case "admin":
+            router.push("/dashboard/admin");
             break;
-          case 'president':
-            router.push('/dashboard/president');
+          case "president":
+            router.push("/dashboard/president");
             break;
-          case 'student':
           default:
-            router.push('/dashboard/student');
+            router.push("/dashboard/student");
             break;
         }
       }
@@ -517,8 +466,8 @@ export function ProtectedRoute({
 
   if (isLoading) {
     return (
-      <div className='min-h-screen flex items-center justify-center'>
-        <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary'></div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
